@@ -940,19 +940,22 @@ body {
 }
 
 .btn-blink {
-    animation: subtlePulse 2.5s ease-in-out infinite;
+    animation: greenPulse 2s ease-in-out infinite;
     font-weight: 700;
+    position: relative;
 }
 
-@keyframes subtlePulse {
+@keyframes greenPulse {
 
     0%,
     100% {
-        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+        box-shadow: 0 2px 8px rgba(67, 160, 71, 0.3);
+        transform: scale(1);
     }
 
     50% {
-        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+        box-shadow: 0 4px 24px rgba(67, 160, 71, 0.6), 0 0 0 4px rgba(67, 160, 71, 0.15);
+        transform: scale(1.05);
     }
 }
 
