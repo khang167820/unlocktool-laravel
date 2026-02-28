@@ -16,23 +16,19 @@ class HomeController extends Controller
         // Get all prices
         $allPrices = Price::orderBy('hours', 'asc')->get();
 
-        // Get accounts list - prioritize longest-waiting available accounts
+        // Get accounts list - available first, then by ID
         $accounts = Account::select('accounts.*', DB::raw('
             (SELECT MAX(o.expires_at) FROM orders o 
              WHERE o.account_id = accounts.id 
              AND o.status IN ("completed","paid")) as active_expires_at
         '))
         ->orderByRaw('CASE WHEN is_available = 1 THEN 0 ELSE 1 END')
-        ->orderBy('available_since', 'asc')
+        ->orderBy('id', 'asc')
         ->limit(100)
         ->get();
 
         // Count available accounts
-        $availableCount = Account::where('is_available', 1)
-            ->where(function ($q) {
-                $q->whereNull('note')->orWhere('note', '');
-            })
-            ->count();
+        $availableCount = Account::where('is_available', 1)->count();
 
         // Recent orders (by IP, last 30 days)
         $userIp = OrderHelper::getClientIP();

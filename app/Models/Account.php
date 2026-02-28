@@ -12,12 +12,11 @@ class Account extends Model
 
     protected $fillable = [
         'username', 'password', 'type', 'is_available',
-        'note', 'note_date', 'available_since',
+        'note', 'note_date',
     ];
 
     protected $casts = [
         'is_available' => 'boolean',
-        'available_since' => 'datetime',
     ];
 
     // === Scopes ===
