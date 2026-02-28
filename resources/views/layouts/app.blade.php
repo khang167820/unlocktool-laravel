@@ -28,7 +28,7 @@
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"></noscript>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=2.0">
     @yield('schema')
     @yield('head')
 </head>
@@ -104,26 +104,26 @@
         <div class="footer-col">
             <h4>UnlockTool.us</h4>
             <p>Dịch vụ cho thuê tài khoản UnlockTool uy tín, giá rẻ nhất Việt Nam. Hệ thống tự động 24/7.</p>
-            <p style="margin-top:12px;"><strong style="color:white;">Hotline:</strong> 0777 333 763</p>
+            <p style="margin-top:12px;"><strong>Hotline:</strong> 0777 333 763</p>
         </div>
         <div class="footer-col">
             <h4>Hướng Dẫn</h4>
             <ul>
-                <li><a href="/articles/19-cach-su-dung-unlocktool.php"><i class="fas fa-angle-right"></i> Cách sử dụng UnlockTool</a></li>
-                <li><a href="/articles/2-tai-unlocktool.php"><i class="fas fa-angle-right"></i> Tải UnlockTool</a></li>
-                <li><a href="/articles/6-cai-driver-unlocktool.php"><i class="fas fa-angle-right"></i> Cài Driver</a></li>
-                <li><a href="/articles/78-huong-dan-thanh-toan.php"><i class="fas fa-angle-right"></i> Hướng dẫn thanh toán</a></li>
-                <li><a href="/articles/77-cau-hoi-thuong-gap.php"><i class="fas fa-angle-right"></i> Câu hỏi thường gặp</a></li>
+                <li><a href="/blog/cach-su-dung-unlocktool"><i class="fas fa-angle-right"></i> Cách sử dụng UnlockTool</a></li>
+                <li><a href="/blog/tai-unlocktool"><i class="fas fa-angle-right"></i> Tải UnlockTool</a></li>
+                <li><a href="/blog/cai-driver-unlocktool"><i class="fas fa-angle-right"></i> Cài Driver</a></li>
+                <li><a href="/blog/huong-dan-thanh-toan"><i class="fas fa-angle-right"></i> Hướng dẫn thanh toán</a></li>
+                <li><a href="/blog/cau-hoi-thuong-gap"><i class="fas fa-angle-right"></i> Câu hỏi thường gặp</a></li>
             </ul>
         </div>
         <div class="footer-col">
             <h4>Dịch Vụ</h4>
             <ul>
-                <li><a href="/articles/14-thue-unlocktool-gia-re.php"><i class="fas fa-angle-right"></i> Thuê UnlockTool giá rẻ</a></li>
-                <li><a href="/articles/3-xoa-frp-samsung.php"><i class="fas fa-angle-right"></i> Xóa FRP Samsung</a></li>
-                <li><a href="/articles/5-bypass-icloud-iphone.php"><i class="fas fa-angle-right"></i> Bypass iCloud iPhone</a></li>
-                <li><a href="/articles/42-xoa-mi-account-xiaomi.php"><i class="fas fa-angle-right"></i> Xóa Mi Account</a></li>
-                <li><a href="/articles/45-vietmap-live-pro.php"><i class="fas fa-angle-right"></i> Thuê Vietmap Live Pro</a></li>
+                <li><a href="/blog/thue-unlocktool-gia-re"><i class="fas fa-angle-right"></i> Thuê UnlockTool giá rẻ</a></li>
+                <li><a href="/blog/xoa-frp-samsung"><i class="fas fa-angle-right"></i> Xóa FRP Samsung</a></li>
+                <li><a href="/blog/bypass-icloud-iphone"><i class="fas fa-angle-right"></i> Bypass iCloud iPhone</a></li>
+                <li><a href="/blog/xoa-mi-account-xiaomi"><i class="fas fa-angle-right"></i> Xóa Mi Account</a></li>
+                <li><a href="/blog/vietmap-live-pro"><i class="fas fa-angle-right"></i> Thuê Vietmap Live Pro</a></li>
             </ul>
         </div>
         <div class="footer-col">

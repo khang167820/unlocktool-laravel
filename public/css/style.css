@@ -61,13 +61,33 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-gradient);
-    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    background: var(--bg-gradient) !important;
+    background-attachment: fixed !important;
+    color: var(--text-primary) !important;
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+}
+
+/* Override Bootstrap table text color */
+.table {
+    color: var(--text-primary) !important;
+}
+
+.table-bordered {
+    border-color: var(--glass-border) !important;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Override Bootstrap modal */
+.modal .table {
+    color: var(--text-primary) !important;
 }
 
 /* Animated background mesh */
@@ -1857,4 +1877,130 @@ footer a:hover {
     .main-header {
         padding: 8px 12px;
     }
+}
+
+/* ========================================================================
+   SITE FOOTER — Glassmorphism
+   ======================================================================== */
+.site-footer {
+    background: rgba(10, 10, 20, 0.8) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--glass-border);
+    padding: 48px 24px 0;
+    margin-top: 40px;
+    color: var(--text-secondary);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+}
+
+.footer-col h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.footer-col h4::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: 3px;
+    margin-top: 8px;
+}
+
+.footer-col p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 8px;
+}
+
+.footer-col ul li a {
+    color: var(--text-secondary) !important;
+    text-decoration: none !important;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    padding: 4px 0;
+}
+
+.footer-col ul li a:hover {
+    color: var(--primary-light) !important;
+    transform: translateX(4px);
+}
+
+.footer-col ul li a i {
+    font-size: 0.65rem;
+    color: var(--primary-light);
+    width: 12px;
+}
+
+.footer-bottom {
+    border-top: 1px solid var(--glass-border);
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 32px;
+}
+
+.footer-bottom p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .site-footer {
+        padding: 32px 16px 0;
+    }
+}
+
+/* Floating Contact Dropdown Header */
+.floating-contact-dropdown-header {
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(124, 58, 237, 0.15));
+    border-bottom: 1px solid var(--glass-border);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Floating Contact Label */
+.floating-contact-label {
+    display: none;
 }
