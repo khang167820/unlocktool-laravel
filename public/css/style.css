@@ -8,11 +8,11 @@
 /* === DESIGN TOKENS === */
 :root {
     /* Primary palette */
-    --primary: #4f46e5;
-    --primary-light: #6366f1;
-    --primary-dark: #4338ca;
-    --primary-50: #eef2ff;
-    --primary-100: #e0e7ff;
+    --primary: #2196F3;
+    --primary-light: #42a5f5;
+    --primary-dark: #1976D2;
+    --primary-50: #e3f2fd;
+    --primary-100: #bbdefb;
 
     /* Warm accent */
     --accent: #f59e0b;
@@ -20,12 +20,12 @@
     --accent-dark: #d97706;
 
     /* Secondary – teal */
-    --teal: #14b8a6;
-    --teal-light: #2dd4bf;
-    --teal-dark: #0d9488;
+    --teal: #26a69a;
+    --teal-light: #4db6ac;
+    --teal-dark: #00897b;
 
     /* Status */
-    --success: #22c55e;
+    --success: #43a047;
     --danger: #ef4444;
     --warning: #f59e0b;
     --info: #06b6d4;
@@ -44,7 +44,7 @@
     --gray-900: #0f172a;
 
     /* Dark palette */
-    --navy: #0f172a;
+    --navy: #0D47A1;
     --navy-light: #1e293b;
     --navy-lighter: #334155;
 
@@ -261,7 +261,7 @@ body {
     padding: 8px 20px;
     border-radius: var(--radius-full);
     border: none;
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    background: linear-gradient(135deg, var(--primary), #1565C0);
     color: #fff;
     font-size: 0.85rem;
     font-weight: 600;
@@ -365,7 +365,7 @@ body {
 }
 
 .contact-item-btn.group {
-    background: #7c3aed;
+    background: #1565C0;
     color: #fff;
 }
 
@@ -467,7 +467,7 @@ body {
     position: relative;
     padding: 80px 24px 64px;
     text-align: center;
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #312e81 65%, #4338ca 100%);
+    background: linear-gradient(135deg, #1a237e 0%, #0D47A1 35%, #1565C0 65%, #1976D2 100%);
     overflow: hidden;
 }
 
@@ -823,7 +823,7 @@ body {
 }
 
 .table thead th {
-    background: linear-gradient(135deg, var(--navy), #1e1b4b, var(--primary-dark));
+    background: linear-gradient(135deg, var(--navy), #0D47A1, var(--primary-dark));
     color: #fff;
     padding: 14px 16px;
     font-weight: 700;
@@ -911,17 +911,17 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    background: linear-gradient(135deg, #43a047, #388e3c);
     color: #fff;
     padding: 8px 20px;
     font-size: 0.85rem;
     border-radius: var(--radius-full);
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 2px 8px rgba(67, 160, 71, 0.25);
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 16px rgba(67, 160, 71, 0.35);
 }
 
 .btn-secondary {
@@ -991,7 +991,7 @@ body {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    background: linear-gradient(135deg, var(--primary), #1565C0);
     color: #fff;
     border: none;
     font-size: 1.3rem;
@@ -1034,7 +1034,7 @@ body {
 
 .floating-contact-dropdown-header {
     padding: 14px 16px;
-    background: linear-gradient(135deg, var(--primary-50), #ede9fe);
+    background: linear-gradient(135deg, var(--primary-50), #e3f2fd);
     border-bottom: 1px solid var(--gray-200);
     font-weight: 700;
     font-size: 0.9rem;
@@ -1085,7 +1085,7 @@ body {
 }
 
 .floating-contact-item-icon.group {
-    background: #7c3aed;
+    background: #1565C0;
     color: #fff;
 }
 
@@ -1247,7 +1247,7 @@ body {
 
 .timeline-dot.purple {
     background: #faf5ff;
-    color: #7c3aed;
+    color: #1565C0;
     border: 1px solid #e9d5ff;
 }
 
@@ -1286,7 +1286,7 @@ body {
 }
 
 .payment-brand-icon.bank {
-    background: linear-gradient(135deg, var(--primary-50), #ede9fe);
+    background: linear-gradient(135deg, var(--primary-50), #e3f2fd);
     border: 1px solid var(--primary-100);
     color: var(--primary);
 }
@@ -1404,7 +1404,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: #7c3aed;
+    background: #1565C0;
 }
 
 .why-card:nth-child(6)::before {
@@ -1459,7 +1459,7 @@ body {
 
 .why-icon.support {
     background: #faf5ff;
-    color: #7c3aed;
+    color: #1565C0;
     border: 1px solid #e9d5ff;
 }
 
@@ -1550,7 +1550,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    background: linear-gradient(135deg, var(--primary), #1565C0);
     color: #fff;
     display: flex;
     align-items: center;
@@ -1600,7 +1600,7 @@ body {
     text-align: center;
     font-weight: 700;
     font-size: 0.9rem;
-    background: linear-gradient(135deg, var(--navy), #1e1b4b, var(--primary-dark));
+    background: linear-gradient(135deg, var(--navy), #0D47A1, var(--primary-dark));
     color: #fff;
     border-bottom: 1px solid var(--gray-200);
 }
