@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="google-site-verification" content="sopE0oKWWzmSq9xXTXegYWh6bE4pdp_FbESZZhTtnmQ" />
     <title>@yield('title', 'Thuê UnlockTool Giá Rẻ Từ 8K - Tự Động 24/7 | UnlockTool.us')</title>
-    <meta name="description" content="@yield('meta_description', @yield('description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau thanh toán.'))">
+    <meta name="description" content="@yield('meta_description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau thanh toán.')">
     <meta name="robots" content="@yield('robots_meta', 'index, follow')">
     <meta name="twitter:title" content="@yield('title', 'Thuê Tài Khoản UnlockTool Giá Rẻ 2026')">
-    <meta name="twitter:description" content="@yield('meta_description', @yield('description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ.'))">
+    <meta name="twitter:description" content="@yield('meta_description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7.')">
     <meta name="twitter:image" content="{{ asset('images/unlocktool-banner.jpg') }}">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta property="og:type" content="website">
