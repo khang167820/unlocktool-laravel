@@ -189,19 +189,19 @@ body {
     padding: 8px 16px;
     border-radius: var(--radius-full);
     border: none;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, #f59e0b, #d97706);
     color: #fff;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
 }
 
 .header-history-btn:hover {
     filter: brightness(1.1);
-    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
     text-decoration: none;
     color: #fff;
 }
