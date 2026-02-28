@@ -467,7 +467,7 @@ body {
     position: relative;
     padding: 80px 24px 64px;
     text-align: center;
-    background: linear-gradient(135deg, #1a237e 0%, #0D47A1 35%, #1565C0 65%, #1976D2 100%);
+    background: linear-gradient(135deg, #0e0e1a 0%, #1a1a2e 40%, #2d2d44 70%, #1a1a2e 100%);
     overflow: hidden;
 }
 
@@ -477,7 +477,7 @@ body {
     position: absolute;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
     top: -100px;
     right: -100px;
     border-radius: 50%;
@@ -489,7 +489,7 @@ body {
     position: absolute;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
     bottom: -80px;
     left: -80px;
     border-radius: 50%;
