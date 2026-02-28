@@ -27,22 +27,22 @@
     --danger: #ef4444;
     --warning: #f59e0b;
 
-    /* Glassmorphism — Light */
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-bg-light: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
+    /* Glassmorphism — Light (high contrast) */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-bg-light: rgba(255, 255, 255, 0.92);
+    --glass-border: rgba(37, 99, 235, 0.15);
+    --glass-shadow: 0 4px 24px rgba(37, 99, 235, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
     --glass-blur: blur(20px);
 
     /* Backgrounds */
-    --bg-gradient: linear-gradient(135deg, #e8f0fe 0%, #dbeafe 30%, #eff6ff 60%, #f0f4ff 100%);
-    --bg-body: #f0f6ff;
-    --card-bg: rgba(255, 255, 255, 0.7);
+    --bg-gradient: linear-gradient(135deg, #dbeafe 0%, #eff6ff 50%, #e0e7ff 100%);
+    --bg-body: #eef2ff;
+    --card-bg: rgba(255, 255, 255, 0.9);
 
     /* Text */
-    --text-primary: #1e293b;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
 
     /* Radius */
     --radius-sm: 10px;
@@ -1187,7 +1187,7 @@ body::before {
     font-weight: 800;
     text-align: center;
     margin-bottom: 8px;
-    background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
+    background: linear-gradient(135deg, #1e40af, #2563eb);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
