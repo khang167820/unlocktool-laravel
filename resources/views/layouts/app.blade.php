@@ -46,7 +46,7 @@
                 </div>
             </a>
             <div class="header-right-actions">
-                <a href="/blog" class="header-history-btn" style="text-decoration:none;"><i class="fas fa-newspaper"></i> <span>Blog</span></a>
+                {{-- <a href="/blog" class="header-history-btn" style="text-decoration:none;"><i class="fas fa-newspaper"></i> <span>Blog</span></a> --}}
                 <button class="header-history-btn" type="button" data-toggle="modal" data-target="#historyModal"><i class="fas fa-clock-rotate-left"></i> <span>Lịch sử thuê</span></button>
                 <div class="header-search-form">
                     <input type="text" id="headerTransferContent" class="header-search-input" placeholder="Nội dung CK hoặc mã đơn">
