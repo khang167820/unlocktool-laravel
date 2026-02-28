@@ -2,12 +2,12 @@
 /* Ported from original index.php inline scripts */
 
 // ===== Mobile Menu Toggle =====
-document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+document.getElementById('mobileMenuToggle')?.addEventListener('click', function () {
     const mobileMenu = document.getElementById('mobileMenu');
     mobileMenu.classList.toggle('show');
     this.innerHTML = mobileMenu.classList.contains('show') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
 });
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const mobileMenu = document.getElementById('mobileMenu');
     const toggle = document.getElementById('mobileMenuToggle');
     if (mobileMenu && toggle && !mobileMenu.contains(e.target) && !toggle.contains(e.target)) {
@@ -17,11 +17,11 @@ document.addEventListener('click', function(e) {
 });
 
 // ===== Contact Dropdown =====
-document.getElementById('contactDropdownBtn')?.addEventListener('click', function(e) {
+document.getElementById('contactDropdownBtn')?.addEventListener('click', function (e) {
     e.stopPropagation();
     document.getElementById('contactDropdown')?.classList.toggle('show');
 });
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const dd = document.getElementById('contactDropdown');
     const btn = document.getElementById('contactDropdownBtn');
     if (dd && btn && !dd.contains(e.target) && !btn.contains(e.target)) dd.classList.remove('show');
@@ -52,7 +52,7 @@ function updateWaitingTime() {
 }
 setInterval(updateCountdowns, 1000);
 setInterval(updateWaitingTime, 1000);
-window.addEventListener('load', function() { updateCountdowns(); updateWaitingTime(); });
+window.addEventListener('load', function () { updateCountdowns(); updateWaitingTime(); });
 
 // ===== Virtual Accounts (60 fake renting accounts) =====
 function createVirtualRentingAccounts() {
@@ -60,7 +60,7 @@ function createVirtualRentingAccounts() {
     if (!tbody) return;
     const STORAGE_KEY = 'virtual_accounts_timers';
     let savedTimers = {};
-    try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) savedTimers = JSON.parse(saved); } catch(e) {}
+    try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) savedTimers = JSON.parse(saved); } catch (e) { }
     const newTimers = {};
     const virtualAccounts = [];
     for (let i = 0; i < 60; i++) {
@@ -104,21 +104,29 @@ function createVirtualRentingAccounts() {
     const allAccounts = [...waitingAccounts, ...expiredAccounts, ...rentingAccounts];
     tbody.innerHTML = '';
     allAccounts.forEach(a => tbody.appendChild(a.element));
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(newTimers)); } catch(e) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(newTimers)); } catch (e) { }
 }
 
 // ===== jQuery-dependent functionality =====
-$(document).ready(function() {
+$(document).ready(function () {
     createVirtualRentingAccounts();
     setTimeout(updateCountdowns, 100);
 
-    // Package selection
-    $('.package-option').click(function() {
-        $('.package-option').removeClass('selected');
+    // Package selection (radio button cards)
+    $('.rent-package-option').click(function () {
+        $('.rent-package-option').removeClass('selected');
         $(this).addClass('selected');
+        $(this).find('input[type="radio"]').prop('checked', true);
         $('#selected_price_id').val($(this).data('price-id'));
     });
-    $('#rentButton').click(function() {
+    // Auto-select first package
+    var firstPkg = $('.rent-package-option').first();
+    if (firstPkg.length) {
+        firstPkg.addClass('selected');
+        firstPkg.find('input[type="radio"]').prop('checked', true);
+        $('#selected_price_id').val(firstPkg.data('price-id'));
+    }
+    $('#rentButton').click(function () {
         if ($('#selected_price_id').val() === '') { alert('Vui lòng chọn một gói thuê!'); return false; }
     });
 
@@ -130,31 +138,34 @@ $(document).ready(function() {
         if (!match) { alert('Không tìm thấy mã đơn hàng.'); return; }
         window.location.href = '/order-status?orderCode=' + encodeURIComponent(match[match.length - 1]);
     }
-    $('#headerCheckBtn').click(function() { doSearch('#headerTransferContent'); });
-    $('#headerTransferContent').on('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doSearch('#headerTransferContent'); } });
-    $('#mobileCheckBtn').click(function() { doSearch('#mobileTransferContent'); });
-    $('#mobileTransferContent').on('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doSearch('#mobileTransferContent'); } });
+    $('#headerCheckBtn').click(function () { doSearch('#headerTransferContent'); });
+    $('#headerTransferContent').on('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doSearch('#headerTransferContent'); } });
+    $('#mobileCheckBtn').click(function () { doSearch('#mobileTransferContent'); });
+    $('#mobileTransferContent').on('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doSearch('#mobileTransferContent'); } });
 
-    // Modal account ID
-    $('#rentModal').on('show.bs.modal', function(e) {
-        $('#account_id').val($(e.relatedTarget).data('account-id'));
+    // Modal account ID + type display
+    $('#rentModal').on('show.bs.modal', function (e) {
+        var btn = $(e.relatedTarget);
+        $('#account_id').val(btn.data('account-id'));
+        var accountType = btn.closest('tr').find('td:eq(1)').text().trim();
+        if (accountType) $('#rentModalAccountType').text(accountType.toUpperCase());
     });
 
     // Copy button
-    $(document).on('click', '.copy-btn', function() {
+    $(document).on('click', '.copy-btn', function () {
         const text = $(this).data('copy');
         navigator.clipboard.writeText(text).then(() => alert('Đã sao chép: ' + text));
     });
 
     // Floating Contact
-    $('#floatingContactBtn').on('click', function(e) {
+    $('#floatingContactBtn').on('click', function (e) {
         e.stopPropagation();
         const dd = $('#floatingContactDropdown');
         const isOpen = dd.hasClass('show');
         if (isOpen) { dd.removeClass('show'); $(this).removeClass('active'); $(this).find('i').removeClass('fa-times').addClass('fa-headset'); }
         else { dd.addClass('show'); $(this).addClass('active'); $(this).find('i').removeClass('fa-headset').addClass('fa-times'); }
     });
-    $(document).on('click', function(e) {
+    $(document).on('click', function (e) {
         const w = $('#floatingContactBtn').closest('.floating-contact-wrapper');
         if (w.length && !w[0].contains(e.target)) {
             $('#floatingContactDropdown').removeClass('show');
@@ -168,5 +179,5 @@ $(document).ready(function() {
         if (q && q.value.trim()) window.open('https://thuetaikhoan.net/ord-services?q=' + encodeURIComponent(q.value.trim()), '_blank');
     }
     $(document).on('click', '#heroSearchBtn', doHeroSearch);
-    $(document).on('keypress', '#heroSearchInput', function(e) { if (e.which === 13) doHeroSearch(); });
+    $(document).on('keypress', '#heroSearchInput', function (e) { if (e.which === 13) doHeroSearch(); });
 });

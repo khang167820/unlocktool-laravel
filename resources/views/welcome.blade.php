@@ -225,27 +225,55 @@
 
 {{-- Rent Modal --}}
 <div class="modal fade" id="rentModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Chọn gói thuê</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
-            <div class="modal-body">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rent-modal">
+            <div class="modal-header rent-modal-header">
+                <div>
+                    <h5 class="modal-title rent-modal-title">Chọn gói thuê</h5>
+                    <p class="rent-modal-subtitle">Chọn gói thuê cho tài khoản: <strong id="rentModalAccountType">UnlockTool</strong></p>
+                </div>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="rent-modal-note">
+                <i class="fas fa-info-circle"></i> Tích lũy điểm, khuyến mại và mã giảm giá sẽ được áp dụng ở bước thanh toán.
+            </div>
+            <div class="modal-body rent-modal-body">
                 <form method="post" action="{{ route('checkout.show') }}" id="rentForm">
                     @csrf
                     <input type="hidden" name="account_id" id="account_id">
                     <input type="hidden" name="price_id" id="selected_price_id">
-                    @foreach($allPrices as $price)
-                        <div class="package-option" data-price-id="{{ $price->id }}">
-                            <span><strong>{{ \App\Helpers\OrderHelper::displayPackageName($price->hours) }}</strong> - {{ \App\Helpers\OrderHelper::formatMoney($price->price) }}</span>
-                            @if(in_array($price->hours, [6, 24]))
-                                <span class="hot-label">🔥 HOT</span>
-                            @endif
-                        </div>
+                    @foreach($allPrices as $index => $price)
+                        @php
+                            $hours = $price->hours;
+                            if ($hours <= 6) { $badge = 'Gói Trải Nghiệm'; $badgeClass = 'badge-trial'; }
+                            elseif ($hours <= 12) { $badge = 'Phổ biến'; $badgeClass = 'badge-popular'; }
+                            elseif ($hours <= 24) { $badge = 'Hot'; $badgeClass = 'badge-hot'; }
+                            elseif ($hours <= 72) { $badge = 'Khuyến mại'; $badgeClass = 'badge-promo'; }
+                            elseif ($hours <= 168) { $badge = 'Đặc biệt'; $badgeClass = 'badge-special'; }
+                            else { $badge = 'Flash Sale'; $badgeClass = 'badge-flash'; }
+                            $displayName = \App\Helpers\OrderHelper::displayPackageName($hours);
+                            $displayPrice = \App\Helpers\OrderHelper::formatMoney($price->price);
+                        @endphp
+                        <label class="rent-package-option {{ $index === 0 ? 'selected' : '' }}" data-price-id="{{ $price->id }}">
+                            <input type="radio" name="package_radio" {{ $index === 0 ? 'checked' : '' }}>
+                            <div class="rent-package-info">
+                                <div class="rent-package-badges">
+                                    <span class="rent-badge {{ $badgeClass }}">{{ $badge }}</span>
+                                    <span class="rent-duration-tag">{{ $displayName }}</span>
+                                </div>
+                                <div class="rent-package-name">UnlockTool {{ $displayName }}</div>
+                                <div class="rent-package-time">Thời hạn: {{ $hours }} giờ</div>
+                            </div>
+                            <div class="rent-package-price">
+                                <strong>{{ $displayPrice }}</strong>
+                            </div>
+                        </label>
                     @endforeach
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                <button type="submit" class="btn btn-primary" form="rentForm" id="rentButton">Tiến hành thanh toán</button>
+            <div class="modal-footer rent-modal-footer">
+                <button type="button" class="btn rent-btn-cancel" data-dismiss="modal">Hủy</button>
+                <button type="submit" class="btn rent-btn-confirm" form="rentForm" id="rentButton"><i class="fas fa-check-circle"></i> Xác nhận thuê</button>
             </div>
         </div>
     </div>

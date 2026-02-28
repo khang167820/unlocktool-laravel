@@ -1126,6 +1126,209 @@ body {
     padding: 16px 24px;
 }
 
+/* ========================================================================
+   RENT MODAL — Premium package selection
+   ======================================================================== */
+.rent-modal {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.rent-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 24px 12px;
+    border-bottom: none;
+}
+
+.rent-modal-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.rent-modal-subtitle {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 4px 0 0;
+}
+
+.rent-modal-note {
+    margin: 0 24px 12px;
+    padding: 10px 16px;
+    background: #eef7ee;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rent-modal-body {
+    padding: 0 24px 16px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.rent-package-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.rent-package-option:hover {
+    border-color: var(--primary-light);
+    background: #f0f7ff;
+}
+
+.rent-package-option.selected {
+    border-color: var(--primary);
+    background: #e8f4fd;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+}
+
+.rent-package-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.rent-package-info {
+    flex: 1;
+}
+
+.rent-package-badges {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.rent-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-trial {
+    background: #e3f2fd;
+    color: #1565C0;
+}
+
+.badge-popular {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.badge-hot {
+    background: #fce4ec;
+    color: #c62828;
+}
+
+.badge-promo {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-special {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.badge-flash {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #f57f17;
+}
+
+.rent-duration-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.rent-package-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.rent-package-time {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+}
+
+.rent-package-price {
+    text-align: right;
+    flex-shrink: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--gray-900);
+}
+
+.rent-modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+    justify-content: flex-end;
+}
+
+.rent-btn-cancel {
+    padding: 10px 28px;
+    border-radius: 10px;
+    border: 1px solid var(--gray-300);
+    background: #fff;
+    color: var(--gray-700);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.rent-btn-cancel:hover {
+    background: var(--gray-50);
+}
+
+.rent-btn-confirm {
+    padding: 10px 32px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #43a047, #2e7d32);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.rent-btn-confirm:hover {
+    background: linear-gradient(135deg, #388e3c, #1b5e20);
+    box-shadow: 0 6px 20px rgba(67, 160, 71, 0.4);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
 .floating-contact-item-name {
     font-weight: 600;
     font-size: 0.88rem;
