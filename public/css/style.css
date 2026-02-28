@@ -107,7 +107,7 @@ body {
     top: 0;
     z-index: 100;
     background: var(--white);
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
     padding: 0 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
@@ -188,7 +188,7 @@ body {
     gap: 6px;
     padding: 8px 16px;
     border-radius: var(--radius-full);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     background: var(--white);
     color: var(--gray-700);
     font-size: 0.85rem;
@@ -212,7 +212,7 @@ body {
 
 .header-search-input {
     padding: 8px 14px;
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-full) 0 0 var(--radius-full);
     background: var(--gray-50);
     color: var(--gray-900);
@@ -284,7 +284,7 @@ body {
     min-width: 320px;
     border-radius: var(--radius-lg);
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     box-shadow: var(--shadow-xl);
     z-index: 1000;
     overflow: hidden;
@@ -312,7 +312,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
     text-decoration: none !important;
     color: var(--gray-800) !important;
     transition: background 0.15s ease;
@@ -373,7 +373,7 @@ body {
 .mobile-menu-toggle {
     display: none;
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     color: var(--gray-700);
     padding: 8px 12px;
     border-radius: var(--radius-sm);
@@ -387,7 +387,7 @@ body {
     gap: 10px;
     padding-top: 15px;
     margin-top: 15px;
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid var(--gray-300);
 }
 
 .mobile-menu.show {
@@ -396,7 +396,7 @@ body {
 
 .mobile-history-btn {
     background: var(--gray-50);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     color: var(--gray-700);
     padding: 10px 16px;
     border-radius: var(--radius-sm);
@@ -414,7 +414,7 @@ body {
 .mobile-search-form input {
     flex: 1;
     padding: 10px 14px;
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-sm) 0 0 var(--radius-sm);
     background: var(--gray-50);
     color: var(--gray-900);
@@ -672,7 +672,7 @@ body {
     gap: 10px;
     padding: 20px 16px;
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-md);
     cursor: pointer;
     text-decoration: none !important;
@@ -791,7 +791,7 @@ body {
     padding: 0;
     border-radius: var(--radius-lg);
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     box-shadow: var(--shadow-md);
     overflow: hidden;
 }
@@ -839,7 +839,7 @@ body {
 
 .table tbody tr {
     transition: background 0.15s ease;
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .table tbody tr:hover {
@@ -931,7 +931,7 @@ body {
     padding: 8px 20px;
     font-size: 0.85rem;
     border-radius: var(--radius-full);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
 }
 
 .btn-sm {
@@ -1016,7 +1016,7 @@ body {
     right: 24px;
     min-width: 280px;
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xl);
     z-index: 99;
@@ -1036,7 +1036,7 @@ body {
 .floating-contact-dropdown-header {
     padding: 14px 16px;
     background: linear-gradient(135deg, var(--primary-50), #e3f2fd);
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-300);
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--primary-dark);
@@ -1052,7 +1052,7 @@ body {
     padding: 14px 16px;
     text-decoration: none !important;
     color: var(--gray-800) !important;
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
     transition: background 0.15s ease;
 }
 
@@ -1150,7 +1150,7 @@ body {
 .guide-col,
 .payment-col {
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-lg);
     padding: 32px 28px;
     box-shadow: var(--shadow-sm);
@@ -1310,7 +1310,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 12px 0;
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
     font-size: 0.88rem;
 }
 
@@ -1351,7 +1351,7 @@ body {
 
 .why-card {
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-md);
     padding: 28px 24px;
     transition: all 0.25s ease;
@@ -1503,7 +1503,7 @@ body {
 
 .testimonial-card {
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-md);
     padding: 24px;
     transition: all 0.2s ease;
@@ -1588,7 +1588,7 @@ body {
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     box-shadow: var(--shadow-md);
 }
 
@@ -1612,7 +1612,7 @@ body {
     text-align: center;
     font-size: 0.88rem;
     color: var(--gray-800);
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .price-compare-table tr:last-child td {
@@ -1660,7 +1660,7 @@ body {
 
 .faq-item {
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-md);
     overflow: hidden;
     transition: all 0.2s ease;
@@ -1726,14 +1726,14 @@ body {
    ======================================================================== */
 .modal-content {
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-300);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xl);
     color: var(--gray-900);
 }
 
 .modal-header {
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-300);
     padding: 18px 24px;
 }
 
@@ -1759,7 +1759,7 @@ body {
 }
 
 .modal-footer {
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid var(--gray-300);
     padding: 16px 24px;
 }
 
