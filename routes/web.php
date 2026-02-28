@@ -39,6 +39,39 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages']);
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts']);
 
+// === 301 Redirect: Old articles → New blog ===
+Route::get('/articles/{filename}', function ($filename) {
+    // Extract slug from filename: "14-thue-unlocktool-gia-re.php" → "thue-unlocktool-gia-re"
+    $slug = preg_replace('/\.php$/', '', $filename);
+    $slug = preg_replace('/^\d+-/', '', $slug);
+    $slug = \Illuminate\Support\Str::slug($slug);
+    
+    // Check if blog post exists
+    $exists = \App\Models\BlogPost::where('slug', $slug)->exists();
+    if ($exists) {
+        return redirect("/blog/{$slug}", 301);
+    }
+    
+    // Fallback: redirect to blog listing
+    return redirect('/blog', 301);
+});
+
+// === Cron: Reclaim expired accounts ===
+Route::get('/cron/reclaim-accounts', function () {
+    $secret = request('key');
+    if ($secret !== config('app.cron_key', 'unlocktool-cron-2026')) {
+        abort(403);
+    }
+    $count = \App\Services\AccountAllocationService::reclaimExpiredAccounts();
+    return response()->json(['reclaimed' => $count]);
+});
+
+// === One-time: Delete 'index' blog post ===
+Route::get('/cleanup/delete-index-post', function () {
+    $deleted = \App\Models\BlogPost::where('slug', 'index')->delete();
+    return "Deleted {$deleted} 'index' post(s). Remove this route after use.";
+});
+
 // === Admin Auth ===
 Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
