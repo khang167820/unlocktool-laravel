@@ -1127,35 +1127,38 @@ body {
 }
 
 /* ========================================================================
-   RENT MODAL — Premium package selection
+   RENT MODAL — Premium package selection (override Bootstrap)
    ======================================================================== */
-.rent-modal {
-    border-radius: 16px;
+#rentModal .modal-content {
+    border-radius: 16px !important;
     overflow: hidden;
+    border: none !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
 }
 
-.rent-modal-header {
-    display: flex;
+#rentModal .rent-modal-header {
+    display: flex !important;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 20px 24px 12px;
-    border-bottom: none;
+    padding: 20px 24px 12px !important;
+    border-bottom: none !important;
+    background: #fff;
 }
 
-.rent-modal-title {
+#rentModal .rent-modal-title {
     font-size: 1.3rem;
     font-weight: 800;
-    color: var(--gray-900);
+    color: #1a1a2e;
     margin: 0;
 }
 
-.rent-modal-subtitle {
+#rentModal .rent-modal-subtitle {
     font-size: 0.85rem;
-    color: var(--gray-500);
+    color: #6b7280;
     margin: 4px 0 0;
 }
 
-.rent-modal-note {
+#rentModal .rent-modal-note {
     margin: 0 24px 12px;
     padding: 10px 16px;
     background: #eef7ee;
@@ -1167,46 +1170,47 @@ body {
     gap: 8px;
 }
 
-.rent-modal-body {
-    padding: 0 24px 16px;
+#rentModal .rent-modal-body {
+    padding: 0 24px 16px !important;
     max-height: 420px;
     overflow-y: auto;
 }
 
-.rent-package-option {
-    display: flex;
+#rentModal .rent-package-option {
+    display: flex !important;
     align-items: center;
     gap: 14px;
     padding: 14px 16px;
     margin-bottom: 8px;
-    border: 2px solid var(--gray-200);
+    border: 2px solid #e5e7eb;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    position: relative;
+    background: #fff;
 }
 
-.rent-package-option:hover {
-    border-color: var(--primary-light);
+#rentModal .rent-package-option:hover {
+    border-color: #93c5fd;
     background: #f0f7ff;
 }
 
-.rent-package-option.selected {
-    border-color: var(--primary);
+#rentModal .rent-package-option.selected {
+    border-color: #2196F3;
     background: #e8f4fd;
     box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
 }
 
-.rent-package-option input[type="radio"] {
+#rentModal .rent-package-option input[type="radio"] {
     width: 18px;
     height: 18px;
-    accent-color: var(--primary);
+    accent-color: #2196F3;
     flex-shrink: 0;
-    margin: 0;
+    margin: 0 !important;
 }
 
 .rent-package-info {
     flex: 1;
+    min-width: 0;
 }
 
 .rent-package-badges {
@@ -1285,34 +1289,34 @@ body {
     color: var(--gray-900);
 }
 
-.rent-modal-footer {
-    display: flex;
+#rentModal .rent-modal-footer {
+    display: flex !important;
     gap: 12px;
-    padding: 16px 24px;
-    border-top: 1px solid var(--gray-200);
+    padding: 16px 24px !important;
+    border-top: 1px solid #e5e7eb !important;
     justify-content: flex-end;
 }
 
-.rent-btn-cancel {
+#rentModal .rent-btn-cancel {
     padding: 10px 28px;
     border-radius: 10px;
-    border: 1px solid var(--gray-300);
-    background: #fff;
-    color: var(--gray-700);
+    border: 1px solid #d1d5db;
+    background: #fff !important;
+    color: #374151 !important;
     font-weight: 600;
     font-size: 0.9rem;
 }
 
-.rent-btn-cancel:hover {
-    background: var(--gray-50);
+#rentModal .rent-btn-cancel:hover {
+    background: #f9fafb !important;
 }
 
-.rent-btn-confirm {
+#rentModal .rent-btn-confirm {
     padding: 10px 32px;
     border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, #43a047, #2e7d32);
-    color: #fff;
+    border: none !important;
+    background: linear-gradient(135deg, #43a047, #2e7d32) !important;
+    color: #fff !important;
     font-weight: 700;
     font-size: 0.9rem;
     box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3);
@@ -1322,10 +1326,10 @@ body {
     transition: all 0.2s ease;
 }
 
-.rent-btn-confirm:hover {
-    background: linear-gradient(135deg, #388e3c, #1b5e20);
+#rentModal .rent-btn-confirm:hover {
+    background: linear-gradient(135deg, #388e3c, #1b5e20) !important;
     box-shadow: 0 6px 20px rgba(67, 160, 71, 0.4);
-    color: #fff;
+    color: #fff !important;
     transform: translateY(-1px);
 }
 
