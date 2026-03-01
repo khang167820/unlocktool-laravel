@@ -2176,6 +2176,21 @@ footer a:hover {
 }
 
 /* ========================================================================
+   ACCOUNT TABLE — Header styling
+   ======================================================================== */
+#account-table .table thead th {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 12px;
+    border: none;
+    white-space: nowrap;
+}
+
+/* ========================================================================
    UTILITY
    ======================================================================== */
 .text-muted {
