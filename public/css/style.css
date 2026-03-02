@@ -1129,11 +1129,20 @@ body {
 /* ========================================================================
    RENT MODAL — Premium package selection (override Bootstrap)
    ======================================================================== */
+#rentModal .modal-dialog {
+    max-width: 520px;
+    max-height: 90vh;
+    margin: 5vh auto;
+}
+
 #rentModal .modal-content {
     border-radius: 16px !important;
     overflow: hidden;
     border: none !important;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
 }
 
 #rentModal .rent-modal-header {
@@ -1172,7 +1181,7 @@ body {
 
 #rentModal .rent-modal-body {
     padding: 0 24px 16px !important;
-    max-height: 600px;
+    max-height: calc(90vh - 200px);
     overflow-y: auto;
 }
 
