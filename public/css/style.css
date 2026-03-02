@@ -739,9 +739,15 @@ body {
 }
 
 @media (max-width: 768px) {
+    .service-strip-inner {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
     .service-card {
-        width: 90px;
-        padding: 14px 10px;
+        width: auto;
+        padding: 14px 8px;
     }
 
     .service-icon {
@@ -760,25 +766,34 @@ body {
 }
 
 @media (max-width: 480px) {
+    .service-strip-inner {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .service-strip {
+        padding: 24px 12px 12px;
+    }
+
     .service-card {
-        width: 75px;
-        padding: 10px 6px;
+        width: auto;
+        padding: 10px 4px;
         gap: 6px;
     }
 
     .service-icon {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         border-radius: 8px;
     }
 
     .service-icon img {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
     }
 
     .service-card span {
-        font-size: 0.65rem;
+        font-size: 0.68rem;
     }
 }
 
