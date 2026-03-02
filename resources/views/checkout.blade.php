@@ -7,7 +7,7 @@
 <style>
 .checkout-page {
     min-height: 85vh;
-    background: #f0f2f5;
+    background: #e8edf2;
     padding: 32px 16px;
 }
 
@@ -52,52 +52,55 @@
 .checkout-main-card {
     background: #fff;
     border-radius: 16px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid #d1d5db;
     overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .checkout-main-header {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 20px 24px;
-    border-bottom: 1px solid #f3f4f6;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, #1e3a5f, #0e2442);
+    border-bottom: none;
 }
 
 .checkout-main-icon {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    background: rgba(255,255,255, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    color: #2563eb;
+    font-size: 1.2rem;
+    color: #93c5fd;
     flex-shrink: 0;
 }
 
 .checkout-main-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #1f2937;
+    color: #fff;
     margin: 0;
 }
 
 .checkout-main-desc {
     font-size: 0.8rem;
-    color: #9ca3af;
+    color: rgba(255,255,255,0.6);
     margin-top: 2px;
 }
 
 .checkout-alert {
-    margin: 16px 20px 0;
-    padding: 12px 16px;
-    background: #fffbeb;
-    border: 1px solid #fde68a;
+    margin: 20px 20px 0;
+    padding: 14px 18px;
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
     border-radius: 10px;
-    font-size: 0.82rem;
-    color: #92400e;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #78350f;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -105,7 +108,8 @@
 
 .checkout-alert i {
     flex-shrink: 0;
-    color: #f59e0b;
+    color: #d97706;
+    font-size: 1rem;
 }
 
 .checkout-details {
@@ -125,35 +129,36 @@
 }
 
 .checkout-detail-label {
-    font-size: 0.9rem;
-    color: #6b7280;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #4b5563;
 }
 
 .checkout-detail-value {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #2563eb;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1e40af;
 }
 
 .checkout-total {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
-    background: #f9fafb;
-    border-top: 2px solid #f3f4f6;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-top: 2px solid #a7f3d0;
 }
 
 .checkout-total-label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #374151;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
 }
 
 .checkout-total-value {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 800;
-    color: #16a34a;
+    color: #dc2626;
 }
 
 .checkout-total-value small {
@@ -218,12 +223,19 @@
 
 .sidebar-card {
     background: #fff;
-    border: 2px solid #e5e7eb;
+    border: 2px solid #d1d5db;
     border-radius: 14px;
     padding: 18px;
     display: flex;
     align-items: flex-start;
     gap: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-icon {
@@ -238,18 +250,18 @@
 }
 
 .sidebar-icon.security {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    color: #2563eb;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
 }
 
 .sidebar-icon.auto {
-    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-    color: #059669;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
 }
 
 .sidebar-icon.support {
-    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
-    color: #db2777;
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+    color: #fff;
 }
 
 .sidebar-title {
