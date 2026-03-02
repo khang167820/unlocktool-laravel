@@ -5,6 +5,7 @@
 @section('head')
 <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
 <style>
+.grecaptcha-badge { visibility: hidden !important; }
 .checkout-page {
     min-height: 85vh;
     background: #e8edf2;
