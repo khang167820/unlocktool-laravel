@@ -1203,11 +1203,11 @@ body {
 #rentModal .rent-package-option {
     display: flex !important;
     align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
     border: 2px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     background: #fff;
@@ -1239,8 +1239,8 @@ body {
 
 .rent-package-badges {
     display: flex;
-    gap: 6px;
-    margin-bottom: 4px;
+    gap: 5px;
+    margin-bottom: 2px;
     flex-wrap: wrap;
 }
 
@@ -1294,15 +1294,15 @@ body {
 }
 
 .rent-package-name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--gray-900);
 }
 
 .rent-package-time {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: var(--gray-500);
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .rent-package-price {
