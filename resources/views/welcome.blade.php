@@ -234,9 +234,7 @@
                 </div>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
-            <div class="rent-modal-note">
-                <i class="fas fa-info-circle"></i> Tích lũy điểm, khuyến mại và mã giảm giá sẽ được áp dụng ở bước thanh toán.
-            </div>
+
             <div class="modal-body rent-modal-body">
                 <form method="post" action="{{ route('checkout.show') }}" id="rentForm">
                     @csrf
