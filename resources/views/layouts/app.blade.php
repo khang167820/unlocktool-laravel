@@ -80,18 +80,39 @@
     </div>
 </header>
 
-{{-- Floating Contact --}}
-<div class="floating-contact-wrapper">
-    <div class="floating-contact-label"><i class="fas fa-headset"></i> Liên hệ hỗ trợ</div>
-    <button class="floating-contact-btn" id="floatingContactBtn" aria-label="Liên hệ"><i class="fas fa-headset"></i></button>
-    <div class="floating-contact-dropdown" id="floatingContactDropdown">
-        <div class="floating-contact-dropdown-header"><i class="fas fa-headset"></i> <span>Liên hệ hỗ trợ</span></div>
-        <a href="https://zalo.me/0777333763" target="_blank" class="floating-contact-item"><div class="floating-contact-item-info"><div class="floating-contact-item-title">Zalo Mai Quyên</div><div class="floating-contact-item-desc">Cấp tài khoản</div></div><div class="floating-contact-item-icon zalo"><i class="fas fa-comments"></i></div></a>
-        <a href="https://zalo.me/0799161640" target="_blank" class="floating-contact-item"><div class="floating-contact-item-info"><div class="floating-contact-item-title">Zalo Thanhtaj</div><div class="floating-contact-item-desc">Hỗ trợ mở khóa</div></div><div class="floating-contact-item-icon zalo"><i class="fas fa-comments"></i></div></a>
-        <a href="tel:0799161640" class="floating-contact-item"><div class="floating-contact-item-info"><div class="floating-contact-item-title">Gọi Mai Quyên</div><div class="floating-contact-item-desc">0799 161640</div></div><div class="floating-contact-item-icon phone"><i class="fas fa-phone-alt"></i></div></a>
-        <a href="tel:0777333763" class="floating-contact-item"><div class="floating-contact-item-info"><div class="floating-contact-item-title">Gọi Khang</div><div class="floating-contact-item-desc">0777 333 763</div></div><div class="floating-contact-item-icon phone"><i class="fas fa-phone-alt"></i></div></a>
-        <a href="https://zalo.me/g/qncjky686" target="_blank" class="floating-contact-item"><div class="floating-contact-item-info"><div class="floating-contact-item-title">Group Hỗ Trợ</div><div class="floating-contact-item-desc">Tham gia ngay</div></div><div class="floating-contact-item-icon group"><i class="fas fa-users"></i></div></a>
+{{-- Floating Contact — Premium --}}
+<div class="fab-contact-wrapper" id="fabContactWrapper">
+    <div class="fab-contact-menu" id="fabContactMenu">
+        <div class="fab-menu-header">
+            <i class="fas fa-headset"></i> Liên hệ hỗ trợ
+        </div>
+        <a href="https://zalo.me/0777333763" target="_blank" class="fab-menu-item">
+            <div class="fab-menu-icon zalo"><i class="fas fa-comments"></i></div>
+            <div class="fab-menu-text"><div class="fab-menu-name">Zalo Mai Quyên</div><div class="fab-menu-desc">Cấp tài khoản</div></div>
+        </a>
+        <a href="https://zalo.me/0799161640" target="_blank" class="fab-menu-item">
+            <div class="fab-menu-icon zalo"><i class="fas fa-comments"></i></div>
+            <div class="fab-menu-text"><div class="fab-menu-name">Zalo Thanhtaj</div><div class="fab-menu-desc">Hỗ trợ mở khóa</div></div>
+        </a>
+        <a href="tel:0799161640" class="fab-menu-item">
+            <div class="fab-menu-icon phone"><i class="fas fa-phone-alt"></i></div>
+            <div class="fab-menu-text"><div class="fab-menu-name">Gọi Mai Quyên</div><div class="fab-menu-desc">0799 161 640</div></div>
+        </a>
+        <a href="tel:0777333763" class="fab-menu-item">
+            <div class="fab-menu-icon phone"><i class="fas fa-phone-alt"></i></div>
+            <div class="fab-menu-text"><div class="fab-menu-name">Gọi Khang</div><div class="fab-menu-desc">0777 333 763</div></div>
+        </a>
+        <a href="https://zalo.me/g/qncjky686" target="_blank" class="fab-menu-item">
+            <div class="fab-menu-icon group"><i class="fas fa-users"></i></div>
+            <div class="fab-menu-text"><div class="fab-menu-name">Group Hỗ Trợ</div><div class="fab-menu-desc">Tham gia ngay</div></div>
+        </a>
     </div>
+    <button class="fab-contact-btn" id="fabContactBtn" aria-label="Liên hệ">
+        <span class="fab-pulse-ring"></span>
+        <span class="fab-pulse-ring fab-pulse-ring-2"></span>
+        <i class="fas fa-headset fab-icon-open"></i>
+        <i class="fas fa-times fab-icon-close"></i>
+    </button>
 </div>
 
 <main role="main">

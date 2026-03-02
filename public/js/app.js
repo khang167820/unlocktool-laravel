@@ -157,19 +157,15 @@ $(document).ready(function () {
         navigator.clipboard.writeText(text).then(() => alert('Đã sao chép: ' + text));
     });
 
-    // Floating Contact
-    $('#floatingContactBtn').on('click', function (e) {
+    // Floating Contact — Premium FAB
+    $('#fabContactBtn').on('click', function (e) {
         e.stopPropagation();
-        const dd = $('#floatingContactDropdown');
-        const isOpen = dd.hasClass('show');
-        if (isOpen) { dd.removeClass('show'); $(this).removeClass('active'); $(this).find('i').removeClass('fa-times').addClass('fa-headset'); }
-        else { dd.addClass('show'); $(this).addClass('active'); $(this).find('i').removeClass('fa-headset').addClass('fa-times'); }
+        $('#fabContactWrapper').toggleClass('open');
     });
     $(document).on('click', function (e) {
-        const w = $('#floatingContactBtn').closest('.floating-contact-wrapper');
+        const w = $('#fabContactWrapper');
         if (w.length && !w[0].contains(e.target)) {
-            $('#floatingContactDropdown').removeClass('show');
-            $('#floatingContactBtn').removeClass('active').find('i').removeClass('fa-times').addClass('fa-headset');
+            w.removeClass('open');
         }
     });
 
