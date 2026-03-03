@@ -128,4 +128,34 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/reports', [AdminController::class, 'revenueReports'])->name('admin.reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::get('/logs', [AdminController::class, 'activityLogs'])->name('admin.logs');
+    
+    // Backup
+    Route::get('/backup', [AdminController::class, 'backupPage'])->name('admin.backup');
+    Route::post('/backup/create', [AdminController::class, 'createBackup'])->name('admin.backup.create');
+    Route::get('/backup/download/{filename}', [AdminController::class, 'downloadBackup'])->name('admin.backup.download');
+    Route::delete('/backup/{filename}', [AdminController::class, 'deleteBackup'])->name('admin.backup.delete');
+    
+    // Coupons
+    Route::get('/coupons', [AdminController::class, 'coupons'])->name('admin.coupons');
+    Route::post('/coupons/{id?}', [AdminController::class, 'saveCoupon'])->name('admin.coupons.save');
+    Route::post('/coupons/{id}/toggle', [AdminController::class, 'toggleCoupon'])->name('admin.coupons.toggle');
+    
+    // Export & Import
+    Route::get('/export', [AdminController::class, 'exportPage'])->name('admin.export');
+    Route::post('/export/orders', [AdminController::class, 'exportOrders'])->name('admin.export.orders');
+    Route::post('/export/accounts', [AdminController::class, 'exportAccounts'])->name('admin.export.accounts');
+    Route::post('/import/accounts', [AdminController::class, 'importAccounts'])->name('admin.import.accounts');
+    
+    // Global Search
+    Route::get('/search', [AdminController::class, 'globalSearch'])->name('admin.search');
+    
+    // System Info
+    Route::get('/system', [AdminController::class, 'systemInfo'])->name('admin.system');
+    Route::post('/system/clear-cache', [AdminController::class, 'clearCache'])->name('admin.system.clear-cache');
+    Route::post('/system/clear-views', [AdminController::class, 'clearViews'])->name('admin.system.clear-views');
+    Route::post('/system/optimize', [AdminController::class, 'optimizeTables'])->name('admin.system.optimize');
+    Route::get('/system/phpinfo', [AdminController::class, 'phpInfo'])->name('admin.system.phpinfo');
+    
+    // Underpaid Orders
+    Route::get('/underpaid', [AdminController::class, 'underpaidOrders'])->name('admin.underpaid');
 });

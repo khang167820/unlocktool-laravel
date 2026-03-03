@@ -650,4 +650,418 @@ class AdminController extends Controller
         }
         return view('admin.logs.index', compact('logContent'));
     }
+    
+    // ==================== BACKUP ====================
+    
+    public function backupPage()
+    {
+        $backupPath = storage_path('app/backups');
+        if (!file_exists($backupPath)) {
+            mkdir($backupPath, 0755, true);
+        }
+        
+        $files = glob($backupPath . '/*.sql');
+        $backups = [];
+        
+        foreach ($files as $file) {
+            $backups[] = [
+                'name' => basename($file),
+                'size' => $this->formatBytes(filesize($file)),
+                'date' => date('d/m/Y H:i:s', filemtime($file))
+            ];
+        }
+        
+        usort($backups, fn($a, $b) => strtotime($b['date']) - strtotime($a['date']));
+        
+        return view('admin.backup.index', compact('backups'));
+    }
+    
+    public function createBackup()
+    {
+        $backupPath = storage_path('app/backups');
+        if (!file_exists($backupPath)) {
+            mkdir($backupPath, 0755, true);
+        }
+        
+        $filename = 'backup_' . date('Y-m-d_His') . '.sql';
+        $filepath = $backupPath . '/' . $filename;
+        
+        $tables = DB::select('SHOW TABLES');
+        $dbName = config('database.connections.mysql.database');
+        $key = "Tables_in_$dbName";
+        
+        $sql = "-- Backup created at " . date('Y-m-d H:i:s') . "\n\n";
+        
+        foreach ($tables as $table) {
+            $tableName = $table->$key;
+            $createTable = DB::select("SHOW CREATE TABLE `$tableName`");
+            $sql .= "DROP TABLE IF EXISTS `$tableName`;\n";
+            $sql .= $createTable[0]->{'Create Table'} . ";\n\n";
+            
+            $rows = DB::table($tableName)->get();
+            if ($rows->count() > 0) {
+                $columns = array_keys((array)$rows[0]);
+                $sql .= "INSERT INTO `$tableName` (`" . implode('`, `', $columns) . "`) VALUES\n";
+                
+                $values = [];
+                foreach ($rows as $row) {
+                    $rowValues = array_map(function($v) {
+                        if ($v === null) return 'NULL';
+                        return "'" . addslashes($v) . "'";
+                    }, (array)$row);
+                    $values[] = '(' . implode(', ', $rowValues) . ')';
+                }
+                
+                $sql .= implode(",\n", $values) . ";\n\n";
+            }
+        }
+        
+        file_put_contents($filepath, $sql);
+        
+        return back()->with('success', "Đã tạo backup: $filename");
+    }
+    
+    public function downloadBackup($filename)
+    {
+        $filepath = storage_path('app/backups/' . $filename);
+        if (!file_exists($filepath)) {
+            return back()->with('error', 'File không tồn tại!');
+        }
+        return response()->download($filepath);
+    }
+    
+    public function deleteBackup($filename)
+    {
+        $filepath = storage_path('app/backups/' . $filename);
+        if (file_exists($filepath)) {
+            unlink($filepath);
+            return back()->with('success', 'Đã xóa backup!');
+        }
+        return back()->with('error', 'File không tồn tại!');
+    }
+    
+    private function formatBytes($size, $precision = 2)
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $i = 0;
+        while ($size >= 1024 && $i < count($units) - 1) {
+            $size /= 1024;
+            $i++;
+        }
+        return round($size, $precision) . ' ' . $units[$i];
+    }
+    
+    // ==================== COUPONS ====================
+    
+    public function coupons(Request $request)
+    {
+        $query = DB::table('coupons');
+        
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active' ? 1 : 0);
+        }
+        
+        $coupons = $query->orderBy('id', 'desc')->paginate(20);
+        
+        return view('admin.coupons.index', compact('coupons'));
+    }
+    
+    public function saveCoupon(Request $request, $id = null)
+    {
+        $request->validate([
+            'code' => 'required|string|max:50',
+            'discount_type' => 'required|in:fixed,percent',
+            'discount_value' => 'required|numeric|min:0',
+        ]);
+        
+        $data = [
+            'code' => strtoupper($request->code),
+            'discount_type' => $request->discount_type,
+            'discount_value' => $request->discount_value,
+            'max_discount_amount' => $request->max_discount_amount,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+            'expires_at' => $request->expires_at,
+            'updated_at' => now(),
+        ];
+        
+        if ($id) {
+            DB::table('coupons')->where('id', $id)->update($data);
+            return back()->with('success', 'Đã cập nhật mã giảm giá!');
+        } else {
+            $data['created_at'] = now();
+            DB::table('coupons')->insert($data);
+            return back()->with('success', 'Đã tạo mã giảm giá mới!');
+        }
+    }
+    
+    public function toggleCoupon($id)
+    {
+        $coupon = DB::table('coupons')->where('id', $id)->first();
+        if ($coupon) {
+            DB::table('coupons')->where('id', $id)->update([
+                'is_active' => !$coupon->is_active,
+                'updated_at' => now(),
+            ]);
+        }
+        return back()->with('success', 'Đã cập nhật trạng thái!');
+    }
+    
+    // ==================== EXPORT ====================
+    
+    public function exportPage()
+    {
+        return view('admin.export.index');
+    }
+    
+    public function exportOrders(Request $request)
+    {
+        $query = Order::query();
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->period && $request->period !== 'all') {
+            $dates = [
+                'today' => now()->startOfDay(),
+                'week' => now()->subDays(7),
+                'month' => now()->subDays(30),
+                'year' => now()->startOfYear(),
+            ];
+            if (isset($dates[$request->period])) {
+                $query->where('created_at', '>=', $dates[$request->period]);
+            }
+        }
+        
+        $orders = $query->orderBy('created_at', 'desc')->get();
+        
+        $filename = 'orders_' . date('Y-m-d_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+        
+        $callback = function() use ($orders) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['ID', 'Tracking Code', 'Service', 'Hours', 'Amount', 'Status', 'Created At']);
+            
+            foreach ($orders as $order) {
+                fputcsv($file, [
+                    $order->id,
+                    $order->tracking_code,
+                    $order->service_type ?? 'Unlocktool',
+                    $order->hours,
+                    $order->amount,
+                    $order->status,
+                    $order->created_at,
+                ]);
+            }
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    public function exportAccounts(Request $request)
+    {
+        $query = DB::table('accounts');
+        
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('is_available', $request->status);
+        }
+        
+        $accounts = $query->orderBy('id', 'desc')->get();
+        
+        $filename = 'accounts_' . date('Y-m-d_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+        
+        $callback = function() use ($accounts) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['ID', 'Type', 'Username', 'Password', 'Note', 'Available', 'Expires At']);
+            
+            foreach ($accounts as $account) {
+                fputcsv($file, [
+                    $account->id,
+                    $account->type,
+                    $account->username,
+                    $account->password,
+                    $account->note ?? '',
+                    $account->is_available ? 'Yes' : 'No',
+                    $account->expires_at ?? ''
+                ]);
+            }
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    public function importAccounts(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:csv,txt']);
+        
+        $file = $request->file('file');
+        $handle = fopen($file->getPathname(), 'r');
+        fgetcsv($handle); // Skip header
+        
+        $imported = 0;
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) >= 3) {
+                DB::table('accounts')->insert([
+                    'type' => $row[0] ?? 'Unlocktool',
+                    'username' => $row[1],
+                    'password' => $row[2],
+                    'note' => $row[3] ?? null,
+                    'is_available' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                $imported++;
+            }
+        }
+        
+        fclose($handle);
+        
+        return back()->with('success', "Đã import $imported tài khoản thành công!");
+    }
+    
+    // ==================== GLOBAL SEARCH ====================
+    
+    public function globalSearch(Request $request)
+    {
+        $query = $request->get('q', '');
+        
+        if (strlen($query) < 2) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Vui lòng nhập ít nhất 2 ký tự để tìm kiếm');
+        }
+        
+        $results = collect();
+        
+        // Search orders
+        try {
+            $results['orders'] = Order::where('tracking_code', 'LIKE', "%$query%")
+                ->orWhere('service_type', 'LIKE', "%$query%")
+                ->orderBy('created_at', 'desc')
+                ->limit(20)
+                ->get();
+        } catch (\Exception $e) {
+            $results['orders'] = collect();
+        }
+        
+        // Search accounts
+        try {
+            $results['accounts'] = DB::table('accounts')
+                ->where('username', 'LIKE', "%$query%")
+                ->orWhere('note', 'LIKE', "%$query%")
+                ->orWhere('type', 'LIKE', "%$query%")
+                ->orderBy('id', 'desc')
+                ->limit(10)
+                ->get();
+        } catch (\Exception $e) {
+            $results['accounts'] = collect();
+        }
+        
+        // Search coupons
+        try {
+            $results['coupons'] = DB::table('coupons')
+                ->where('code', 'LIKE', "%$query%")
+                ->orderBy('id', 'desc')
+                ->limit(10)
+                ->get();
+        } catch (\Exception $e) {
+            $results['coupons'] = collect();
+        }
+        
+        return view('admin.search.index', compact('query', 'results'));
+    }
+    
+    // ==================== SYSTEM INFO ====================
+    
+    public function systemInfo()
+    {
+        // Database stats
+        $tables = DB::select('SHOW TABLES');
+        $dbName = config('database.connections.mysql.database');
+        $key = "Tables_in_$dbName";
+        
+        $dbStats = [];
+        foreach ($tables as $table) {
+            $tableName = $table->$key;
+            $count = DB::table($tableName)->count();
+            $dbStats[$tableName] = $count;
+        }
+        
+        // Disk info
+        $totalDisk = disk_total_space('/');
+        $freeDisk = disk_free_space('/');
+        $usedDisk = $totalDisk - $freeDisk;
+        $usedPercent = $totalDisk > 0 ? round(($usedDisk / $totalDisk) * 100, 1) : 0;
+        
+        $diskInfo = [
+            'total' => $this->formatBytes($totalDisk),
+            'used' => $this->formatBytes($usedDisk),
+            'free' => $this->formatBytes($freeDisk),
+            'used_percent' => $usedPercent,
+        ];
+        
+        // Extensions
+        $extensions = get_loaded_extensions();
+        sort($extensions);
+        
+        return view('admin.system.info', compact('dbStats', 'diskInfo', 'extensions'));
+    }
+    
+    public function clearCache()
+    {
+        \Artisan::call('cache:clear');
+        \Artisan::call('config:clear');
+        \Artisan::call('route:clear');
+        return back()->with('success', 'Đã xóa cache!');
+    }
+    
+    public function clearViews()
+    {
+        \Artisan::call('view:clear');
+        return back()->with('success', 'Đã xóa views cache!');
+    }
+    
+    public function optimizeTables()
+    {
+        $tables = DB::select('SHOW TABLES');
+        $dbName = config('database.connections.mysql.database');
+        $key = "Tables_in_$dbName";
+        
+        foreach ($tables as $table) {
+            DB::statement("OPTIMIZE TABLE `{$table->$key}`");
+        }
+        
+        return back()->with('success', 'Đã optimize tất cả tables!');
+    }
+    
+    public function phpInfo()
+    {
+        phpinfo();
+        exit;
+    }
+    
+    // ==================== UNDERPAID ORDERS ====================
+    
+    public function underpaidOrders()
+    {
+        $orders = Order::where('status', 'pending')
+            ->where('created_at', '<', now()->subHours(24))
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('admin.underpaid.index', compact('orders'));
+    }
 }
+

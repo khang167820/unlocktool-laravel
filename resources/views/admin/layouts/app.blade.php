@@ -212,6 +212,13 @@
             </div>
             
             <nav class="admin-nav">
+                <!-- Search Bar -->
+                <div style="padding: 0 16px; margin-bottom: 16px;">
+                    <form action="{{ route('admin.search') }}" method="GET">
+                        <input type="text" name="q" class="form-input" placeholder="🔍 Tìm kiếm..." value="{{ request('q') }}" style="width: 100%; font-size: 13px; padding: 8px 12px; background: var(--bg-darker, #0f172a); border: 1px solid var(--border, #334155); border-radius: 8px;">
+                    </form>
+                </div>
+                
                 <div class="admin-nav-section">
                     <div class="admin-nav-title">Tổng quan</div>
                     <a href="{{ route('admin.dashboard') }}" class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -233,6 +240,14 @@
                     <a href="{{ route('admin.orders') }}" class="admin-nav-item {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
                         Đơn hàng
+                    </a>
+                    <a href="{{ route('admin.coupons') }}" class="admin-nav-item {{ request()->routeIs('admin.coupons') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6"/><polyline points="12 2 12 12"/><polyline points="16 6 12 2 8 6"/></svg>
+                        Mã giảm giá
+                    </a>
+                    <a href="{{ route('admin.underpaid') }}" class="admin-nav-item {{ request()->routeIs('admin.underpaid') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Đơn thiếu tiền
                     </a>
                 </div>
                 
@@ -257,6 +272,18 @@
                     <a href="{{ route('admin.logs') }}" class="admin-nav-item {{ request()->routeIs('admin.logs') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         Nhật ký
+                    </a>
+                    <a href="{{ route('admin.backup') }}" class="admin-nav-item {{ request()->routeIs('admin.backup*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Sao lưu
+                    </a>
+                    <a href="{{ route('admin.export') }}" class="admin-nav-item {{ request()->routeIs('admin.export*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Xuất dữ liệu
+                    </a>
+                    <a href="{{ route('admin.system') }}" class="admin-nav-item {{ request()->routeIs('admin.system*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9c0-.61-.26-1.2-.72-1.6l-.06-.06a2 2 0 012.83-2.83l.06.06c.4.46 1 .72 1.6.72H9c.55 0 1-.45 1-1V3a2 2 0 014 0v.09c0 .55.45 1 1 1 .61 0 1.2-.26 1.6-.72l.06-.06a2 2 0 012.83 2.83l-.06.06c-.46.4-.72 1-.72 1.6V9c0 .55.45 1 1 1H21a2 2 0 010 4h-.09c-.55 0-1 .45-1 1z"/></svg>
+                        Hệ thống
                     </a>
                     <a href="/" class="admin-nav-item" target="_blank">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
