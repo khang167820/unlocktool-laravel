@@ -372,7 +372,7 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="admin-logo">
-                <img src="/images/logo.png" alt="Logo">
+                <img src="/favicon.ico" alt="Logo">
                 <div>
                     <div class="admin-logo-text">Admin Panel</div>
                     <div class="admin-logo-sub">UnlockTool.us</div>
