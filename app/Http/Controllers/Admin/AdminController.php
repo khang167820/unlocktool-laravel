@@ -276,6 +276,7 @@ class AdminController extends Controller
         if ($newAvailable) {
             $updateData['note'] = null;
             $updateData['note_date'] = null;
+            $updateData['password_changed'] = 0;
         }
         
         // Also save password if provided (from edit page)
@@ -333,6 +334,7 @@ class AdminController extends Controller
         
         DB::table('accounts')->where('id', $id)->update([
             'password' => $request->password,
+            'password_changed' => 1,
             'updated_at' => now(),
         ]);
         

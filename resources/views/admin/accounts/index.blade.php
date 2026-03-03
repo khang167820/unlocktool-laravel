@@ -142,9 +142,9 @@
                                 Chuyển TT
                             </button>
                         </form>
-                        <!-- Status dot -->
-                        <span style="width: 16px; height: 16px; border-radius: 50%; display: inline-block; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2);
-                            {{ $account->is_available ? 'background: #10b981;' : 'background: #f97316;' }}">
+                        <!-- Password changed indicator dot: green=đã đổi pass, orange=chưa đổi -->
+                        <span title="{{ $account->password_changed ? 'Đã đổi pass ✅' : 'Chưa đổi pass ⚠' }}" style="width: 16px; height: 16px; border-radius: 50%; display: inline-block; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2); cursor: help;
+                            {{ $account->password_changed ? 'background: #10b981;' : 'background: #f97316;' }}">
                         </span>
                     </div>
                 </td>
