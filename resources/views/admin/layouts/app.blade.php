@@ -213,31 +213,31 @@
             
             <nav class="admin-nav">
                 <div class="admin-nav-section">
-                    <div class="admin-nav-title">Overview</div>
+                    <div class="admin-nav-title">Tổng quan</div>
                     <a href="{{ route('admin.dashboard') }}" class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                        Dashboard
+                        Bảng điều khiển
                     </a>
                 </div>
                 
                 <div class="admin-nav-section">
-                    <div class="admin-nav-title">Management</div>
+                    <div class="admin-nav-title">Quản lý</div>
                     <a href="{{ route('admin.accounts') }}" class="admin-nav-item {{ request()->routeIs('admin.accounts*') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        Accounts
+                        Tài khoản
                     </a>
                     <a href="{{ route('admin.prices') }}" class="admin-nav-item {{ request()->routeIs('admin.prices') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                        Prices
+                        Bảng giá
                     </a>
                     <a href="{{ route('admin.orders') }}" class="admin-nav-item {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-                        Orders
+                        Đơn hàng
                     </a>
                 </div>
                 
                 <div class="admin-nav-section">
-                    <div class="admin-nav-title">Content</div>
+                    <div class="admin-nav-title">Nội dung</div>
                     <a href="{{ route('admin.blog') }}" class="admin-nav-item {{ request()->routeIs('admin.blog*') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Blog
@@ -249,18 +249,18 @@
                 </div>
                 
                 <div class="admin-nav-section">
-                    <div class="admin-nav-title">System</div>
+                    <div class="admin-nav-title">Hệ thống</div>
                     <a href="{{ route('admin.reports') }}" class="admin-nav-item {{ request()->routeIs('admin.reports') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                        Reports
+                        Báo cáo
                     </a>
                     <a href="{{ route('admin.logs') }}" class="admin-nav-item {{ request()->routeIs('admin.logs') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                        Logs
+                        Nhật ký
                     </a>
                     <a href="/" class="admin-nav-item" target="_blank">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        View Website
+                        Xem Website
                     </a>
                 </div>
             </nav>
@@ -271,13 +271,13 @@
                 <button class="mobile-menu-toggle" onclick="toggleSidebar()" aria-label="Menu">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
-                <h1 class="admin-header-title">@yield('page-title', 'Dashboard')</h1>
+                <h1 class="admin-header-title">@yield('page-title', 'Bảng điều khiển')</h1>
                 <div class="admin-header-user">
                     <button id="theme-btn" class="theme-toggle" onclick="toggleTheme()">☀️ Light</button>
-                    <span>Hello, <strong>{{ session('admin_username', 'Admin') }}</strong></span>
+                    <span>Xin chào, <strong>{{ session('admin_username', 'Admin') }}</strong></span>
                     <form action="{{ route('admin.logout') }}" method="POST" style="margin:0;">
                         @csrf
-                        <button type="submit" class="admin-logout">Logout</button>
+                        <button type="submit" class="admin-logout">Đăng xuất</button>
                     </form>
                 </div>
             </header>
