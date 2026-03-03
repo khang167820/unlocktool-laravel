@@ -142,12 +142,6 @@
                                 Chuyển TT
                             </button>
                         </form>
-                        <form action="{{ route('admin.accounts.delete', $account->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Xóa tài khoản #{{ $account->id }}?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" style="padding: 8px 14px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; background: #dc2626; color: white; font-weight: 600; white-space: nowrap;">
-                                Xóa
-                            </button>
-                        </form>
                         <!-- Status dot -->
                         <span style="width: 16px; height: 16px; border-radius: 50%; display: inline-block; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2);
                             {{ $account->is_available ? 'background: #10b981;' : 'background: #f97316;' }}">
