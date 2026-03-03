@@ -33,8 +33,8 @@
 
 <!-- Stats & Action Buttons -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
-    <div style="font-size: 16px; color: #94a3b8;">
-        Tổng <strong style="color: #e2e8f0;">{{ $stats['total'] }}</strong> tài khoản 
+    <div style="font-size: 16px; color: var(--text-muted);">
+        Tổng <strong style="color: var(--text-primary);">{{ $stats['total'] }}</strong> tài khoản 
         &nbsp;·&nbsp; 
         <span style="color: #10b981;">{{ $stats['available'] }} chờ thuê</span>
         &nbsp;·&nbsp;
@@ -67,19 +67,19 @@
         </thead>
         <tbody>
             @forelse($accounts as $account)
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                <td style="text-align: center; font-weight: 700; color: #94a3b8; font-size: 16px; padding: 16px 10px;">{{ $account->id }}</td>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="text-align: center; font-weight: 700; color: var(--text-muted); font-size: 16px; padding: 16px 10px;">{{ $account->id }}</td>
                 <td style="padding: 14px 10px;">
                     <div style="margin-bottom: 4px;">
-                        <span style="color: #94a3b8; font-size: 14px;">TK:</span>
-                        <strong style="color: #e2e8f0; font-size: 16px;">{{ $account->username }}</strong>
+                        <span style="color: var(--text-muted); font-size: 14px;">TK:</span>
+                        <strong style="color: var(--text-primary); font-size: 16px;">{{ $account->username }}</strong>
                     </div>
                     <div style="margin-bottom: 8px;">
-                        <span style="color: #94a3b8; font-size: 14px;">MK:</span>
-                        <span style="font-family: monospace; color: #e2e8f0; font-size: 15px;">{{ $account->password }}</span>
+                        <span style="color: var(--text-muted); font-size: 14px;">MK:</span>
+                        <span style="font-family: monospace; color: var(--text-secondary); font-size: 15px;">{{ $account->password }}</span>
                     </div>
                     <div style="display: flex; gap: 6px;">
-                        <button type="button" class="btn-copy" onclick="copyText('{{ $account->username }}\n{{ $account->password }}', this)" style="padding: 4px 14px; font-size: 13px; border-radius: 5px; border: 1px solid #475569; background: #334155; color: #cbd5e1; cursor: pointer; font-weight: 500;">
+                        <button type="button" class="btn-copy" onclick="copyText('{{ $account->username }}\n{{ $account->password }}', this)" style="padding: 4px 14px; font-size: 13px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-secondary); cursor: pointer; font-weight: 500;">
                             Copy
                         </button>
                         <a href="{{ route('admin.accounts.edit', $account->id) }}" style="padding: 4px 14px; font-size: 13px; border-radius: 5px; border: none; background: #f97316; color: white; text-decoration: none; display: inline-flex; align-items: center; font-weight: 500;">
@@ -101,7 +101,7 @@
                             @if($expired)
                                 <div style="color: #ef4444; font-size: 14px; font-weight: 600;">
                                     ⚠ HẾT HẠN
-                                    <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">{{ $expiresAt->format('d/m/Y H:i') }}</div>
+                                    <div style="font-size: 12px; color: var(--text-dimmed); margin-top: 2px;">{{ $expiresAt->format('d/m/Y H:i') }}</div>
                                 </div>
                             @else
                                 <div class="countdown-timer" data-expires="{{ $isoDate }}" style="font-size: 14px; font-weight: 600; color: #10b981;">
@@ -129,7 +129,7 @@
                         @endif
                     @endif
                 </td>
-                <td style="font-size: 14px; color: #94a3b8; max-width: 180px; overflow: hidden; text-overflow: ellipsis; padding: 14px 10px;">
+                <td style="font-size: 14px; color: var(--text-muted); max-width: 180px; overflow: hidden; text-overflow: ellipsis; padding: 14px 10px;">
                     {{ $account->note ?? '—' }}
                 </td>
                 <td style="text-align: center; padding: 14px 10px;">
@@ -155,7 +155,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="text-align: center; color: #64748b; padding: 40px; font-size: 16px;">Chưa có tài khoản nào</td>
+                <td colspan="5" style="text-align: center; color: var(--text-dimmed); padding: 40px; font-size: 16px;">Chưa có tài khoản nào</td>
             </tr>
             @endforelse
         </tbody>
@@ -174,10 +174,12 @@ function copyText(text, btn) {
         btn.textContent = '✓';
         btn.style.background = '#10b981';
         btn.style.borderColor = '#10b981';
+        btn.style.color = 'white';
         setTimeout(() => {
             btn.textContent = original;
-            btn.style.background = '#334155';
-            btn.style.borderColor = '#475569';
+            btn.style.background = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
         }, 1500);
     });
 }
