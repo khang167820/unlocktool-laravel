@@ -4,50 +4,50 @@
 
 @section('content')
 <!-- Add Account Form -->
-<div class="admin-card" style="margin-bottom: 20px;">
-    <form action="{{ route('admin.accounts.add') }}" method="POST" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: end;">
+<div class="admin-card" style="margin-bottom: 20px; padding: 20px;">
+    <form action="{{ route('admin.accounts.add') }}" method="POST" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: end;">
         @csrf
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Tên đăng nhập</label>
-            <input type="text" name="username" class="form-input" required style="width: 180px;" placeholder="">
+            <label class="form-label" style="font-size: 14px; margin-bottom: 6px;">Tên đăng nhập</label>
+            <input type="text" name="username" class="form-input" required style="width: 200px; font-size: 15px; padding: 10px 12px;">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Mật khẩu</label>
-            <input type="text" name="password" class="form-input" required style="width: 180px;" placeholder="">
+            <label class="form-label" style="font-size: 14px; margin-bottom: 6px;">Mật khẩu</label>
+            <input type="text" name="password" class="form-input" required style="width: 200px; font-size: 15px; padding: 10px 12px;">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Loại</label>
-            <input type="text" class="form-input" value="Unlocktool" readonly style="width: 140px; opacity: 0.7;">
+            <label class="form-label" style="font-size: 14px; margin-bottom: 6px;">Loại</label>
+            <input type="text" class="form-input" value="Unlocktool" readonly style="width: 150px; font-size: 15px; padding: 10px 12px; opacity: 0.7;">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Ngày gia hạn</label>
-            <input type="date" name="expires_at" class="form-input" style="width: 160px;">
+            <label class="form-label" style="font-size: 14px; margin-bottom: 6px;">Ngày gia hạn</label>
+            <input type="date" name="expires_at" class="form-input" style="width: 170px; font-size: 15px; padding: 10px 12px;">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Ghi chú</label>
-            <input type="text" name="note" class="form-input" style="width: 160px;" placeholder="">
+            <label class="form-label" style="font-size: 14px; margin-bottom: 6px;">Ghi chú</label>
+            <input type="text" name="note" class="form-input" style="width: 180px; font-size: 15px; padding: 10px 12px;">
         </div>
-        <button type="submit" class="btn btn-primary" style="height: 38px;">+ Thêm</button>
+        <button type="submit" class="btn btn-primary" style="height: 44px; font-size: 15px; padding: 0 20px;">+ Thêm</button>
     </form>
 </div>
 
 <!-- Stats & Action Buttons -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-    <div style="font-size: 14px; color: #94a3b8;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+    <div style="font-size: 16px; color: #94a3b8;">
         Tổng <strong style="color: #e2e8f0;">{{ $stats['total'] }}</strong> tài khoản 
         &nbsp;·&nbsp; 
         <span style="color: #10b981;">{{ $stats['available'] }} chờ thuê</span>
         &nbsp;·&nbsp;
         <span style="color: #f97316;">{{ $stats['renting'] }} đang thuê</span>
     </div>
-    <div style="display: flex; gap: 8px;">
-        <a href="https://unlocktool.us" target="_blank" class="btn btn-sm" style="background: #10b981; color: white; font-size: 12px;">
+    <div style="display: flex; gap: 10px;">
+        <a href="https://unlocktool.us" target="_blank" class="btn" style="background: #10b981; color: white; font-size: 14px; padding: 8px 16px; border-radius: 6px; text-decoration: none;">
             🌐 Unlocktool.us
         </a>
         <form id="batchForm" action="{{ route('admin.accounts.batch') }}" method="POST" style="display: inline;">
             @csrf
         </form>
-        <button type="submit" form="batchForm" class="btn btn-sm" style="background: #ef4444; color: white; font-size: 12px;" onclick="return confirm('Đặt các tài khoản đã chọn thành Chờ thuê?')">
+        <button type="submit" form="batchForm" class="btn" style="background: #ef4444; color: white; font-size: 14px; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;" onclick="return confirm('Đặt các tài khoản đã chọn thành Chờ thuê?')">
             🔄 Lưu trạng thái
         </button>
     </div>
@@ -55,41 +55,41 @@
 
 <!-- Accounts Table -->
 <div class="admin-card" style="padding: 0; overflow-x: auto;">
-    <table class="admin-table" style="margin: 0;">
+    <table class="admin-table" style="margin: 0; font-size: 15px;">
         <thead>
             <tr>
-                <th style="width: 50px; text-align: center;">ID</th>
-                <th style="min-width: 240px;">Tài khoản / Mật khẩu</th>
-                <th style="min-width: 200px;">Trạng thái & Thời gian</th>
-                <th style="min-width: 130px;">Ghi chú</th>
-                <th style="width: 150px; text-align: center;">Hành động</th>
+                <th style="width: 60px; text-align: center; font-size: 14px; padding: 14px 10px;">ID</th>
+                <th style="min-width: 280px; font-size: 14px; padding: 14px 10px;">Tài khoản / Mật khẩu</th>
+                <th style="min-width: 220px; font-size: 14px; padding: 14px 10px;">Trạng thái & Thời gian</th>
+                <th style="min-width: 140px; font-size: 14px; padding: 14px 10px;">Ghi chú</th>
+                <th style="width: 180px; text-align: center; font-size: 14px; padding: 14px 10px;">Hành động</th>
             </tr>
         </thead>
         <tbody>
             @forelse($accounts as $account)
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="text-align: center; font-weight: 600; color: #94a3b8;">{{ $account->id }}</td>
-                <td>
-                    <div style="margin-bottom: 2px;">
-                        <span style="color: #94a3b8; font-size: 12px;">TK:</span>
-                        <strong style="color: #e2e8f0;">{{ $account->username }}</strong>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <td style="text-align: center; font-weight: 700; color: #94a3b8; font-size: 16px; padding: 16px 10px;">{{ $account->id }}</td>
+                <td style="padding: 14px 10px;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="color: #94a3b8; font-size: 14px;">TK:</span>
+                        <strong style="color: #e2e8f0; font-size: 16px;">{{ $account->username }}</strong>
                     </div>
-                    <div style="margin-bottom: 6px;">
-                        <span style="color: #94a3b8; font-size: 12px;">MK:</span>
-                        <span style="font-family: monospace; color: #e2e8f0;">{{ $account->password }}</span>
+                    <div style="margin-bottom: 8px;">
+                        <span style="color: #94a3b8; font-size: 14px;">MK:</span>
+                        <span style="font-family: monospace; color: #e2e8f0; font-size: 15px;">{{ $account->password }}</span>
                     </div>
-                    <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-copy" onclick="copyText('{{ $account->username }}\n{{ $account->password }}', this)" style="padding: 2px 8px; font-size: 11px; border-radius: 4px; border: 1px solid #475569; background: #334155; color: #cbd5e1; cursor: pointer;">
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="btn-copy" onclick="copyText('{{ $account->username }}\n{{ $account->password }}', this)" style="padding: 4px 14px; font-size: 13px; border-radius: 5px; border: 1px solid #475569; background: #334155; color: #cbd5e1; cursor: pointer; font-weight: 500;">
                             Copy
                         </button>
-                        <a href="{{ route('admin.accounts.edit', $account->id) }}" style="padding: 2px 8px; font-size: 11px; border-radius: 4px; border: 1px solid #f97316; background: #f97316; color: white; text-decoration: none; display: inline-flex; align-items: center;">
+                        <a href="{{ route('admin.accounts.edit', $account->id) }}" style="padding: 4px 14px; font-size: 13px; border-radius: 5px; border: none; background: #f97316; color: white; text-decoration: none; display: inline-flex; align-items: center; font-weight: 500;">
                             Sửa
                         </a>
                     </div>
                 </td>
-                <td>
+                <td style="padding: 14px 10px;">
                     @if(!$account->is_available)
-                        <span style="display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #f97316; color: white; margin-bottom: 4px;">
+                        <span style="display: inline-block; padding: 5px 14px; border-radius: 5px; font-size: 14px; font-weight: 600; background: #f97316; color: white; margin-bottom: 6px;">
                             Đang thuê
                         </span>
                         @if(isset($account->rental_expires_at))
@@ -99,20 +99,20 @@
                                 $isoDate = $expiresAt->toIso8601String();
                             @endphp
                             @if($expired)
-                                <div style="color: #ef4444; font-size: 12px; font-weight: 600;">
+                                <div style="color: #ef4444; font-size: 14px; font-weight: 600;">
                                     ⚠ HẾT HẠN
-                                    <div style="font-size: 10px; color: #94a3b8;">{{ $expiresAt->format('d/m/Y H:i') }}</div>
+                                    <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">{{ $expiresAt->format('d/m/Y H:i') }}</div>
                                 </div>
                             @else
-                                <div class="countdown-timer" data-expires="{{ $isoDate }}" style="font-size: 12px; font-weight: 600; color: #10b981;">
+                                <div class="countdown-timer" data-expires="{{ $isoDate }}" style="font-size: 14px; font-weight: 600; color: #10b981;">
                                     ⏳ Đang tính...
                                 </div>
                             @endif
                         @elseif(isset($account->rental_order_code))
-                            <div style="font-size: 11px; color: #3b82f6;">📋 {{ $account->rental_order_code }}</div>
+                            <div style="font-size: 13px; color: #3b82f6;">📋 {{ $account->rental_order_code }}</div>
                         @endif
                     @else
-                        <span style="display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #10b981; color: white; margin-bottom: 4px;">
+                        <span style="display: inline-block; padding: 5px 14px; border-radius: 5px; font-size: 14px; font-weight: 600; background: #10b981; color: white; margin-bottom: 6px;">
                             Chờ thuê
                         </span>
                         @php
@@ -121,36 +121,33 @@
                                 : (isset($account->created_at) ? \Carbon\Carbon::parse($account->created_at) : null);
                         @endphp
                         @if($waitingSince)
-                            <div class="waiting-timer" data-since="{{ $waitingSince->toIso8601String() }}" style="color: #8b5cf6; font-size: 11px;">
+                            <div class="waiting-timer" data-since="{{ $waitingSince->toIso8601String() }}" style="color: #8b5cf6; font-size: 13px;">
                                 🕐 Đang tính...
                             </div>
                         @else
-                            <span style="color: #8b5cf6; font-size: 11px;">🕐 Mới thêm</span>
+                            <span style="color: #8b5cf6; font-size: 13px;">🕐 Mới thêm</span>
                         @endif
                     @endif
                 </td>
-                <td style="font-size: 12px; color: #94a3b8; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">
+                <td style="font-size: 14px; color: #94a3b8; max-width: 180px; overflow: hidden; text-overflow: ellipsis; padding: 14px 10px;">
                     {{ $account->note ?? '—' }}
                 </td>
-                <td style="text-align: center;">
-                    <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                <td style="text-align: center; padding: 14px 10px;">
+                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                         <form action="{{ route('admin.accounts.toggle', $account->id) }}" method="POST" style="display: inline;">
                             @csrf
                             <input type="hidden" name="status" value="{{ $account->is_available ? 'renting' : 'available' }}">
                             <input type="hidden" name="ids[]" value="{{ $account->id }}" form="batchForm">
-                            <button type="submit" style="padding: 4px 12px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600;
-                                {{ $account->is_available 
-                                    ? 'background: #3b82f6; color: white;' 
-                                    : 'background: #3b82f6; color: white;' }}">
+                            <button type="submit" style="padding: 6px 16px; font-size: 13px; border-radius: 5px; border: none; cursor: pointer; font-weight: 600; background: #3b82f6; color: white;">
                                 Chuyển TT
                             </button>
                         </form>
                         <form action="{{ route('admin.accounts.delete', $account->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Xóa tài khoản #{{ $account->id }}?')">
                             @csrf @method('DELETE')
-                            <button type="submit" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer; background: #dc2626; color: white;">🗑</button>
+                            <button type="submit" style="padding: 6px 10px; font-size: 13px; border-radius: 5px; border: none; cursor: pointer; background: #dc2626; color: white;">🗑</button>
                         </form>
                         <!-- Status dot -->
-                        <span style="width: 12px; height: 12px; border-radius: 50%; display: inline-block; 
+                        <span style="width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0;
                             {{ $account->is_available ? 'background: #10b981;' : 'background: #f97316;' }}">
                         </span>
                     </div>
@@ -158,7 +155,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="text-align: center; color: #64748b; padding: 40px;">Chưa có tài khoản nào</td>
+                <td colspan="5" style="text-align: center; color: #64748b; padding: 40px; font-size: 16px;">Chưa có tài khoản nào</td>
             </tr>
             @endforelse
         </tbody>
@@ -212,10 +209,9 @@ function updateCountdowns() {
             timeStr = `${minutes}m ${seconds}s`;
         }
         
-        // Color: green > 1h, yellow < 1h, red < 10m
         let color = '#10b981';
-        if (diff < 600000) color = '#ef4444';       // < 10 min
-        else if (diff < 3600000) color = '#f59e0b';  // < 1 hour
+        if (diff < 600000) color = '#ef4444';
+        else if (diff < 3600000) color = '#f59e0b';
         
         el.style.color = color;
         el.innerHTML = `⏳ <strong>${timeStr}</strong>`;
