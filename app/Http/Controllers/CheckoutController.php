@@ -64,6 +64,19 @@ class CheckoutController extends Controller
             abort(400, 'Số tiền thuê không hợp lệ.');
         }
 
+        // 4. Check if there are available accounts BEFORE creating order
+        $availableCount = DB::table('accounts')
+            ->where('type', 'Unlocktool')
+            ->where('is_available', 1)
+            ->where(function ($q) {
+                $q->whereNull('note')->orWhere('note', '');
+            })
+            ->count();
+
+        if ($availableCount === 0) {
+            return back()->with('error', 'Hiện tại đã hết tài khoản trống. Vui lòng quay lại sau.');
+        }
+
         // Generate unique tracking code
         $trackingCode = $this->generateUniqueTrackingCode();
 

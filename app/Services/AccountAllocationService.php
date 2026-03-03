@@ -29,13 +29,13 @@ class AccountAllocationService
             }
 
             // Find available account with row lock
-            // Ưu tiên: ID thấp nhất (chờ lâu nhất) + không có ghi chú
+            // Ưu tiên: Tài khoản mới nhất (vừa thêm) → rồi đến chờ lâu nhất
             $account = Account::where('type', $serviceType)
                 ->where('is_available', 1)
                 ->where(function ($q) {
                     $q->whereNull('note')->orWhere('note', '');
                 })
-                ->orderBy('id', 'asc')
+                ->orderBy('id', 'desc')
                 ->lockForUpdate()
                 ->first();
 
