@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Price;
 use App\Helpers\OrderHelper;
 use App\Services\AccountAllocationService;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -77,6 +78,16 @@ class CheckoutController extends Controller
         ]);
 
         DB::table('orders')->where('id', $orderId)->update(['order_code' => $orderId]);
+
+        // Fetch created order to pass to Telegram
+        $order = Order::find($orderId);
+        if ($order) {
+            try {
+                TelegramService::notifyNewOrder($order);
+            } catch (\Exception $e) {
+                Log::error("Telegram notify failed for order {$orderId}: " . $e->getMessage());
+            }
+        }
 
         // === Pay2S API ===
         $payUrl = $this->createPay2sPayment($orderId, $trackingCode, $amount);

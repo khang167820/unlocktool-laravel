@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\TelegramService;
 
 class AccountAllocationService
 {
@@ -69,6 +70,13 @@ class AccountAllocationService
             DB::commit();
 
             Log::info("Account allocated: {$account->id} ({$account->type}) -> Order: {$order->tracking_code}");
+
+            // Send Telegram notification
+            try {
+                TelegramService::notifyAccountAllocated($order, $account);
+            } catch (\Exception $e) {
+                Log::error("Telegram failed for order {$order->tracking_code}: " . $e->getMessage());
+            }
 
             return [
                 'success' => true,
