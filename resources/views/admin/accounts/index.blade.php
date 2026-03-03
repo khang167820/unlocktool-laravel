@@ -133,21 +133,23 @@
                     {{ $account->note ?? '—' }}
                 </td>
                 <td style="text-align: center; padding: 14px 10px;">
-                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: nowrap;">
                         <form action="{{ route('admin.accounts.toggle', $account->id) }}" method="POST" style="display: inline;">
                             @csrf
                             <input type="hidden" name="status" value="{{ $account->is_available ? 'renting' : 'available' }}">
                             <input type="hidden" name="ids[]" value="{{ $account->id }}" form="batchForm">
-                            <button type="submit" style="padding: 6px 16px; font-size: 13px; border-radius: 5px; border: none; cursor: pointer; font-weight: 600; background: #3b82f6; color: white;">
+                            <button type="submit" style="padding: 8px 18px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; background: #3b82f6; color: white; white-space: nowrap;">
                                 Chuyển TT
                             </button>
                         </form>
                         <form action="{{ route('admin.accounts.delete', $account->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Xóa tài khoản #{{ $account->id }}?')">
                             @csrf @method('DELETE')
-                            <button type="submit" style="padding: 6px 10px; font-size: 13px; border-radius: 5px; border: none; cursor: pointer; background: #dc2626; color: white;">🗑</button>
+                            <button type="submit" style="padding: 8px 14px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; background: #dc2626; color: white; font-weight: 600; white-space: nowrap;">
+                                Xóa
+                            </button>
                         </form>
                         <!-- Status dot -->
-                        <span style="width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+                        <span style="width: 16px; height: 16px; border-radius: 50%; display: inline-block; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2);
                             {{ $account->is_available ? 'background: #10b981;' : 'background: #f97316;' }}">
                         </span>
                     </div>
