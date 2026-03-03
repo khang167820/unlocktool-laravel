@@ -74,7 +74,7 @@ class CheckoutController extends Controller
             ->count();
 
         if ($availableCount === 0) {
-            return back()->with('error', 'Hiện tại đã hết tài khoản trống. Vui lòng quay lại sau.');
+            return back()->with('error', 'Hiện tại đã hết tài khoản trống. Vui lòng liên hệ admin Zalo 0777333763 để cấp thêm tài khoản.');
         }
 
         // Generate unique tracking code
