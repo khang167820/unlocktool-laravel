@@ -95,6 +95,8 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::delete('/accounts/{id}', [AdminController::class, 'deleteAccount'])->name('admin.accounts.delete');
     Route::get('/accounts/{id}/edit', [AdminController::class, 'editAccount'])->name('admin.accounts.edit');
     Route::post('/accounts/batch', [AdminController::class, 'batchToggleAccounts'])->name('admin.accounts.batch');
+    Route::post('/accounts/{id}/change-pass', [AdminController::class, 'changeAccountPassword'])->name('admin.accounts.change-pass');
+    Route::post('/accounts/{id}/reset-tg', [AdminController::class, 'resetAccountTG'])->name('admin.accounts.reset-tg');
     
     // Prices
     Route::get('/prices', [AdminController::class, 'prices'])->name('admin.prices');

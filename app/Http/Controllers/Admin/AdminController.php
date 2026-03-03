@@ -245,7 +245,7 @@ class AdminController extends Controller
     public function toggleAccount($id)
     {
         $account = DB::table('accounts')->where('id', $id)->first();
-        if (!$account) return redirect()->route('admin.accounts')->with('error', 'Account not found!');
+        if (!$account) return redirect()->route('admin.accounts')->with('error', 'Tài khoản không tồn tại!');
         
         $status = request()->input('status');
         if ($status === 'available') {
@@ -257,14 +257,22 @@ class AdminController extends Controller
         }
         
         $updateData = ['is_available' => $newAvailable ? 1 : 0];
+        
+        // If toggling to available, also clear note and note_date
         if ($newAvailable) {
             $updateData['note'] = null;
             $updateData['note_date'] = null;
         }
         
+        // Also save password if provided (from edit page)
+        $password = request()->input('password');
+        if (!empty($password)) {
+            $updateData['password'] = $password;
+        }
+        
         DB::table('accounts')->where('id', $id)->update($updateData);
         
-        return redirect()->route('admin.accounts')->with('success', 'Account status updated!');
+        return redirect()->route('admin.accounts')->with('success', 'Đã cập nhật trạng thái tài khoản!');
     }
     
     public function updateAccount(Request $request, $id)
@@ -274,7 +282,9 @@ class AdminController extends Controller
         if ($request->has('password')) $data['password'] = $request->password;
         if ($request->has('note')) $data['note'] = $request->note;
         if ($request->has('note_date')) $data['note_date'] = $request->note_date;
+        if ($request->has('expires_at')) $data['expires_at'] = $request->expires_at;
         
+        // Nếu thêm ghi chú → tự động chuyển Đang thuê
         if ($request->has('note') && !empty($request->note)) {
             $data['is_available'] = 0;
         }
@@ -283,7 +293,7 @@ class AdminController extends Controller
             DB::table('accounts')->where('id', $id)->update($data);
         }
         
-        return redirect()->route('admin.accounts')->with('success', 'Account updated!');
+        return redirect()->route('admin.accounts')->with('success', 'Cập nhật tài khoản thành công!');
     }
     
     public function deleteAccount($id)
@@ -295,8 +305,54 @@ class AdminController extends Controller
     public function editAccount($id)
     {
         $account = DB::table('accounts')->where('id', $id)->first();
-        if (!$account) return redirect()->route('admin.accounts')->with('error', 'Account not found!');
+        if (!$account) return redirect()->route('admin.accounts')->with('error', 'Tài khoản không tồn tại!');
         return view('admin.accounts.edit', compact('account'));
+    }
+    
+    /**
+     * Change Account Password
+     */
+    public function changeAccountPassword(Request $request, $id)
+    {
+        $account = DB::table('accounts')->where('id', $id)->first();
+        if (!$account) return redirect()->route('admin.accounts')->with('error', 'Tài khoản không tồn tại!');
+        
+        DB::table('accounts')->where('id', $id)->update([
+            'password' => $request->password,
+            'updated_at' => now(),
+        ]);
+        
+        return redirect()->route('admin.accounts')->with('success', 'Đã đổi mật khẩu thành công!');
+    }
+    
+    /**
+     * Reset Account Time
+     * - Đang thuê: set latest order expires_at to NOW (expired)
+     * - Chờ thuê: reset idle timer (set latest order expires_at to NOW)
+     */
+    public function resetAccountTG($id)
+    {
+        $account = DB::table('accounts')->where('id', $id)->first();
+        if (!$account) return redirect()->route('admin.accounts')->with('error', 'Tài khoản không tồn tại!');
+        
+        $latestOrder = DB::table('orders')
+            ->where('account_id', $id)
+            ->orderBy('expires_at', 'desc')
+            ->first();
+        
+        if ($latestOrder) {
+            DB::table('orders')->where('id', $latestOrder->id)->update([
+                'expires_at' => now(),
+            ]);
+            $msg = 'Đã reset thời gian thành công!';
+        } else {
+            DB::table('accounts')->where('id', $id)->update([
+                'created_at' => now(),
+            ]);
+            $msg = 'Đã reset thời gian (từ ngày tạo)!';
+        }
+        
+        return redirect()->route('admin.accounts')->with('success', $msg);
     }
     
     public function batchToggleAccounts(Request $request)
