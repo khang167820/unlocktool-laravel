@@ -131,16 +131,17 @@ class AdminController extends Controller
         if ($shouldAllocate) {
             $order->refresh();
             
-            $success = \App\Services\AccountAllocationService::allocateAccount($order);
+            $allocationResult = \App\Services\AccountAllocationService::allocateAccount($order);
             
-            if ($success) {
-                return back()->with('success', 'Payment confirmed & account allocated!');
+            if ($allocationResult['success']) {
+                return back()->with('success', 'Đã thanh toán & cấp tài khoản thành công!');
             } else {
-                return back()->with('warning', 'Payment confirmed but no available accounts!');
+                \Log::warning("Admin allocation failed for order: {$order->tracking_code}, error: {$allocationResult['error']}");
+                return back()->with('warning', 'Đã thanh toán nhưng không thể cấp tài khoản: ' . $allocationResult['error']);
             }
         }
         
-        return back()->with('success', 'Order status updated!');
+        return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
     }
     
     // ==================== ACCOUNTS ====================

@@ -10,76 +10,149 @@ use Illuminate\Support\Facades\Log;
 class AccountAllocationService
 {
     /**
-     * Allocate an available account to a paid order.
-     * Uses lockForUpdate() to prevent double-leasing during concurrent checkouts.
+     * Allocate an available account to an order
+     * 
+     * @param Order $order The order to allocate account for
+     * @return array ['success' => bool, 'account' => Account|null, 'error' => string|null]
      */
-    public static function allocateAccount(Order $order): bool
+    public static function allocateAccount(Order $order): array
     {
-        return DB::transaction(function () use ($order) {
-            // Determine service type from order (default: Unlocktool)
-            $type = 'Unlocktool';
+        try {
+            DB::beginTransaction();
 
-            // Find available account with lock
-            $account = Account::where('type', $type)
+            // Determine service type (default: Unlocktool)
+            $serviceType = $order->service_type ?? 'Unlocktool';
+
+            if (empty($serviceType)) {
+                $serviceType = 'Unlocktool';
+            }
+
+            // Find available account with row lock
+            // Ưu tiên: ID thấp nhất (chờ lâu nhất) + không có ghi chú
+            $account = Account::where('type', $serviceType)
                 ->where('is_available', 1)
                 ->where(function ($q) {
                     $q->whereNull('note')->orWhere('note', '');
                 })
+                ->orderBy('id', 'asc')
                 ->lockForUpdate()
                 ->first();
 
             if (!$account) {
-                Log::warning("ALLOCATION FAILED: No available accounts for type={$type}, order={$order->tracking_code}");
-                return false;
+                DB::rollBack();
+                Log::warning("No available account for type: {$serviceType}, order: {$order->tracking_code}");
+                return [
+                    'success' => false,
+                    'account' => null,
+                    'error' => 'Không còn tài khoản trống. Vui lòng liên hệ admin.'
+                ];
             }
-
-            // Calculate expiration
-            $expiresAt = now()->addHours($order->hours);
-
-            // Assign account to order
-            $order->account_id = $account->id;
-            $order->assigned_password = $account->password;
-            $order->expires_at = $expiresAt;
-            $order->status = 'completed';
-            $order->completed_at = now();
-            $order->save();
 
             // Mark account as rented
             $account->is_available = 0;
-            $account->available_since = null;
             $account->save();
 
-            Log::info("ALLOCATION SUCCESS: Account #{$account->id} -> Order {$order->tracking_code}, expires={$expiresAt}");
-            return true;
-        });
+            // Update order with account info
+            $order->account_id = $account->id;
+            $order->assigned_password = $account->password;
+            $order->status = 'completed';
+            
+            // Calculate expiry time
+            $hours = $order->hours ?? 0;
+            if ($hours > 0) {
+                $order->expires_at = now()->addHours($hours);
+            }
+            
+            $order->completed_at = now();
+            $order->save();
+
+            DB::commit();
+
+            Log::info("Account allocated: {$account->id} ({$account->type}) -> Order: {$order->tracking_code}");
+
+            return [
+                'success' => true,
+                'account' => $account,
+                'error' => null
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Account allocation failed: " . $e->getMessage());
+            return [
+                'success' => false,
+                'account' => null,
+                'error' => 'Lỗi hệ thống khi cấp tài khoản: ' . $e->getMessage()
+            ];
+        }
     }
 
     /**
-     * Reclaim expired accounts back to the available pool.
+     * Reclaim expired accounts
+     * Call this from a scheduled command
+     * 
+     * @return int Number of accounts reclaimed
      */
     public static function reclaimExpiredAccounts(): int
     {
-        $expiredOrders = Order::where('status', 'completed')
-            ->where('expires_at', '<', now())
-            ->whereNotNull('account_id')
-            ->get();
-
         $count = 0;
-        foreach ($expiredOrders as $order) {
-            $account = Account::find($order->account_id);
-            if ($account && !$account->is_available) {
-                $account->is_available = 1;
-                $account->available_since = now();
-                $account->save();
 
-                $order->status = 'expired';
-                $order->save();
+        try {
+            // Find completed orders that have expired
+            $expiredOrders = Order::where('status', 'completed')
+                ->whereNotNull('account_id')
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '<', now())
+                ->get();
 
-                $count++;
+            foreach ($expiredOrders as $order) {
+                try {
+                    DB::beginTransaction();
+
+                    // Lock the account row
+                    $account = Account::where('id', $order->account_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($account && !$account->is_available) {
+                        // Update order status to expired
+                        $order->status = 'expired';
+                        $order->save();
+
+                        // Chỉ chuyển Chờ thuê nếu KHÔNG có ghi chú
+                        // Có ghi chú → giữ is_available = 0 (admin click thủ công)
+                        if (empty($account->note)) {
+                            $account->is_available = 1;
+                            $account->save();
+                        }
+
+                        $count++;
+                        Log::info("Reclaimed account: {$account->id} from order: {$order->tracking_code}" . (!empty($account->note) ? " (kept locked due to note)" : ""));
+                    }
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error("Failed to reclaim account for order {$order->tracking_code}: " . $e->getMessage());
+                }
             }
+
+        } catch (\Exception $e) {
+            Log::error("Reclaim expired accounts error: " . $e->getMessage());
         }
 
-        Log::info("RECLAIM: {$count} accounts returned to pool.");
         return $count;
+    }
+
+    /**
+     * Get account statistics by type
+     */
+    public static function getStats(string $type = 'Unlocktool'): array
+    {
+        return [
+            'total' => Account::where('type', $type)->count(),
+            'available' => Account::where('type', $type)->where('is_available', 1)->count(),
+            'renting' => Account::where('type', $type)->where('is_available', 0)->count(),
+        ];
     }
 }
