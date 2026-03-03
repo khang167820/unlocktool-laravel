@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\SeoController;
 use Illuminate\Support\Facades\Route;
 
 // === Public Routes ===
@@ -108,8 +109,20 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::delete('/blog/{id}', [AdminController::class, 'blogDelete'])->name('admin.blog.delete');
     Route::post('/blog/{id}/toggle', [AdminController::class, 'blogToggle'])->name('admin.blog.toggle');
     
-    // SEO Analyzer
-    Route::get('/seo-analyzer', [AdminController::class, 'seoAnalyzer'])->name('admin.seo-analyzer');
+    // SEO Analyzer (Full Suite)
+    Route::get('/seo-analyzer', [SeoController::class, 'dashboard'])->name('admin.seo');
+    Route::post('/seo-analyzer/analyze', [SeoController::class, 'analyzePost'])->name('admin.seo.analyze');
+    Route::post('/seo-analyzer/bulk-save', [SeoController::class, 'bulkSave'])->name('admin.seo.bulk-save');
+    Route::get('/seo-analyzer/redirects', [SeoController::class, 'redirects'])->name('admin.seo.redirects');
+    Route::post('/seo-analyzer/redirects', [SeoController::class, 'redirectStore'])->name('admin.seo.redirect-store');
+    Route::delete('/seo-analyzer/redirects/{id}', [SeoController::class, 'redirectDelete'])->name('admin.seo.redirect-delete');
+    Route::post('/seo-analyzer/internal-links', [SeoController::class, 'internalLinks'])->name('admin.seo.internal-links');
+    Route::get('/seo-analyzer/export-keywords', [SeoController::class, 'exportKeywords'])->name('admin.seo.export-keywords');
+    Route::get('/seo-analyzer/content-decay', [SeoController::class, 'contentDecay'])->name('admin.seo.content-decay');
+    Route::get('/seo-analyzer/broken-links', [SeoController::class, 'brokenLinks'])->name('admin.seo.broken-links');
+    Route::get('/seo-analyzer/topical-authority', [SeoController::class, 'topicalAuthority'])->name('admin.seo.topical-authority');
+    Route::get('/seo-analyzer/auto-fix-v2-preview', [SeoController::class, 'autoFixV2Preview'])->name('admin.seo.auto-fix-v2-preview');
+    Route::post('/seo-analyzer/auto-fix-v2', [SeoController::class, 'autoFixV2'])->name('admin.seo.auto-fix-v2');
     
     // Reports & System
     Route::get('/reports', [AdminController::class, 'revenueReports'])->name('admin.reports');
