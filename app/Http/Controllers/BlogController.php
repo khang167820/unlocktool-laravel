@@ -76,8 +76,33 @@ class BlogController extends Controller
         $prevPost = BlogPost::published()->where('id', '<', $post->id)->orderBy('id', 'desc')->first();
         $nextPost = BlogPost::published()->where('id', '>', $post->id)->orderBy('id', 'asc')->first();
         
+        // ===== Auto-SEO Processing (from SeoAnalyzerService) =====
+        $seoAnalyzer = new \App\Services\SeoAnalyzerService();
+        
         // Generate TOC from content
-        $toc = $this->generateTOC($post->content);
+        $toc = $seoAnalyzer->generateToc($post->content);
+        
+        // Add heading IDs for TOC anchoring
+        $post->content = $seoAnalyzer->addHeadingIds($post->content);
+        
+        // Auto lazy loading + width/height for images (CLS fix)
+        $post->content = $seoAnalyzer->autoLazyLoading($post->content);
+        
+        // Auto image alt text from filename
+        $post->content = $seoAnalyzer->autoImageAlt($post->content);
+        
+        // Auto meta description if missing
+        if (empty($post->meta_description)) {
+            $post->meta_description = $seoAnalyzer->autoMetaDescription($post->content, $post->title);
+        }
+        
+        // Detect video schema (YouTube/Vimeo)
+        $videoSchema = $seoAnalyzer->detectVideoSchema(
+            $post->content, $post->title, $post->meta_description ?? ''
+        );
+        
+        // Auto internal linking (max 3 links)
+        $post->content = $seoAnalyzer->insertInternalLinks($post->content, $post->id, 3);
         
         // Rating data
         $ratingCount = 0;
@@ -92,10 +117,9 @@ class BlogController extends Controller
                 ->exists();
         } catch (\Exception $e) {}
         
-        // FAQ Schema
+        // FAQ & HowTo Schema
         $faqSchema = null;
         $howToSchema = null;
-        $videoSchema = null;
         try {
             $schemaGenerator = new SEOSchemaGenerator();
             

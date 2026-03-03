@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
         
+        // SEO 301/302 Redirect middleware (global)
+        $middleware->web(append: [
+            \App\Http\Middleware\SeoRedirect::class,
+        ]);
+        
         $middleware->validateCsrfTokens(except: [
             'webhook/*',
         ]);
