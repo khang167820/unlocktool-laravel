@@ -154,6 +154,13 @@ class AdminController extends Controller
             ->where('status', 'completed')
             ->groupBy('account_id');
 
+        // Sắp xếp theo thứ tự:
+        // 1. Đang thuê - Hết hạn (expired, no note + with note)
+        // 2. Đang thuê - Còn nhiều thời gian (most time remaining first)
+        // 3. Đang thuê - Còn thời gian + có ghi chú
+        // 4. Đang thuê - Có ghi chú (no active order)
+        // 5. Chờ thuê - Vừa thêm mới (newest ID first)
+        // 6. Chờ thuê - Chờ lâu rồi → Chờ ít (oldest ID first among rest)
         $accounts = DB::table('accounts')
             ->leftJoinSub($latestOrders, 'latest_orders', function ($join) {
                 $join->on('accounts.id', '=', 'latest_orders.account_id');
@@ -161,20 +168,26 @@ class AdminController extends Controller
             ->select('accounts.*', 'latest_orders.latest_expires_at as sorting_expires_at')
             ->orderByRaw("
                 CASE 
-                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at < NOW() AND (accounts.note IS NULL OR accounts.note = '') THEN 1
-                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at >= NOW() AND (accounts.note IS NULL OR accounts.note = '') THEN 2
-                    WHEN accounts.is_available = 0 AND (accounts.note IS NULL OR accounts.note = '') THEN 3
-                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at < NOW() AND accounts.note IS NOT NULL AND accounts.note != '' THEN 4
-                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at >= NOW() AND accounts.note IS NOT NULL AND accounts.note != '' THEN 5
-                    WHEN accounts.is_available = 0 AND accounts.note IS NOT NULL AND accounts.note != '' THEN 6
-                    ELSE 7
+                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at < NOW() THEN 1
+                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at >= NOW() AND (accounts.note IS NULL OR accounts.note = '') THEN 2
+                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at >= NOW() AND accounts.note IS NOT NULL AND accounts.note != '' THEN 3
+                    WHEN accounts.is_available = 0 AND accounts.note IS NOT NULL AND accounts.note != '' THEN 4
+                    WHEN accounts.is_available = 0 THEN 5
+                    ELSE 6
                 END ASC
             ")
             ->orderByRaw("
                 CASE 
-                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at >= NOW() THEN latest_orders.latest_expires_at
+                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at >= NOW() 
+                        THEN latest_orders.latest_expires_at
                     ELSE NULL 
-                END ASC
+                END DESC
+            ")
+            ->orderByRaw("
+                CASE 
+                    WHEN accounts.is_available = 1 THEN accounts.id
+                    ELSE NULL 
+                END DESC
             ")
             ->orderBy('accounts.id', 'asc')
             ->paginate(50)
