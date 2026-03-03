@@ -93,6 +93,36 @@
                     </select>
                 </div>
             </div>
+
+            <!-- Social & Schema -->
+            <div class="admin-card">
+                <div class="admin-card-title">🌐 Social & Schema</div>
+                <div class="form-group">
+                    <label class="form-label">OG Image URL</label>
+                    <input type="text" name="og_image" class="form-input" value="{{ old('og_image', $post->og_image ?? '') }}" placeholder="/images/og-post.jpg">
+                    <div style="font-size: 11px; color: var(--text-dimmed); margin-top: 4px;">Ảnh hiển thị khi share lên MXH</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Canonical URL</label>
+                    <input type="text" name="canonical_url" class="form-input" value="{{ old('canonical_url', $post->canonical_url ?? '') }}" placeholder="https://unlocktool.us/blog/...">
+                    <div style="font-size: 11px; color: var(--text-dimmed); margin-top: 4px;">Để trống = tự động dùng URL hiện tại</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Schema Type</label>
+                    <select name="schema_type" class="form-select">
+                        <option value="Article" {{ old('schema_type', $post->schema_type ?? 'Article') === 'Article' ? 'selected' : '' }}>Article</option>
+                        <option value="Product" {{ old('schema_type', $post->schema_type ?? '') === 'Product' ? 'selected' : '' }}>Product</option>
+                        <option value="FAQ" {{ old('schema_type', $post->schema_type ?? '') === 'FAQ' ? 'selected' : '' }}>FAQ</option>
+                        <option value="HowTo" {{ old('schema_type', $post->schema_type ?? '') === 'HowTo' ? 'selected' : '' }}>HowTo</option>
+                        <option value="Review" {{ old('schema_type', $post->schema_type ?? '') === 'Review' ? 'selected' : '' }}>Review</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Schema JSON-LD</label>
+                    <textarea name="schema_json" class="form-input" rows="5" placeholder='{"@type": "Article", ...}' style="font-family: 'Courier New', monospace; font-size: 12px;">{{ old('schema_json', $post->schema_json ?? '') }}</textarea>
+                    <div style="font-size: 11px; color: var(--text-dimmed); margin-top: 4px;">Để trống = tự động generate</div>
+                </div>
+            </div>
         </div>
     </div>
 </form>

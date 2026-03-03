@@ -412,6 +412,10 @@ class AdminController extends Controller
             'content' => 'required|string',
             'excerpt' => 'nullable|string',
             'image' => 'nullable|string',
+            'og_image' => 'nullable|string|max:500',
+            'canonical_url' => 'nullable|string|max:500',
+            'schema_type' => 'nullable|string|max:50',
+            'schema_json' => 'nullable|string',
             'category' => 'nullable|string|max:100',
             'status' => 'required|in:draft,published',
             'meta_title' => 'nullable|string',
@@ -452,6 +456,157 @@ class AdminController extends Controller
         $newStatus = $post->status === 'published' ? 'draft' : 'published';
         DB::table('blog_posts')->where('id', $id)->update(['status' => $newStatus]);
         return back()->with('success', 'Post status updated!');
+    }
+    
+    // ==================== SEO ANALYZER ====================
+    
+    public function seoAnalyzer()
+    {
+        $posts = DB::table('blog_posts')->orderBy('created_at', 'desc')->get();
+        
+        $analyzedPosts = [];
+        $totalScore = 0;
+        
+        foreach ($posts as $post) {
+            $checks = [];
+            $score = 0;
+            $maxScore = 0;
+            
+            // 1. Meta Title (max 15 pts)
+            $maxScore += 15;
+            $titleLen = mb_strlen($post->meta_title ?? '');
+            if ($titleLen >= 50 && $titleLen <= 60) {
+                $checks['title'] = ['status' => 'good', 'msg' => "Tốt ({$titleLen} ký tự)", 'pts' => 15];
+                $score += 15;
+            } elseif ($titleLen >= 30 && $titleLen < 70) {
+                $checks['title'] = ['status' => 'ok', 'msg' => "Tạm ({$titleLen} ký tự)", 'pts' => 8];
+                $score += 8;
+            } elseif ($titleLen > 0) {
+                $checks['title'] = ['status' => 'bad', 'msg' => "Quá " . ($titleLen < 30 ? 'ngắn' : 'dài') . " ({$titleLen})", 'pts' => 3];
+                $score += 3;
+            } else {
+                $checks['title'] = ['status' => 'bad', 'msg' => 'Chưa có meta title', 'pts' => 0];
+            }
+            
+            // 2. Meta Description (max 15 pts)
+            $maxScore += 15;
+            $descLen = mb_strlen($post->meta_description ?? '');
+            if ($descLen >= 120 && $descLen <= 160) {
+                $checks['description'] = ['status' => 'good', 'msg' => "Tốt ({$descLen} ký tự)", 'pts' => 15];
+                $score += 15;
+            } elseif ($descLen >= 80 && $descLen < 180) {
+                $checks['description'] = ['status' => 'ok', 'msg' => "Tạm ({$descLen} ký tự)", 'pts' => 8];
+                $score += 8;
+            } elseif ($descLen > 0) {
+                $checks['description'] = ['status' => 'bad', 'msg' => "Quá " . ($descLen < 80 ? 'ngắn' : 'dài') . " ({$descLen})", 'pts' => 3];
+                $score += 3;
+            } else {
+                $checks['description'] = ['status' => 'bad', 'msg' => 'Chưa có meta description', 'pts' => 0];
+            }
+            
+            // 3. Focus Keyword (max 15 pts)
+            $maxScore += 15;
+            $kw = $post->focus_keyword ?? '';
+            if (!empty($kw)) {
+                $inTitle = stripos($post->meta_title ?? $post->title, $kw) !== false;
+                $inDesc = stripos($post->meta_description ?? '', $kw) !== false;
+                $inContent = stripos($post->content ?? '', $kw) !== false;
+                $kwScore = ($inTitle ? 5 : 0) + ($inDesc ? 5 : 0) + ($inContent ? 5 : 0);
+                $where = [];
+                if ($inTitle) $where[] = 'title';
+                if ($inDesc) $where[] = 'desc';
+                if ($inContent) $where[] = 'content';
+                $checks['keyword'] = ['status' => $kwScore >= 10 ? 'good' : ($kwScore >= 5 ? 'ok' : 'bad'), 'msg' => 'Có trong: ' . (empty($where) ? 'không đâu' : implode(', ', $where)), 'pts' => $kwScore];
+                $score += $kwScore;
+            } else {
+                $checks['keyword'] = ['status' => 'bad', 'msg' => 'Chưa đặt focus keyword', 'pts' => 0];
+            }
+            
+            // 4. OG Image (max 10 pts)
+            $maxScore += 10;
+            $hasOgImage = !empty($post->og_image) || !empty($post->image);
+            if ($hasOgImage) {
+                $checks['og_image'] = ['status' => 'good', 'msg' => 'Có ảnh OG', 'pts' => 10];
+                $score += 10;
+            } else {
+                $checks['og_image'] = ['status' => 'bad', 'msg' => 'Chưa có ảnh OG', 'pts' => 0];
+            }
+            
+            // 5. Schema Markup (max 10 pts)
+            $maxScore += 10;
+            if (!empty($post->schema_json) || !empty($post->schema_type)) {
+                $checks['schema'] = ['status' => 'good', 'msg' => $post->schema_type ?? 'Custom', 'pts' => 10];
+                $score += 10;
+            } else {
+                $checks['schema'] = ['status' => 'bad', 'msg' => 'Chưa có schema', 'pts' => 0];
+            }
+            
+            // 6. Content Length (max 15 pts)
+            $maxScore += 15;
+            $contentLen = mb_strlen(strip_tags($post->content ?? ''));
+            if ($contentLen >= 1500) {
+                $checks['content_length'] = ['status' => 'good', 'msg' => number_format($contentLen) . ' ký tự', 'pts' => 15];
+                $score += 15;
+            } elseif ($contentLen >= 800) {
+                $checks['content_length'] = ['status' => 'ok', 'msg' => number_format($contentLen) . ' ký tự (nên >1500)', 'pts' => 8];
+                $score += 8;
+            } elseif ($contentLen > 0) {
+                $checks['content_length'] = ['status' => 'bad', 'msg' => number_format($contentLen) . ' ký tự (quá ngắn)', 'pts' => 3];
+                $score += 3;
+            } else {
+                $checks['content_length'] = ['status' => 'bad', 'msg' => 'Không có nội dung', 'pts' => 0];
+            }
+            
+            // 7. Internal Links (max 10 pts)
+            $maxScore += 10;
+            preg_match_all('/<a\s[^>]*href=["\']([^"\']*)["\']/', $post->content ?? '', $links);
+            $internalLinks = 0;
+            foreach ($links[1] ?? [] as $link) {
+                if (strpos($link, 'unlocktool.us') !== false || strpos($link, '/') === 0) {
+                    $internalLinks++;
+                }
+            }
+            if ($internalLinks >= 3) {
+                $checks['internal_links'] = ['status' => 'good', 'msg' => "{$internalLinks} link nội bộ", 'pts' => 10];
+                $score += 10;
+            } elseif ($internalLinks >= 1) {
+                $checks['internal_links'] = ['status' => 'ok', 'msg' => "{$internalLinks} link (nên ≥3)", 'pts' => 5];
+                $score += 5;
+            } else {
+                $checks['internal_links'] = ['status' => 'bad', 'msg' => 'Không có link nội bộ', 'pts' => 0];
+            }
+            
+            // 8. Heading Structure (max 10 pts)
+            $maxScore += 10;
+            preg_match_all('/<h[23][^>]*>/i', $post->content ?? '', $headings);
+            $headingCount = count($headings[0] ?? []);
+            if ($headingCount >= 3) {
+                $checks['headings'] = ['status' => 'good', 'msg' => "{$headingCount} headings", 'pts' => 10];
+                $score += 10;
+            } elseif ($headingCount >= 1) {
+                $checks['headings'] = ['status' => 'ok', 'msg' => "{$headingCount} heading (nên ≥3)", 'pts' => 5];
+                $score += 5;
+            } else {
+                $checks['headings'] = ['status' => 'bad', 'msg' => 'Không có H2/H3', 'pts' => 0];
+            }
+            
+            $pct = $maxScore > 0 ? round(($score / $maxScore) * 100) : 0;
+            $totalScore += $pct;
+            
+            $analyzedPosts[] = (object) [
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'status' => $post->status,
+                'score' => $pct,
+                'checks' => $checks,
+            ];
+        }
+        
+        $avgScore = count($analyzedPosts) > 0 ? round($totalScore / count($analyzedPosts)) : 0;
+        $needsWork = collect($analyzedPosts)->where('score', '<', 60)->count();
+        
+        return view('admin.seo-analyzer.index', compact('analyzedPosts', 'avgScore', 'needsWork'));
     }
     
     // ==================== REPORTS ====================

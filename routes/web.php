@@ -108,6 +108,9 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::delete('/blog/{id}', [AdminController::class, 'blogDelete'])->name('admin.blog.delete');
     Route::post('/blog/{id}/toggle', [AdminController::class, 'blogToggle'])->name('admin.blog.toggle');
     
+    // SEO Analyzer
+    Route::get('/seo-analyzer', [AdminController::class, 'seoAnalyzer'])->name('admin.seo-analyzer');
+    
     // Reports & System
     Route::get('/reports', [AdminController::class, 'revenueReports'])->name('admin.reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');

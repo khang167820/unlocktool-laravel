@@ -88,6 +88,7 @@
     .stat-icon.blue { background: rgba(59, 130, 246, 0.15); }
     .stat-icon.orange { background: rgba(249, 115, 22, 0.15); }
     .stat-icon.purple { background: rgba(139, 92, 246, 0.15); }
+    .stat-icon.red { background: rgba(239, 68, 68, 0.15); }
     .stat-info { flex: 1; }
     .stat-label { font-size: 12px; color: var(--text-dimmed); margin-bottom: 4px; }
     .stat-value { font-size: 24px; font-weight: 700; color: var(--text-primary); }
@@ -240,6 +241,10 @@
                     <a href="{{ route('admin.blog') }}" class="admin-nav-item {{ request()->routeIs('admin.blog*') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Blog
+                    </a>
+                    <a href="{{ route('admin.seo-analyzer') }}" class="admin-nav-item {{ request()->routeIs('admin.seo-analyzer') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        SEO Analyzer
                     </a>
                 </div>
                 

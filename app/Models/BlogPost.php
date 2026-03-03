@@ -10,6 +10,7 @@ class BlogPost extends Model
     
     protected $fillable = [
         'title', 'slug', 'excerpt', 'content', 'image',
+        'og_image', 'canonical_url', 'schema_type', 'schema_json',
         'category', 'author', 'status', 'views',
         'meta_title', 'meta_description', 'meta_keywords',
         'focus_keyword', 'robots_meta', 'is_cornerstone',
