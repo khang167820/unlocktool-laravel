@@ -15,7 +15,7 @@
     <div class="stat-card">
         <div class="stat-icon green">✅</div>
         <div class="stat-info">
-            <div class="stat-label">Còn trống</div>
+            <div class="stat-label">Chờ thuê</div>
             <div class="stat-value" style="color: #16a34a;">{{ $stats['available'] }}</div>
         </div>
     </div>
@@ -57,8 +57,8 @@
     <div class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <div class="admin-card-title" style="margin-bottom: 0;">📋 Tài khoản ({{ $stats['total'] }})</div>
-            <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Đặt các tài khoản đã chọn thành Còn trống?')">
-                ✅ Đặt thành Còn trống
+            <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Đặt các tài khoản đã chọn thành Chờ thuê?')">
+                ✅ Đặt thành Chờ thuê
             </button>
         </div>
         <table class="admin-table">
@@ -83,7 +83,7 @@
                     <td style="font-family: monospace; font-size: 12px;">{{ $account->password }}</td>
                     <td>
                         @if($account->is_available)
-                            <span class="badge badge-active">Còn trống</span>
+                            <span class="badge badge-active">Chờ thuê</span>
                         @else
                             <span class="badge badge-inactive">Đang thuê</span>
                         @endif
@@ -92,7 +92,7 @@
                         {{ $account->note ?? '—' }}
                     </td>
                     <td style="font-size: 11px; min-width: 160px;">
-                        @if(isset($account->rental_order_code))
+                        @if(!$account->is_available && isset($account->rental_order_code))
                             <div style="color: #3b82f6; margin-bottom: 2px;">📋 {{ $account->rental_order_code }}</div>
                             @if(isset($account->rental_expires_at))
                                 @php
@@ -110,6 +110,19 @@
                                         ⏳ Đang tính...
                                     </div>
                                 @endif
+                            @endif
+                        @elseif($account->is_available)
+                            @php
+                                $waitingSince = isset($account->sorting_expires_at) 
+                                    ? \Carbon\Carbon::parse($account->sorting_expires_at) 
+                                    : (isset($account->created_at) ? \Carbon\Carbon::parse($account->created_at) : null);
+                            @endphp
+                            @if($waitingSince)
+                                <div class="waiting-timer" data-since="{{ $waitingSince->toIso8601String() }}" style="color: #8b5cf6; font-size: 11px;">
+                                    🕐 Đang tính...
+                                </div>
+                            @else
+                                <span style="color: #8b5cf6;">🕐 Mới thêm</span>
                             @endif
                         @else
                             <span style="color: #64748b;">—</span>
@@ -190,5 +203,37 @@ function updateCountdowns() {
 
 updateCountdowns();
 setInterval(updateCountdowns, 1000);
+
+// Live waiting timers for "Chờ thuê" accounts
+function updateWaitingTimers() {
+    document.querySelectorAll('.waiting-timer').forEach(el => {
+        const since = new Date(el.dataset.since);
+        const now = new Date();
+        const diff = now - since;
+
+        if (diff < 0) {
+            el.innerHTML = '🕐 Mới thêm';
+            return;
+        }
+
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+
+        let timeStr = '';
+        if (days > 0) {
+            timeStr = `${days}d ${hours}h ${minutes}m`;
+        } else if (hours > 0) {
+            timeStr = `${hours}h ${minutes}m`;
+        } else {
+            timeStr = `${minutes}m`;
+        }
+
+        el.innerHTML = `🕐 Chờ <strong>${timeStr}</strong>`;
+    });
+}
+
+updateWaitingTimers();
+setInterval(updateWaitingTimers, 60000);
 </script>
 @endsection
