@@ -1,21 +1,21 @@
 @extends('admin.layouts.app')
-@section('title', 'Settings')
-@section('page-title', 'Settings')
+@section('title', 'Cài đặt')
+@section('page-title', 'Cài đặt')
 
 @section('content')
 <div class="admin-card" style="max-width: 600px;">
-    <div class="admin-card-title">⚙️ System Settings</div>
+    <div class="admin-card-title">⚙️ Cài đặt hệ thống</div>
     <div class="form-group">
         <label class="form-label">App URL</label>
         <input type="text" class="form-input" value="{{ config('app.url') }}" disabled>
     </div>
     <div class="form-group">
-        <label class="form-label">App Environment</label>
+        <label class="form-label">Môi trường</label>
         <input type="text" class="form-input" value="{{ config('app.env') }}" disabled>
     </div>
     <div class="form-group">
-        <label class="form-label">Debug Mode</label>
-        <input type="text" class="form-input" value="{{ config('app.debug') ? 'ON' : 'OFF' }}" disabled>
+        <label class="form-label">Chế độ Debug</label>
+        <input type="text" class="form-input" value="{{ config('app.debug') ? 'BẬT' : 'TẮT' }}" disabled>
     </div>
     <div class="form-group">
         <label class="form-label">PHP Version</label>
@@ -27,7 +27,7 @@
     </div>
     
     <div style="margin-top: 24px;">
-        <a href="/fix-cache.php" target="_blank" class="btn btn-primary">🔄 Clear Cache</a>
+        <a href="/fix-cache.php" target="_blank" class="btn btn-primary">🔄 Xóa Cache</a>
     </div>
 </div>
 @endsection

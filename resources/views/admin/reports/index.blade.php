@@ -1,17 +1,17 @@
 @extends('admin.layouts.app')
-@section('title', 'Revenue Reports')
-@section('page-title', 'Revenue Reports')
+@section('title', 'Báo cáo doanh thu')
+@section('page-title', 'Báo cáo doanh thu')
 
 @section('content')
 <div class="admin-card">
-    <div class="admin-card-title">📊 Daily Revenue (Last 30 Days)</div>
+    <div class="admin-card-title">📊 Doanh thu hàng ngày (30 ngày gần nhất)</div>
     <table class="admin-table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Orders</th>
-                <th>Revenue</th>
-                <th>Graph</th>
+                <th>Ngày</th>
+                <th>Đơn hàng</th>
+                <th>Doanh thu</th>
+                <th>Biểu đồ</th>
             </tr>
         </thead>
         <tbody>
@@ -29,7 +29,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="4" style="text-align: center; color: #64748b; padding: 40px;">No revenue data</td>
+                <td colspan="4" style="text-align: center; color: #64748b; padding: 40px;">Chưa có dữ liệu doanh thu</td>
             </tr>
             @endforelse
         </tbody>
