@@ -38,7 +38,10 @@ Route::post('/blog/{slug}/rate', [BlogController::class, 'ratePost'])->name('blo
 // === Sitemap ===
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages']);
+Route::get('/sitemap-services.xml', [SitemapController::class, 'services']);
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts']);
+Route::get('/sitemap-images.xml', [SitemapController::class, 'images']);
+Route::get('/sitemap-videos.xml', [SitemapController::class, 'videos']);
 
 // === 301 Redirect: Old articles → New blog ===
 Route::get('/articles/{filename}', function ($filename) {
