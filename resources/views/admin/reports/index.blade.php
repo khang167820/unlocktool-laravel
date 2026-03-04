@@ -4,48 +4,55 @@
 
 @section('content')
 <style>
-.report-tabs { display: flex; gap: 0; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+/* Filter Tabs */
+.report-tabs { display: flex; gap: 6px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
 .report-tab {
-    padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+    padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
     background: var(--bg-hover); color: var(--text-muted); border: 1px solid var(--border-color);
-    text-decoration: none; transition: all 0.2s;
+    text-decoration: none; transition: all 0.2s; border-radius: 8px;
 }
-.report-tab:first-child { border-radius: 8px 0 0 8px; }
 .report-tab:hover { background: var(--bg-secondary); color: var(--text-primary); text-decoration: none; }
 .report-tab.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-.report-tab-sep { padding: 8px 12px; background: var(--bg-hover); border: 1px solid var(--border-color); border-left: none; color: var(--text-dimmed); font-size: 12px; }
+.report-date-group { display: flex; align-items: center; gap: 0; margin-left: 8px; }
+.report-date-label { padding: 8px 10px; font-size: 12px; font-weight: 600; color: var(--text-dimmed); background: var(--bg-hover); border: 1px solid var(--border-color); white-space: nowrap; }
+.report-date-label:first-child { border-radius: 8px 0 0 8px; }
 .report-date { padding: 7px 12px; font-size: 13px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); border-left: none; outline: none; }
-.report-date:last-of-type { border-radius: 0; }
-.report-btn-go { padding: 8px 16px; font-size: 13px; font-weight: 600; background: #3b82f6; color: #fff; border: 1px solid #3b82f6; border-left: none; border-radius: 0 8px 8px 0; cursor: pointer; }
+.report-btn-go { padding: 8px 18px; font-size: 13px; font-weight: 600; background: #3b82f6; color: #fff; border: 1px solid #3b82f6; border-left: none; border-radius: 0 8px 8px 0; cursor: pointer; transition: background 0.2s; }
+.report-btn-go:hover { background: #2563eb; }
 
+/* Summary Stats */
 .report-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
 .report-stat {
-    padding: 20px 22px; border-radius: 12px; color: #fff; font-weight: 600;
-    display: flex; flex-direction: column; gap: 4px;
+    padding: 24px 22px; border-radius: 14px; color: #fff; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
 }
 .report-stat.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
 .report-stat.teal { background: linear-gradient(135deg, #14b8a6, #0d9488); }
 .report-stat.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .report-stat.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-.report-stat-label { font-size: 12px; opacity: 0.85; }
-.report-stat-value { font-size: 24px; font-weight: 800; }
+.report-stat-label { font-size: 13px; opacity: 0.9; font-weight: 500; }
+.report-stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
 
+/* Chart */
 .chart-container {
     background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
-    padding: 20px; margin-bottom: 24px; overflow: hidden;
+    padding: 24px; margin-bottom: 24px; overflow: hidden;
 }
 .chart-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; }
-.chart-wrap { position: relative; height: 300px; width: 100%; }
+.chart-wrap { position: relative; height: 320px; width: 100%; }
 
+/* Section titles */
 .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
 
-.pkg-bar-bg { background: var(--bg-hover); border-radius: 4px; height: 20px; overflow: hidden; flex: 1; }
-.pkg-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #3b82f6, #14b8a6); transition: width 0.4s ease; }
-.pkg-pct { font-size: 12px; font-weight: 600; color: var(--text-muted); min-width: 45px; text-align: right; }
+/* Package bar */
+.pkg-bar-bg { background: var(--bg-hover); border-radius: 4px; height: 22px; overflow: hidden; flex: 1; }
+.pkg-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 0.5s ease; }
+.pkg-pct { font-size: 12px; font-weight: 600; color: var(--text-muted); min-width: 50px; text-align: right; }
 
 @media (max-width: 768px) {
     .report-stats { grid-template-columns: repeat(2, 1fr); }
     .report-tabs { gap: 4px; }
+    .report-date-group { margin-left: 0; margin-top: 8px; }
 }
 @media (max-width: 480px) {
     .report-stats { grid-template-columns: 1fr; }
@@ -65,12 +72,14 @@
         <a href="{{ route('admin.reports', ['range' => $key]) }}" 
            class="report-tab {{ $range === $key ? 'active' : '' }}">{{ $label }}</a>
     @endforeach
-    <span class="report-tab-sep">|</span>
     <input type="hidden" name="range" value="custom" id="rangeInput">
-    <input type="date" name="from" class="report-date" value="{{ $startDate->format('Y-m-d') }}">
-    <span class="report-tab-sep" style="border-left: none; padding: 8px 6px;">→</span>
-    <input type="date" name="to" class="report-date" value="{{ $endDate->format('Y-m-d') }}">
-    <button type="submit" class="report-btn-go" onclick="document.getElementById('rangeInput').value='custom'">Xem</button>
+    <div class="report-date-group">
+        <span class="report-date-label">Từ</span>
+        <input type="date" name="from" class="report-date" value="{{ $startDate->format('Y-m-d') }}">
+        <span class="report-date-label" style="border-left: none;">Đến</span>
+        <input type="date" name="to" class="report-date" value="{{ $endDate->format('Y-m-d') }}">
+        <button type="submit" class="report-btn-go" onclick="document.getElementById('rangeInput').value='custom'">Xem</button>
+    </div>
 </form>
 
 {{-- Summary Stats --}}
