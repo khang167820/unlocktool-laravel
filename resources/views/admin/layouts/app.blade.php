@@ -186,9 +186,9 @@
     
     /* Tables */
     .admin-table { width: auto; min-width: 80%; border-collapse: collapse; }
-    .admin-table th, .admin-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
-    .admin-table th { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dimmed); background: var(--bg-primary); }
-    .admin-table td { font-size: 13px; color: var(--text-secondary); }
+    .admin-table th, .admin-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .admin-table th { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); background: var(--bg-primary); }
+    .admin-table td { font-size: 14px; font-weight: 500; color: var(--text-primary); }
     .admin-table tr:hover { background: var(--bg-hover); }
     
     /* Badges */
