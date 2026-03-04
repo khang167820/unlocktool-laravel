@@ -185,7 +185,7 @@
     .stat-sub { font-size: 11px; color: var(--text-dimmed); margin-top: 4px; }
     
     /* Tables */
-    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table { width: auto; min-width: 80%; border-collapse: collapse; }
     .admin-table th, .admin-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
     .admin-table th { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dimmed); background: var(--bg-primary); }
     .admin-table td { font-size: 13px; color: var(--text-secondary); }
