@@ -51,19 +51,21 @@ class AccountAllocationService
 
             // Mark account as rented
             $account->is_available = 0;
+            
+            // Calculate expiry time
+            $hours = $order->hours ?? 0;
+            $expiresAt = $hours > 0 ? now()->addHours($hours) : null;
+            
+            // Set rental info on account for admin dashboard countdown
+            $account->rental_expires_at = $expiresAt;
+            $account->rental_order_code = $order->tracking_code;
             $account->save();
 
             // Update order with account info
             $order->account_id = $account->id;
             $order->assigned_password = $account->password;
             $order->status = 'completed';
-            
-            // Calculate expiry time
-            $hours = $order->hours ?? 0;
-            if ($hours > 0) {
-                $order->expires_at = now()->addHours($hours);
-            }
-            
+            $order->expires_at = $expiresAt;
             $order->completed_at = now();
             $order->save();
 
