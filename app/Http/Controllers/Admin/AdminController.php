@@ -86,7 +86,7 @@ class AdminController extends Controller
     
     public function orders(Request $request)
     {
-        $query = Order::orderBy('created_at', 'desc');
+        $query = Order::with('account')->orderBy('created_at', 'desc');
         
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -94,6 +94,12 @@ class AdminController extends Controller
         
         if ($request->filled('search')) {
             $query->where('tracking_code', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->filled('account')) {
+            $query->whereHas('account', function($q) use ($request) {
+                $q->where('username', 'like', '%' . $request->account . '%');
+            });
         }
         
         $orders = $query->paginate(100)->withQueryString();
