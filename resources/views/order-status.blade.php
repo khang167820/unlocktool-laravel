@@ -93,8 +93,8 @@
 .os-card {
     background: #fff;
     border-radius: 16px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    border: 2px solid #d1d5db;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     overflow: hidden;
 }
 
