@@ -235,6 +235,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var labels = @json($chartLabels);
     var data = @json($chartData);
 
+    // Create gradient fill
+    var gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 320);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+    gradient.addColorStop(0.6, 'rgba(59, 130, 246, 0.08)');
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -243,15 +249,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Doanh thu (VNĐ)',
                 data: data,
                 borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59,130,246,0.08)',
+                backgroundColor: gradient,
                 borderWidth: 2.5,
                 fill: true,
-                tension: 0.3,
-                pointRadius: 4,
+                tension: 0.35,
+                pointRadius: 3,
                 pointBackgroundColor: '#3b82f6',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2,
-                pointHoverRadius: 6
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#2563eb'
             }]
         },
         options: {
