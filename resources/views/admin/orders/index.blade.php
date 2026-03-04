@@ -66,7 +66,7 @@
                                 🔑 <strong>{{ $order->account->username }}</strong>
                             </span>
                         </div>
-                        <div style="font-size: 11px; color: var(--text-dimmed); font-family: monospace;">
+                        <div style="font-size: 13px; color: var(--text-muted); font-family: monospace;">
                             {{ $order->assigned_password ?? $order->account->password }}
                         </div>
                     @else
