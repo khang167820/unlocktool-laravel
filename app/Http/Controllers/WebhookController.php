@@ -70,7 +70,10 @@ class WebhookController extends Controller
         $allocationResult = AccountAllocationService::allocateAccount($order);
 
         if ($allocationResult['success']) {
-            Log::info("PAY2S: Account allocated for order {$order->tracking_code}");
+            // Account sent to customer → mark as completed
+            $order->status = 'completed';
+            $order->save();
+            Log::info("PAY2S: Account allocated for order {$order->tracking_code} — status → COMPLETED");
         } else {
             Log::warning("PAY2S: Account allocation FAILED for order {$order->tracking_code}: " . ($allocationResult['error'] ?? 'unknown'));
         }
