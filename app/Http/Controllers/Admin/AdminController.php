@@ -96,7 +96,7 @@ class AdminController extends Controller
             $query->where('tracking_code', 'like', '%' . $request->search . '%');
         }
         
-        $orders = $query->paginate(20)->withQueryString();
+        $orders = $query->paginate(100)->withQueryString();
         
         $statusCounts = Order::select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
