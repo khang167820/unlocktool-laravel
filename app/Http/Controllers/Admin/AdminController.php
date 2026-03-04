@@ -689,13 +689,56 @@ class AdminController extends Controller
     
     // ==================== REPORTS ====================
     
-    public function revenueReports()
+    public function revenueReports(Request $request)
     {
-        // Daily revenue for last 30 days
-        $dailyRevenue = DB::table('orders')
+        // Date range filter
+        $range = $request->get('range', 'month');
+        $from = $request->get('from');
+        $to = $request->get('to');
+        
+        switch ($range) {
+            case 'today':
+                $startDate = now()->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+            case 'yesterday':
+                $startDate = now()->subDay()->startOfDay();
+                $endDate = now()->subDay()->endOfDay();
+                break;
+            case 'week':
+                $startDate = now()->startOfWeek();
+                $endDate = now()->endOfWeek();
+                break;
+            case 'month':
+                $startDate = now()->startOfMonth();
+                $endDate = now()->endOfMonth();
+                break;
+            case 'year':
+                $startDate = now()->startOfYear();
+                $endDate = now()->endOfYear();
+                break;
+            case 'custom':
+                $startDate = $from ? \Carbon\Carbon::parse($from)->startOfDay() : now()->subDays(30)->startOfDay();
+                $endDate = $to ? \Carbon\Carbon::parse($to)->endOfDay() : now()->endOfDay();
+                break;
+            default:
+                $startDate = now()->startOfMonth();
+                $endDate = now()->endOfMonth();
+        }
+        
+        $baseQuery = DB::table('orders')
             ->whereIn('status', ['paid', 'completed'])
             ->whereNotNull('paid_at')
-            ->where('paid_at', '>=', now()->subDays(30))
+            ->whereBetween('paid_at', [$startDate, $endDate]);
+        
+        // Summary stats
+        $totalRevenue = (clone $baseQuery)->sum('amount');
+        $totalOrders = (clone $baseQuery)->count();
+        $avgPerOrder = $totalOrders > 0 ? round($totalRevenue / $totalOrders) : 0;
+        $uniqueIps = (clone $baseQuery)->distinct('ip_address')->count('ip_address');
+        
+        // Daily revenue for chart
+        $dailyRevenue = (clone $baseQuery)
             ->select(
                 DB::raw("DATE(paid_at) as date"),
                 DB::raw("SUM(amount) as total"),
@@ -705,7 +748,39 @@ class AdminController extends Controller
             ->orderBy('date', 'asc')
             ->get();
         
-        return view('admin.reports.index', compact('dailyRevenue'));
+        // Revenue by package (hours)
+        $packageRevenue = (clone $baseQuery)
+            ->select(
+                'hours',
+                DB::raw("COUNT(*) as order_count"),
+                DB::raw("SUM(amount) as total")
+            )
+            ->groupBy('hours')
+            ->orderByDesc('total')
+            ->get()
+            ->map(function($item) use ($totalRevenue) {
+                $item->percentage = $totalRevenue > 0 ? round(($item->total / $totalRevenue) * 100, 1) : 0;
+                $item->label = $item->hours . ' giờ';
+                return $item;
+            });
+        
+        // Top customers by IP
+        $topCustomers = (clone $baseQuery)
+            ->select(
+                'ip_address',
+                DB::raw("COUNT(*) as order_count"),
+                DB::raw("SUM(amount) as total_spent")
+            )
+            ->groupBy('ip_address')
+            ->orderByDesc('total_spent')
+            ->limit(10)
+            ->get();
+        
+        return view('admin.reports.index', compact(
+            'dailyRevenue', 'totalRevenue', 'totalOrders', 'avgPerOrder',
+            'uniqueIps', 'packageRevenue', 'topCustomers',
+            'range', 'startDate', 'endDate'
+        ));
     }
     
     // ==================== SETTINGS ====================
