@@ -216,8 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var ctx = document.getElementById('revenueChart');
     if (!ctx) return;
 
-    var labels = @json($dailyRevenue->pluck('date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('d/m')));
-    var data = @json($dailyRevenue->pluck('total'));
+    @php
+        $chartLabels = $dailyRevenue->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('d/m'); })->values();
+        $chartData = $dailyRevenue->pluck('total')->values();
+    @endphp
+    var labels = @json($chartLabels);
+    var data = @json($chartData);
 
     new Chart(ctx, {
         type: 'line',
