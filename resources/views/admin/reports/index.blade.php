@@ -35,7 +35,7 @@
     padding: 20px; margin-bottom: 24px; overflow: hidden;
 }
 .chart-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; }
-.chart-canvas { width: 100%; height: 280px; }
+.chart-wrap { position: relative; height: 300px; width: 100%; }
 
 .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
 
@@ -95,7 +95,9 @@
 {{-- Revenue Chart --}}
 <div class="chart-container">
     <div class="chart-title">📈 Biểu đồ Doanh thu</div>
-    <canvas id="revenueChart" class="chart-canvas"></canvas>
+    <div class="chart-wrap">
+        <canvas id="revenueChart"></canvas>
+    </div>
 </div>
 
 {{-- Revenue by Package --}}
