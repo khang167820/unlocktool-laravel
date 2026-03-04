@@ -70,12 +70,6 @@ Route::get('/cron/reclaim-accounts', function () {
     return response()->json(['reclaimed' => $count]);
 });
 
-// === One-time: Delete 'index' blog post ===
-Route::get('/cleanup/delete-index-post', function () {
-    $deleted = \App\Models\BlogPost::where('slug', 'index')->delete();
-    return "Deleted {$deleted} 'index' post(s). Remove this route after use.";
-});
-
 // === Admin Auth ===
 Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');

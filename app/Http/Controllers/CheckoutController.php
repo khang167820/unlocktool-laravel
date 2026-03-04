@@ -44,7 +44,7 @@ class CheckoutController extends Controller
         // === SECURITY ===
 
         // 1. Blocked IPs
-        $blockedIps = ['42.119.229.100'];
+        $blockedIps = config('app.blocked_ips', ['42.119.229.100']);
         if (in_array($ipAddress, $blockedIps)) {
             abort(403, 'Access denied.');
         }
@@ -65,13 +65,7 @@ class CheckoutController extends Controller
         }
 
         // 4. Check if there are available accounts BEFORE creating order
-        $availableCount = DB::table('accounts')
-            ->where('type', 'Unlocktool')
-            ->where('is_available', 1)
-            ->where(function ($q) {
-                $q->whereNull('note')->orWhere('note', '');
-            })
-            ->count();
+        $availableCount = \App\Models\Account::available()->count();
 
         if ($availableCount === 0) {
             return back()->with('error', 'Hiện tại đã hết tài khoản trống. Vui lòng liên hệ admin Zalo 0777333763 để cấp thêm tài khoản.');
@@ -117,7 +111,7 @@ class CheckoutController extends Controller
 
     private function verifyRecaptcha(string $token, string $ip): void
     {
-        $secret = env('RECAPTCHA_SECRET_KEY');
+        $secret = config('services.recaptcha.secret_key');
         $response = file_get_contents('https://www.google.com/recaptcha/api/siteverify?' . http_build_query([
             'secret' => $secret,
             'response' => $token,
@@ -183,10 +177,10 @@ class CheckoutController extends Controller
 
     private function createPay2sPayment(int $orderId, string $trackingCode, int $amount): ?string
     {
-        $accessKey = env('PAY2S_ACCESS_KEY');
-        $secretKey = env('PAY2S_SECRET_KEY');
-        $partnerCode = env('PAY2S_PARTNER_CODE');
-        $merchantName = env('PAY2S_MERCHANT_NAME');
+        $accessKey = config('services.pay2s.access_key');
+        $secretKey = config('services.pay2s.secret_key');
+        $partnerCode = config('services.pay2s.partner_code');
+        $merchantName = config('services.pay2s.merchant_name');
 
         $returnUrl = url("/order-status?token={$trackingCode}&orderCode={$orderId}");
         $ipnUrl = url('/webhook/pay2s');

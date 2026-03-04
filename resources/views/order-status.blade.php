@@ -38,6 +38,13 @@
                             <p><strong>⏱ Trạng thái:</strong> <span class="text-danger">Đã hết hạn</span></p>
                         @endif
                     </div>
+                @elseif(in_array($order->status, ['paid', 'completed']) && !$order->account)
+                    <div class="alert alert-info mt-3">
+                        <h5>✅ Đã thanh toán thành công!</h5>
+                        <p>Hệ thống đang cấp tài khoản cho bạn. Vui lòng đợi vài giây và <strong>tải lại trang</strong>.</p>
+                        <p>Nếu đợi quá 5 phút chưa có tài khoản, vui lòng liên hệ admin qua Zalo: <strong>0777333763</strong></p>
+                        <button class="btn btn-primary btn-sm" onclick="location.reload()">🔄 Tải lại trang</button>
+                    </div>
                 @elseif($order->status === 'pending')
                     <div class="alert alert-warning mt-3" id="pendingMessage">
                         <h5>⏳ Đang chờ thanh toán...</h5>
@@ -73,13 +80,16 @@ function updateCountdown() {
 }
 setInterval(updateCountdown, 1000);
 
-// Poll for payment status (if pending)
-@if(isset($order) && $order->status === 'pending')
+// Poll for payment/account status (if pending or paid without account)
+@if(isset($order) && ($order->status === 'pending' || (in_array($order->status, ['paid', 'completed']) && !$order->account)))
 var pollInterval = setInterval(function() {
     fetch('{{ route("order.check", $order->tracking_code) }}')
         .then(r => r.json())
         .then(data => {
-            if (data.status === 'paid' || data.status === 'completed') {
+            if (data.status === 'paid' && data.username) {
+                clearInterval(pollInterval);
+                location.reload();
+            } else if (data.status === 'paid' && '{{ $order->status }}' === 'pending') {
                 clearInterval(pollInterval);
                 location.reload();
             }

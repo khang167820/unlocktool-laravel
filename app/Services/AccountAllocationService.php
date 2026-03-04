@@ -11,69 +11,58 @@ use App\Services\TelegramService;
 class AccountAllocationService
 {
     /**
-     * Allocate an available account to an order
-     * 
+     * Allocate an available account to a paid order.
+     *
      * @param Order $order The order to allocate account for
-     * @return array ['success' => bool, 'account' => Account|null, 'error' => string|null]
+     * @return array{success: bool, account: ?Account, error: ?string}
      */
     public static function allocateAccount(Order $order): array
     {
         try {
             DB::beginTransaction();
 
-            // Determine service type (default: Unlocktool)
-            $serviceType = $order->service_type ?? 'Unlocktool';
-
-            if (empty($serviceType)) {
-                $serviceType = 'Unlocktool';
-            }
-
-            // Find available account with row lock
-            // Ưu tiên: Tài khoản mới nhất (vừa thêm) → rồi đến chờ lâu nhất
-            $account = Account::where('type', $serviceType)
-                ->where('is_available', 1)
-                ->where(function ($q) {
-                    $q->whereNull('note')->orWhere('note', '');
-                })
-                ->orderBy('id', 'desc')
+            // Find available account with row lock (FIFO: oldest first)
+            $account = Account::available()
+                ->orderBy('id', 'asc')
                 ->lockForUpdate()
                 ->first();
 
             if (!$account) {
                 DB::rollBack();
-                Log::warning("No available account for type: {$serviceType}, order: {$order->tracking_code}");
+                Log::warning("No available account for order: {$order->tracking_code}");
                 return [
                     'success' => false,
                     'account' => null,
-                    'error' => 'Không còn tài khoản trống. Vui lòng liên hệ admin.'
+                    'error' => 'Không còn tài khoản trống. Vui lòng liên hệ admin.',
                 ];
             }
 
-            // Mark account as rented
-            $account->is_available = 0;
-            
             // Calculate expiry time
             $hours = $order->hours ?? 0;
             $expiresAt = $hours > 0 ? now()->addHours($hours) : null;
-            
-            // Set rental info on account for admin dashboard countdown
-            $account->rental_expires_at = $expiresAt;
-            $account->rental_order_code = $order->tracking_code;
-            $account->save();
 
-            // Update order with account info
-            $order->account_id = $account->id;
-            $order->assigned_password = $account->password;
-            $order->status = 'completed';
-            $order->expires_at = $expiresAt;
-            $order->completed_at = now();
-            $order->save();
+            // Mark account as rented
+            $account->update([
+                'is_available' => false,
+                'rental_expires_at' => $expiresAt,
+                'rental_order_code' => $order->tracking_code,
+            ]);
+
+            // Update order with account info → completed
+            $order->update([
+                'account_id' => $account->id,
+                'assigned_password' => $account->password,
+                'status' => 'completed',
+                'paid_at' => $order->paid_at ?? now(),
+                'expires_at' => $expiresAt,
+                'completed_at' => now(),
+            ]);
 
             DB::commit();
 
-            Log::info("Account allocated: {$account->id} ({$account->type}) -> Order: {$order->tracking_code}");
+            Log::info("Account allocated: #{$account->id} ({$account->username}) → Order: {$order->tracking_code}");
 
-            // Send Telegram notification
+            // Send Telegram notification (non-blocking)
             try {
                 TelegramService::notifyAccountAllocated($order, $account);
             } catch (\Exception $e) {
@@ -83,24 +72,24 @@ class AccountAllocationService
             return [
                 'success' => true,
                 'account' => $account,
-                'error' => null
+                'error' => null,
             ];
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Account allocation failed: " . $e->getMessage());
+            Log::error("Account allocation failed for order {$order->tracking_code}: " . $e->getMessage());
             return [
                 'success' => false,
                 'account' => null,
-                'error' => 'Lỗi hệ thống khi cấp tài khoản: ' . $e->getMessage()
+                'error' => 'Lỗi hệ thống khi cấp tài khoản: ' . $e->getMessage(),
             ];
         }
     }
 
     /**
-     * Reclaim expired accounts
-     * Call this from a scheduled command
-     * 
+     * Reclaim expired accounts.
+     * Call this from a scheduled command or cron.
+     *
      * @return int Number of accounts reclaimed
      */
     public static function reclaimExpiredAccounts(): int
@@ -108,7 +97,6 @@ class AccountAllocationService
         $count = 0;
 
         try {
-            // Find completed orders that have expired
             $expiredOrders = Order::where('status', 'completed')
                 ->whereNotNull('account_id')
                 ->whereNotNull('expires_at')
@@ -119,25 +107,25 @@ class AccountAllocationService
                 try {
                     DB::beginTransaction();
 
-                    // Lock the account row
                     $account = Account::where('id', $order->account_id)
                         ->lockForUpdate()
                         ->first();
 
                     if ($account && !$account->is_available) {
-                        // Update order status to expired
-                        $order->status = 'expired';
-                        $order->save();
+                        $order->update(['status' => 'expired']);
 
-                        // Chỉ chuyển Chờ thuê nếu KHÔNG có ghi chú
-                        // Có ghi chú → giữ is_available = 0 (admin click thủ công)
+                        // Only release if no admin note
                         if (empty($account->note)) {
-                            $account->is_available = 1;
-                            $account->save();
+                            $account->update([
+                                'is_available' => true,
+                                'rental_expires_at' => null,
+                                'rental_order_code' => null,
+                            ]);
                         }
 
                         $count++;
-                        Log::info("Reclaimed account: {$account->id} from order: {$order->tracking_code}" . (!empty($account->note) ? " (kept locked due to note)" : ""));
+                        Log::info("Reclaimed account: #{$account->id} from order: {$order->tracking_code}" .
+                            (!empty($account->note) ? ' (kept locked due to note)' : ''));
                     }
 
                     DB::commit();
@@ -155,14 +143,14 @@ class AccountAllocationService
     }
 
     /**
-     * Get account statistics by type
+     * Get account statistics.
      */
-    public static function getStats(string $type = 'Unlocktool'): array
+    public static function getStats(): array
     {
         return [
-            'total' => Account::where('type', $type)->count(),
-            'available' => Account::where('type', $type)->where('is_available', 1)->count(),
-            'renting' => Account::where('type', $type)->where('is_available', 0)->count(),
+            'total' => Account::count(),
+            'available' => Account::where('is_available', true)->count(),
+            'renting' => Account::where('is_available', false)->count(),
         ];
     }
 }

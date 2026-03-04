@@ -62,9 +62,9 @@ class OrderHelper
     public static function getBankInfo(): array
     {
         return [
-            'bin' => env('BANK_BIN', 'acb'),
-            'account' => env('BANK_ACCOUNT', '20867091'),
-            'owner' => env('BANK_OWNER', 'MAI THI THU QUYEN'),
+            'bin' => config('services.bank.bin', 'acb'),
+            'account' => config('services.bank.account', '20867091'),
+            'owner' => config('services.bank.owner', 'MAI THI THU QUYEN'),
         ];
     }
 }

@@ -35,4 +35,22 @@ return [
         ],
     ],
 
+    'pay2s' => [
+        'access_key' => env('PAY2S_ACCESS_KEY'),
+        'secret_key' => env('PAY2S_SECRET_KEY'),
+        'partner_code' => env('PAY2S_PARTNER_CODE'),
+        'merchant_name' => env('PAY2S_MERCHANT_NAME'),
+    ],
+
+    'recaptcha' => [
+        'site_key' => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+    ],
+
+    'bank' => [
+        'bin' => env('BANK_BIN', 'acb'),
+        'account' => env('BANK_ACCOUNT', '20867091'),
+        'owner' => env('BANK_OWNER', 'MAI THI THU QUYEN'),
+    ],
+
 ];
