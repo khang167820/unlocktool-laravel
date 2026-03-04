@@ -59,6 +59,7 @@
         'yesterday' => 'Hôm qua', 
         'week' => 'Tuần này',
         'month' => 'Tháng này',
+        'last_month' => 'Tháng trước',
         'year' => 'Năm này'
     ] as $key => $label)
         <a href="{{ route('admin.reports', ['range' => $key]) }}" 

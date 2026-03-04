@@ -713,6 +713,10 @@ class AdminController extends Controller
                 $startDate = now()->startOfMonth();
                 $endDate = now()->endOfMonth();
                 break;
+            case 'last_month':
+                $startDate = now()->subMonth()->startOfMonth();
+                $endDate = now()->subMonth()->endOfMonth();
+                break;
             case 'year':
                 $startDate = now()->startOfYear();
                 $endDate = now()->endOfYear();
