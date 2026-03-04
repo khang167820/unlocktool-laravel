@@ -159,17 +159,17 @@
 }
 
 .os-info-label {
-    font-size: 0.72rem;
-    color: #9ca3af;
+    font-size: 0.75rem;
+    color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
 .os-info-value {
-    font-size: 1.05rem;
-    color: #1f2937;
+    font-size: 1.15rem;
+    color: #111827;
     font-weight: 800;
 }
 
@@ -177,7 +177,7 @@
 .os-credentials {
     margin: 4px 24px 16px;
     background: #ecfdf5;
-    border: 1px solid #a7f3d0;
+    border: 2px solid #6ee7b7;
     border-radius: 14px;
     overflow: hidden;
 }
@@ -190,11 +190,11 @@
     gap: 8px;
 }
 
-.os-cred-header i { color: #059669; font-size: 1rem; }
+.os-cred-header i { color: #059669; font-size: 1.1rem; }
 
 .os-cred-header span {
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: #065f46;
 }
 
@@ -209,15 +209,15 @@
 .os-cred-row:last-child { border-bottom: none; }
 
 .os-cred-label {
-    font-size: 0.82rem;
-    color: #6b7280;
-    font-weight: 500;
+    font-size: 0.85rem;
+    color: #374151;
+    font-weight: 600;
 }
 
 .os-cred-value {
-    font-size: 0.95rem;
-    color: #1f2937;
-    font-weight: 700;
+    font-size: 1.05rem;
+    color: #111827;
+    font-weight: 800;
     font-family: 'Fira Code', 'Consolas', monospace;
     display: flex;
     align-items: center;
@@ -225,10 +225,10 @@
 }
 
 .os-copy-btn {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
-    border: 1px solid #a7f3d0;
+    border: 2px solid #34d399;
     background: #fff;
     color: #059669;
     font-size: 0.78rem;
@@ -271,10 +271,11 @@
 .os-countdown-label i { color: #d97706; }
 
 .os-countdown-value {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #d97706;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #b45309;
     font-family: 'Fira Code', 'Consolas', monospace;
+    letter-spacing: 1px;
 }
 
 .os-countdown-expired { color: #dc2626; font-weight: 700; }
