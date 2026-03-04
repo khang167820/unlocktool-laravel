@@ -58,11 +58,11 @@
     <table class="admin-table" style="margin: 0; font-size: 15px;">
         <thead>
             <tr>
-                <th style="width: 60px; text-align: center; font-size: 14px; padding: 14px 10px;">ID</th>
-                <th style="min-width: 280px; font-size: 14px; padding: 14px 10px;">Tài khoản / Mật khẩu</th>
-                <th style="min-width: 220px; font-size: 14px; padding: 14px 10px;">Trạng thái & Thời gian</th>
-                <th style="min-width: 140px; font-size: 14px; padding: 14px 10px;">Ghi chú</th>
-                <th style="width: 180px; text-align: center; font-size: 14px; padding: 14px 10px;">Hành động</th>
+                <th style="width: 50px; text-align: center; font-size: 14px; padding: 14px 10px;">ID</th>
+                <th style="min-width: 240px; font-size: 14px; padding: 14px 10px;">Tài khoản / Mật khẩu</th>
+                <th style="min-width: 180px; font-size: 14px; padding: 14px 10px;">Trạng thái & Thời gian</th>
+                <th style="width: 120px; font-size: 14px; padding: 14px 10px;">Ghi chú</th>
+                <th style="width: 140px; text-align: center; font-size: 14px; padding: 14px 10px;">Hành động</th>
             </tr>
         </thead>
         <tbody>
