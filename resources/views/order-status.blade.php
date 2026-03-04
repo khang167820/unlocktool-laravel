@@ -594,7 +594,7 @@
                 <div class="os-waiting">
                     <div class="os-waiting-icon">✅</div>
                     <h4>Đã thanh toán thành công!</h4>
-                    <p>Hệ thống đang cấp tài khoản. Trang sẽ tự động cập nhật.<br>Nếu quá 5 phút, liên hệ Zalo: <strong style="color:#93c5fd;">0777333763</strong></p>
+                    <p>Hệ thống đang cấp tài khoản. Trang sẽ tự động cập nhật.<br>Nếu quá 30 giây, liên hệ Zalo: <strong style="color:#93c5fd;">0777333763</strong></p>
                     <button class="os-reload-btn" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Tải lại trang</button>
                 </div>
 
