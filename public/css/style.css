@@ -2377,3 +2377,32 @@ footer a:hover {
         padding: 36px 16px;
     }
 }
+
+/* === ACCOUNTS TABLE — Stronger Contrast === */
+#account-table .table thead th {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    border-color: #1e3a8a;
+    padding: 12px 10px;
+}
+
+#account-table .table {
+    border: 2px solid #cbd5e1;
+}
+
+#account-table .table td {
+    border-color: #cbd5e1;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+#account-table .table tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+#account-table .table tbody tr:hover {
+    background: #e0f2fe;
+}
