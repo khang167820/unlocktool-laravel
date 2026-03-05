@@ -154,7 +154,5 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::post('/system/clear-views', [AdminController::class, 'clearViews'])->name('admin.system.clear-views');
     Route::post('/system/optimize', [AdminController::class, 'optimizeTables'])->name('admin.system.optimize');
     Route::get('/system/phpinfo', [AdminController::class, 'phpInfo'])->name('admin.system.phpinfo');
-    
-    // Underpaid Orders
-    Route::get('/underpaid', [AdminController::class, 'underpaidOrders'])->name('admin.underpaid');
+
 });
