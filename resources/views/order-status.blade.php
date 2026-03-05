@@ -5,38 +5,59 @@
 @section('head')
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* ===== ORDER DETAIL PAGE ===== */
+/* ===== ORDER DETAIL — PREMIUM V3 ===== */
 .od-page {
-    min-height: 85vh;
-    background: #f0f2f5;
+    min-height: 90vh;
+    background: linear-gradient(160deg, #0a1628 0%, #162544 40%, #1a3a5c 100%);
     padding: 40px 16px;
     font-family: 'Inter', -apple-system, sans-serif;
+    position: relative;
+}
+.od-page::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
 }
 
 .od-container {
-    max-width: 640px;
+    max-width: 600px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
-/* === Main Card === */
+/* === Card === */
 .od-card {
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
     overflow: hidden;
 }
 
-/* === Header === */
+/* === Header with gradient === */
 .od-header {
-    padding: 28px 32px 20px;
-    border-bottom: 1px solid #f0f0f0;
+    background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+}
+.od-header::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
 }
 
 .od-title {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    color: #1a1a2e;
-    margin-bottom: 10px;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
 }
 
 .od-status-row {
@@ -46,258 +67,264 @@
 }
 
 .od-status-label {
-    font-size: 0.85rem;
-    color: #888;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
     font-weight: 500;
 }
 
 .od-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 5px 14px;
-    border-radius: 20px;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 24px;
     font-size: 0.78rem;
     font-weight: 700;
 }
-
 .od-badge.completed {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+    background: rgba(46,125,50,0.2);
+    color: #81c784;
+    border: 1px solid rgba(129,199,132,0.3);
+    box-shadow: 0 0 12px rgba(46,125,50,0.15);
 }
-
 .od-badge.paid {
-    background: #e3f2fd;
-    color: #1565c0;
-    border: 1px solid #90caf9;
+    background: rgba(66,165,245,0.2);
+    color: #90caf9;
+    border: 1px solid rgba(144,202,249,0.3);
 }
-
 .od-badge.pending {
-    background: #fff8e1;
-    color: #f57f17;
-    border: 1px solid #ffe082;
+    background: rgba(255,167,38,0.2);
+    color: #ffcc02;
+    border: 1px solid rgba(255,204,2,0.3);
 }
 
-/* === Info Rows === */
+/* === Info Section === */
 .od-info {
-    padding: 0 32px;
+    padding: 4px 0;
 }
 
 .od-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 0;
-    border-bottom: 1px solid #f5f5f5;
+    padding: 15px 32px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
 }
-
-.od-row:last-child {
-    border-bottom: none;
-}
+.od-row:hover { background: #fafbfc; }
+.od-row:last-child { border-bottom: none; }
 
 .od-row-label {
     font-size: 0.88rem;
-    color: #666;
-    font-weight: 500;
+    color: #64748b;
+    font-weight: 600;
 }
 
 .od-row-value {
     font-size: 0.92rem;
-    color: #1a1a2e;
+    color: #1e293b;
     font-weight: 700;
     text-align: right;
 }
 
 .od-row-value.price {
-    color: #d32f2f;
-    font-size: 1rem;
+    color: #dc2626;
+    font-size: 1.05rem;
+    font-weight: 800;
 }
 
 .od-row-value.mono {
     font-family: 'JetBrains Mono', 'Consolas', monospace;
-    font-size: 0.88rem;
+    color: #334155;
+    letter-spacing: 0.5px;
 }
 
-/* === Account Section === */
+/* === Account Section (GREEN THEMED) === */
 .od-account {
-    margin: 16px 32px 0;
-    background: #fafafa;
-    border: 1px solid #eee;
-    border-radius: 12px;
+    margin: 4px 24px 0;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border: 1.5px solid #86efac;
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 2px 12px rgba(34,197,94,0.08);
 }
 
 .od-account-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.92rem;
+    padding: 16px 22px;
+    border-bottom: 1px solid #bbf7d0;
+    font-size: 0.95rem;
     font-weight: 800;
-    color: #1a1a2e;
+    color: #166534;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.od-account-header i {
+    color: #22c55e;
+    font-size: 1.1rem;
 }
 
 .od-account-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 13px 22px;
+    border-bottom: 1px solid #dcfce7;
 }
-
-.od-account-row:last-child {
-    border-bottom: none;
-}
+.od-account-row:last-child { border-bottom: none; }
 
 .od-account-label {
     font-size: 0.85rem;
-    color: #888;
-    font-weight: 500;
+    color: #4ade80;
+    font-weight: 600;
 }
 
 .od-account-value {
-    font-size: 0.95rem;
-    color: #1a1a2e;
-    font-weight: 700;
-    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 1rem;
+    color: #14532d;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    letter-spacing: 0.3px;
 }
 
 .od-copy-btn {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1.5px solid #86efac;
     background: #fff;
-    color: #888;
-    font-size: 0.75rem;
+    color: #22c55e;
+    font-size: 0.78rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .od-copy-btn:hover {
-    background: #f0f0f0;
-    color: #333;
+    background: #dcfce7;
+    transform: scale(1.05);
 }
-
 .od-copy-btn.copied {
-    background: #2e7d32;
+    background: #22c55e;
     color: #fff;
-    border-color: #2e7d32;
+    border-color: #22c55e;
+    animation: od-pop 0.3s ease;
+}
+@keyframes od-pop {
+    50% { transform: scale(1.2); }
 }
 
-/* === Countdown === */
+/* === Countdown (ORANGE/AMBER) === */
 .od-countdown {
-    margin: 16px 32px 0;
-    padding: 14px 20px;
-    background: #fff8e1;
-    border: 1px solid #ffe082;
-    border-radius: 12px;
+    margin: 12px 24px 0;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1.5px solid #fbbf24;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(245,158,11,0.1);
 }
 
 .od-countdown-label {
     font-size: 0.85rem;
-    color: #f57f17;
-    font-weight: 600;
+    color: #b45309;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 8px;
 }
+.od-countdown-label i { color: #f59e0b; }
 
 .od-countdown-value {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 900;
-    color: #e65100;
+    color: #d97706;
     font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-shadow: 0 1px 2px rgba(217,119,6,0.15);
 }
 
 .od-countdown-expired {
-    font-size: 0.9rem;
-    color: #d32f2f;
-    font-weight: 700;
+    font-size: 0.92rem;
+    color: #dc2626;
+    font-weight: 800;
 }
 
 /* === Waiting / Pending States === */
 .od-state-box {
-    margin: 16px 32px 0;
+    margin: 12px 24px 0;
     padding: 28px 24px;
     text-align: center;
-    border-radius: 12px;
+    border-radius: 16px;
 }
-
 .od-state-box.waiting {
-    background: #e3f2fd;
-    border: 1px solid #90caf9;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1.5px solid #93c5fd;
+}
+.od-state-box.pending {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1.5px solid #fcd34d;
 }
 
-.od-state-box.pending {
-    background: #fff8e1;
-    border: 1px solid #ffe082;
-}
+.od-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
 
 .od-state-box h4 {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 800;
     margin-bottom: 8px;
 }
-
-.od-state-box.waiting h4 { color: #1565c0; }
-.od-state-box.pending h4 { color: #f57f17; }
+.od-state-box.waiting h4 { color: #1d4ed8; }
+.od-state-box.pending h4 { color: #b45309; }
 
 .od-state-box p {
-    color: #666;
+    color: #64748b;
     font-size: 0.85rem;
-    line-height: 1.6;
+    line-height: 1.7;
     margin-bottom: 16px;
 }
-
-.od-state-box p strong { color: #1565c0; }
+.od-state-box p strong { color: #2563eb; }
 
 .od-reload-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 22px;
-    background: linear-gradient(135deg, #1976d2, #1565c0);
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: #fff;
     border: none;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s;
     font-family: 'Inter', sans-serif;
-    box-shadow: 0 2px 8px rgba(21,101,192,0.2);
+    box-shadow: 0 4px 14px rgba(37,99,235,0.3);
 }
-
 .od-reload-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(21,101,192,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.4);
 }
 
 .od-spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid #ffe082;
-    border-top-color: #f57f17;
+    width: 34px;
+    height: 34px;
+    border: 3px solid #fde68a;
+    border-top-color: #f59e0b;
     border-radius: 50%;
     animation: od-spin 0.8s linear infinite;
-    margin: 16px auto 0;
+    margin: 18px auto 0;
 }
-
 @keyframes od-spin { to { transform: rotate(360deg); } }
 
 /* === Actions === */
 .od-actions {
-    padding: 24px 32px;
+    padding: 24px;
     display: flex;
     gap: 12px;
 }
@@ -308,39 +335,37 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 13px 18px;
-    border-radius: 10px;
-    font-size: 0.88rem;
-    font-weight: 600;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
     text-decoration: none;
-    transition: all 0.2s;
+    transition: all 0.25s;
     font-family: 'Inter', sans-serif;
     border: none;
     cursor: pointer;
 }
 
 .od-btn-outline {
-    background: #fff;
-    border: 1.5px solid #ddd;
-    color: #555;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    color: #475569;
 }
-
 .od-btn-outline:hover {
-    background: #f5f5f5;
-    color: #333;
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #cbd5e1;
     text-decoration: none;
-    border-color: #bbb;
 }
 
 .od-btn-primary {
-    background: linear-gradient(135deg, #1976d2, #1565c0);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: #fff;
-    box-shadow: 0 2px 8px rgba(21,101,192,0.2);
+    box-shadow: 0 4px 14px rgba(37,99,235,0.3);
 }
-
 .od-btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(21,101,192,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.4);
     color: #fff;
     text-decoration: none;
 }
@@ -350,39 +375,31 @@
     text-align: center;
     padding: 60px 20px;
 }
-
-.od-not-found i {
-    font-size: 3rem;
-    color: #ccc;
-    margin-bottom: 16px;
-}
-
-.od-not-found h3 {
-    color: #888;
-    font-size: 1.1rem;
-    margin-bottom: 24px;
-}
+.od-not-found i { font-size: 3rem; color: #cbd5e1; margin-bottom: 16px; }
+.od-not-found h3 { color: #64748b; font-size: 1.1rem; margin-bottom: 24px; }
 
 /* === Branding === */
 .od-branding {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 24px;
     font-size: 0.72rem;
-    color: #bbb;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    color: rgba(255,255,255,0.25);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 /* === Responsive === */
 @media (max-width: 480px) {
-    .od-page { padding: 20px 12px; }
-    .od-header { padding: 22px 20px 16px; }
-    .od-info { padding: 0 20px; }
-    .od-account { margin-left: 20px; margin-right: 20px; }
-    .od-countdown { margin-left: 20px; margin-right: 20px; }
-    .od-state-box { margin-left: 20px; margin-right: 20px; }
-    .od-actions { padding: 20px; flex-direction: column; }
-    .od-title { font-size: 1.15rem; }
+    .od-page { padding: 20px 10px; }
+    .od-header { padding: 22px 20px 18px; }
+    .od-row { padding: 13px 20px; }
+    .od-account { margin-left: 16px; margin-right: 16px; }
+    .od-countdown { margin-left: 16px; margin-right: 16px; }
+    .od-state-box { margin-left: 16px; margin-right: 16px; }
+    .od-actions { padding: 20px 16px; flex-direction: column; }
+    .od-title { font-size: 1.2rem; }
+    .od-countdown-value { font-size: 1.2rem; }
 }
 </style>
 @endsection
@@ -407,7 +424,7 @@
         @endphp
 
         <div class="od-card">
-            {{-- Header --}}
+            {{-- Gradient Header --}}
             <div class="od-header">
                 <div class="od-title">Đơn hàng {{ $order->tracking_code }}</div>
                 <div class="od-status-row">
@@ -426,7 +443,7 @@
                 </div>
             </div>
 
-            {{-- Order Info Rows --}}
+            {{-- Order Info --}}
             <div class="od-info">
                 <div class="od-row">
                     <span class="od-row-label">Mã tra cứu</span>
@@ -462,10 +479,10 @@
                 @endif
             </div>
 
-            {{-- Account Info --}}
+            {{-- Account Info (Green themed) --}}
             @if($isCompleted)
                 <div class="od-account">
-                    <div class="od-account-header">Tài khoản đã cấp</div>
+                    <div class="od-account-header"><i class="fas fa-key"></i> Tài khoản đã cấp</div>
                     <div class="od-account-row">
                         <span class="od-account-label">Loại dịch vụ</span>
                         <span class="od-account-value">Unlocktool</span>
@@ -486,7 +503,6 @@
                     </div>
                 </div>
 
-                {{-- Countdown --}}
                 @if($timeRemaining && !$timeRemaining['expired'])
                     <div class="od-countdown">
                         <div class="od-countdown-label"><i class="fas fa-hourglass-half"></i> Thời gian còn lại</div>
@@ -501,14 +517,16 @@
 
             @elseif($isPaid)
                 <div class="od-state-box waiting">
-                    <h4>✅ Đã thanh toán thành công!</h4>
+                    <div class="od-state-icon">✅</div>
+                    <h4>Đã thanh toán thành công!</h4>
                     <p>Hệ thống đang cấp tài khoản. Trang sẽ tự động cập nhật.<br>Nếu quá 30 giây, liên hệ Zalo: <strong>0777333763</strong></p>
                     <button class="od-reload-btn" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Tải lại trang</button>
                 </div>
 
             @elseif($isPending)
                 <div class="od-state-box pending">
-                    <h4>⏳ Đang chờ thanh toán</h4>
+                    <div class="od-state-icon">⏳</div>
+                    <h4>Đang chờ thanh toán</h4>
                     <p>Hệ thống sẽ tự động cập nhật khi nhận được thanh toán.</p>
                     <div class="od-spinner"></div>
                 </div>
