@@ -319,11 +319,11 @@
             <h2 class="guide-col-title">Hướng dẫn thuê tài khoản</h2>
             <p class="guide-col-subtitle">Quy trình thuê tài khoản hoàn toàn tự động 24/7</p>
             <div class="timeline">
-                <div class="timeline-item"><div class="timeline-dot blue"><i class="fas fa-list"></i></div><div class="timeline-content"><h3>Bước 1: Chọn tài khoản UnlockTool</h3><p>Chọn tài khoản còn trống trong bảng, nhấn "Thuê ngay".</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot orange"><i class="fas fa-shopping-cart"></i></div><div class="timeline-content"><h3>Bước 2: Chọn gói thuê</h3><p>Chọn gói thuê phù hợp: theo giờ, ngày, tuần.</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot green"><i class="fas fa-check-circle"></i></div><div class="timeline-content"><h3>Bước 3: Xác nhận đơn thuê</h3><p>Xác nhận thuê và kiểm tra thông tin thanh toán.</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot red"><i class="fas fa-credit-card"></i></div><div class="timeline-content"><h3>Bước 4: Thanh toán</h3><p>Quét mã QR hoặc chuyển khoản. Hệ thống tự động nhận diện giao dịch.</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot purple"><i class="fas fa-unlock-alt"></i></div><div class="timeline-content"><h3>Bước 5: Nhận tài khoản</h3><p>Hệ thống tự động hiển thị thông tin tài khoản sau khi thanh toán.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot blue"><i class="fas fa-list"></i></div><div class="timeline-content"><h4>Bước 1: Chọn tài khoản UnlockTool</h4><p>Chọn tài khoản còn trống trong bảng, nhấn "Thuê ngay".</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot orange"><i class="fas fa-shopping-cart"></i></div><div class="timeline-content"><h4>Bước 2: Chọn gói thuê</h4><p>Chọn gói thuê phù hợp: theo giờ, ngày, tuần.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot green"><i class="fas fa-check-circle"></i></div><div class="timeline-content"><h4>Bước 3: Xác nhận đơn thuê</h4><p>Xác nhận thuê và kiểm tra thông tin thanh toán.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot red"><i class="fas fa-credit-card"></i></div><div class="timeline-content"><h4>Bước 4: Thanh toán</h4><p>Quét mã QR hoặc chuyển khoản. Hệ thống tự động nhận diện giao dịch.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot purple"><i class="fas fa-unlock-alt"></i></div><div class="timeline-content"><h4>Bước 5: Nhận tài khoản</h4><p>Hệ thống tự động hiển thị thông tin tài khoản sau khi thanh toán.</p></div></div>
             </div>
         </div>
         <div class="payment-col">
