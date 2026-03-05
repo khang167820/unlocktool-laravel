@@ -151,7 +151,7 @@
         margin-bottom: 2px;
     }
     .acc-password { 
-        font-size: 13px; 
+        font-size: 14px; 
         color: #1e40af; 
         font-weight: 700;
     }
