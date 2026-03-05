@@ -41,7 +41,7 @@
             <a href="{{ route('home') }}" class="logo-section">
                 <div class="logo-icon"><img src="{{ asset('images/logo.jpg') }}" alt="UnlockTool.us Logo" width="44" height="44"></div>
                 <div class="logo-text">
-                    <h1 class="logo-title">UNLOCKTOOL.US</h1>
+                    <span class="logo-title">UNLOCKTOOL.US</span>
                     <p class="logo-subtitle">Thuê tài khoản tự động 24/7</p>
                 </div>
             </a>

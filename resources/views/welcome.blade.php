@@ -2,7 +2,7 @@
 
 @section('title', 'Thuê UnlockTool Giá Rẻ Từ 8K - Tự Động 24/7 | Uy Tín 2026')
 
-@section('meta_description', 'Thuê tài khoản UnlockTool giá rẻ chỉ từ 10.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau 30 giây. Hỗ trợ FRP Bypass Samsung, Xiaomi, Oppo. Uy tín 6.500+ đơn hàng.')
+@section('meta_description', 'Thuê tài khoản UnlockTool giá rẻ chỉ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay 30 giây. Hỗ trợ FRP Bypass Samsung, Xiaomi. Uy tín 6.500+ đơn.')
 
 @section('head')
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -238,14 +238,14 @@
 {{-- ===== SERVICE STRIP ===== --}}
 <section class="service-strip">
     <div class="service-strip-inner">
-        <a class="service-card" href="https://thuetaikhoan.net/thue-unlocktool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Unlocktool" loading="lazy" width="68" height="68"></div><span>Unlocktool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-griffin.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/griffin.webp') }}" alt="Griffin" loading="lazy" width="68" height="68"></div><span>Griffin</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-amt.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/amt.webp') }}" alt="AMT" loading="lazy" width="68" height="68"></div><span>Android Multitool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-tsm.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/tsm.webp') }}" alt="TSM" loading="lazy" width="68" height="68"></div><span>TSM Tool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-vietmap.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/vietmap.webp') }}" alt="Vietmap" loading="lazy" width="68" height="68"></div><span>Vietmap Live</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-kg-killer.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/kg-killer.webp') }}" alt="KG Killer" loading="lazy" width="68" height="68"></div><span>KG Killer</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-dft.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/dft-pro.webp') }}" alt="DFT Pro" loading="lazy" width="68" height="68"></div><span>DFT Pro</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-samsung-tool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/samsung-tool.webp') }}" alt="Samsung Tool" loading="lazy" width="68" height="68"></div><span>Samsung Tool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-unlocktool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Thuê tài khoản Unlocktool giá rẻ" loading="lazy" width="68" height="68"></div><span>Unlocktool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-griffin.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/griffin.webp') }}" alt="Thuê tài khoản Griffin Unlocker" loading="lazy" width="68" height="68"></div><span>Griffin</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-amt.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/amt.webp') }}" alt="Thuê Android Multitool AMT" loading="lazy" width="68" height="68"></div><span>Android Multitool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-tsm.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/tsm.webp') }}" alt="Thuê TSM Tool bypass FRP" loading="lazy" width="68" height="68"></div><span>TSM Tool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-vietmap.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/vietmap.webp') }}" alt="Thuê Vietmap Live Pro bản đồ" loading="lazy" width="68" height="68"></div><span>Vietmap Live</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-kg-killer.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/kg-killer.webp') }}" alt="Thuê KG Killer xóa Knox Guard" loading="lazy" width="68" height="68"></div><span>KG Killer</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-dft.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/dft-pro.webp') }}" alt="Thuê DFT Pro unlock Samsung" loading="lazy" width="68" height="68"></div><span>DFT Pro</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-samsung-tool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/samsung-tool.webp') }}" alt="Thuê Samsung Tool bypass KG Lock" loading="lazy" width="68" height="68"></div><span>Samsung Tool</span></a>
     </div>
 </section>
 
