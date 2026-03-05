@@ -157,7 +157,7 @@ class AdminController extends Controller
         // Advanced query with sorting logic
         $latestOrders = DB::table('orders')
             ->select('account_id', DB::raw('MAX(expires_at) as latest_expires_at'))
-            ->where('status', 'completed')
+            ->whereIn('status', ['paid', 'completed'])
             ->groupBy('account_id');
 
         // Sắp xếp theo thứ tự:
@@ -209,7 +209,7 @@ class AdminController extends Controller
         if (!empty($rentedAccountIds)) {
             $rentalInfo = DB::table('orders')
                 ->whereIn('account_id', $rentedAccountIds)
-                ->where('status', 'completed')
+                ->whereIn('status', ['paid', 'completed'])
                 ->whereNotNull('expires_at')
                 ->select('account_id', 'tracking_code', 'expires_at', 'ip_address')
                 ->get()
