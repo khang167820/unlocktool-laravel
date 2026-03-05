@@ -54,7 +54,6 @@ class AccountAllocationService
                 'status' => 'completed',
                 'paid_at' => $order->paid_at ?? now(),
                 'expires_at' => $expiresAt,
-                'completed_at' => now(),
             ]);
 
             DB::commit();
