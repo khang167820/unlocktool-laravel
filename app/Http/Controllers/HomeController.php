@@ -32,7 +32,8 @@ class HomeController extends Controller
 
         // Recent orders (by IP, last 30 days)
         $userIp = OrderHelper::getClientIP();
-        $recentOrders = Order::where('ip_address', $userIp)
+        $recentOrders = Order::with('account')
+            ->where('ip_address', $userIp)
             ->where('created_at', '>=', now()->subDays(30))
             ->orderBy('created_at', 'desc')
             ->limit(10)

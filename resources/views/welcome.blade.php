@@ -413,7 +413,7 @@
                 @if($recentOrders->count() > 0)
                     <div class="table-responsive">
                         <table class="table table-bordered">
-                            <thead><tr><th>#</th><th>Mã đơn</th><th>Gói thuê</th><th>Giá</th><th>Trạng thái</th><th>Thời gian</th></tr></thead>
+                            <thead><tr><th>#</th><th>Mã đơn</th><th>Gói thuê</th><th>Giá</th><th>Trạng thái</th><th>Tài khoản</th><th>Thời gian</th></tr></thead>
                             <tbody>
                             @foreach($recentOrders as $i => $order)
                                 <tr>
@@ -422,6 +422,14 @@
                                     <td>{{ \App\Helpers\OrderHelper::displayPackageName($order->hours) }}</td>
                                     <td>{{ \App\Helpers\OrderHelper::formatMoney($order->amount) }}</td>
                                     <td><span class="badge badge-{{ $order->status === 'completed' ? 'success' : ($order->status === 'pending' ? 'warning' : 'info') }}">{{ $order->status }}</span></td>
+                                    <td>
+                                        @if($order->account)
+                                            <strong>{{ $order->account->username }}</strong><br>
+                                            <small class="text-muted">{{ $order->account->password }}</small>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $order->created_at }}</td>
                                 </tr>
                             @endforeach

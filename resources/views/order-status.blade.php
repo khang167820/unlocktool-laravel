@@ -686,7 +686,7 @@
         </div>
     @endif
 
-    <div class="os-branding">UNLOCKTOOL.US — THÊ TỰ ĐỘNG 24/7</div>
+    <div class="os-branding">UNLOCKTOOL.US — THUÊ TỰ ĐỘNG 24/7</div>
 
 </div>
 </div>
