@@ -28,7 +28,7 @@
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"></noscript>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=5.3">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=5.4">
     @yield('schema')
     @yield('head')
 </head>
