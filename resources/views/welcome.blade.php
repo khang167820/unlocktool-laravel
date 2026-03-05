@@ -10,7 +10,8 @@
 @endsection
 
 @section('schema')
-{{-- 1. Organization Schema --}}
+@verbatim
+<!-- 1. Organization Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -43,7 +44,7 @@
 }
 </script>
 
-{{-- 2. WebSite + SearchAction Schema --}}
+<!-- 2. WebSite + SearchAction Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -60,7 +61,7 @@
 }
 </script>
 
-{{-- 3. Product + AggregateRating Schema (⭐ hiện sao trên Google) --}}
+<!-- 3. Product + AggregateRating Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -114,7 +115,7 @@
 }
 </script>
 
-{{-- 4. FAQPage Schema (đối thủ KHÔNG có!) --}}
+<!-- 4. FAQPage Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -196,7 +197,7 @@
 }
 </script>
 
-{{-- 5. BreadcrumbList Schema --}}
+<!-- 5. BreadcrumbList Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -211,6 +212,7 @@
     ]
 }
 </script>
+@endverbatim
 @endsection
 
 @section('content')
