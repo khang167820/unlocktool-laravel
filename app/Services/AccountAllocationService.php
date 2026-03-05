@@ -51,7 +51,6 @@ class AccountAllocationService
             // Update order with account info → completed
             $order->update([
                 'account_id' => $account->id,
-                'assigned_password' => $account->password,
                 'status' => 'completed',
                 'paid_at' => $order->paid_at ?? now(),
                 'expires_at' => $expiresAt,
