@@ -2,6 +2,217 @@
 
 @section('title', 'Thuê UnlockTool Giá Rẻ Từ 8K - Tự Động 24/7 | Uy Tín 2026')
 
+@section('meta_description', 'Thuê tài khoản UnlockTool giá rẻ chỉ từ 10.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau 30 giây. Hỗ trợ FRP Bypass Samsung, Xiaomi, Oppo. Uy tín 6.500+ đơn hàng.')
+
+@section('head')
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="keywords" content="thuê unlocktool, cho thuê unlocktool, thuê tài khoản unlocktool, unlocktool giá rẻ, thuê tool mở khóa, FRP bypass, xóa tài khoản google, thuê unlocktool 2026">
+@endsection
+
+@section('schema')
+{{-- 1. Organization Schema --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "UnlockTool.us",
+    "alternateName": "Thuê UnlockTool Giá Rẻ",
+    "url": "https://unlocktool.us",
+    "logo": "https://unlocktool.us/images/logo.jpg",
+    "description": "Hệ thống cho thuê tài khoản UnlockTool tự động 24/7. Giá rẻ nhất thị trường, nhận tài khoản ngay sau thanh toán.",
+    "contactPoint": [
+        {
+            "@type": "ContactPoint",
+            "telephone": "+84799161640",
+            "contactType": "customer service",
+            "areaServed": "VN",
+            "availableLanguage": "Vietnamese"
+        },
+        {
+            "@type": "ContactPoint",
+            "telephone": "+84777333763",
+            "contactType": "sales",
+            "areaServed": "VN",
+            "availableLanguage": "Vietnamese"
+        }
+    ],
+    "sameAs": [
+        "https://zalo.me/0799161640",
+        "https://zalo.me/0777333763"
+    ]
+}
+</script>
+
+{{-- 2. WebSite + SearchAction Schema --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "UnlockTool.us",
+    "url": "https://unlocktool.us",
+    "description": "Hệ thống cho thuê tài khoản UnlockTool, Griffin, Samsung Tool tự động 24/7",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://unlocktool.us/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    },
+    "inLanguage": "vi"
+}
+</script>
+
+{{-- 3. Product + AggregateRating Schema (⭐ hiện sao trên Google) --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Thuê Tài Khoản UnlockTool",
+    "description": "Dịch vụ cho thuê tài khoản UnlockTool giá rẻ, tự động 24/7. Hỗ trợ FRP Bypass Samsung, Xiaomi, Oppo, Vivo. Nhận tài khoản ngay sau thanh toán.",
+    "image": "https://unlocktool.us/images/unlocktool-banner.jpg",
+    "brand": {
+        "@type": "Brand",
+        "name": "UnlockTool.us"
+    },
+    "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "10000",
+        "highPrice": "220000",
+        "priceCurrency": "VND",
+        "offerCount": "8",
+        "availability": "https://schema.org/InStock"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "127",
+        "reviewCount": "127"
+    },
+    "review": [
+        {
+            "@type": "Review",
+            "author": {"@type": "Person", "name": "Minh Tuấn"},
+            "datePublished": "2026-01-15",
+            "reviewBody": "Thanh toán xong là nhận tài khoản liền. Xóa FRP Samsung A54, A34 thành công. Giá 8K/6h quá rẻ.",
+            "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
+        },
+        {
+            "@type": "Review",
+            "author": {"@type": "Person", "name": "Thanh Hải"},
+            "datePublished": "2026-02-01",
+            "reviewBody": "Hệ thống tự động 24/7 tiện lợi. Thuê lúc 2h sáng, chuyển tiền xong 30 giây là có tài khoản.",
+            "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
+        },
+        {
+            "@type": "Review",
+            "author": {"@type": "Person", "name": "Thành Long"},
+            "datePublished": "2026-02-10",
+            "reviewBody": "Đã thử 3-4 trang khác nhau, chốt ở đây vì giá rẻ nhất, hệ thống tự động, hỗ trợ nhanh.",
+            "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
+        }
+    ]
+}
+</script>
+
+{{-- 4. FAQPage Schema (đối thủ KHÔNG có!) --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "UnlockTool là gì?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "UnlockTool là phần mềm chuyên dụng dùng để mở khóa điện thoại, xóa FRP, bypass iCloud, xóa Mi Account. Hỗ trợ Samsung, Xiaomi, Oppo, Vivo, Realme, iPhone."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Thuê UnlockTool bao lâu nhận được tài khoản?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Hệ thống tự động 24/7, nhận tài khoản ngay lập tức (30 giây đến 1 phút) sau khi thanh toán thành công."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Có thể đổi máy tính khi đang thuê không?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Không. UnlockTool quy định đổi PC sau mỗi 6 giờ. Nếu đăng nhập máy thứ 2 khi chưa đủ thời gian, hệ thống sẽ báo lỗi."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Thời gian thuê tính như thế nào?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Tính real-time từ lúc nhận tài khoản. Đếm ngược liên tục 24/7, kể cả khi tắt máy."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Thanh toán bằng hình thức nào?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Chuyển khoản tất cả ngân hàng Việt Nam. Hệ thống xác nhận tự động qua QR code hoặc nội dung chuyển khoản."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Cần chuẩn bị gì trước khi thuê UnlockTool?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Tải sẵn phần mềm UnlockTool từ trang chủ, cài Driver đầy đủ cho dòng máy cần làm để tiết kiệm thời gian thuê."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "UnlockTool hỗ trợ những dòng máy nào?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Samsung, Xiaomi/Redmi/POCO, Oppo, Vivo, Realme, Huawei, LG, Motorola, iPhone. Hỗ trợ FRP Bypass, Flash, Unlock Network, Mi Account Remove."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Giá đại lý thuê UnlockTool có không?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Có. Liên hệ Zalo 0799161640 hoặc 0777333763 để nhận giá đại lý tốt nhất cho cửa hàng."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quên thông tin tài khoản thì sao?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Tra cứu lại bằng mã đơn hoặc nội dung chuyển khoản trên website, hoặc liên hệ Zalo để được hỗ trợ."
+            }
+        }
+    ]
+}
+</script>
+
+{{-- 5. BreadcrumbList Schema --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Trang chủ",
+            "item": "https://unlocktool.us"
+        }
+    ]
+}
+</script>
+@endsection
+
 @section('content')
 
 {{-- ===== HERO BANNER ===== --}}
@@ -106,11 +317,11 @@
             <h2 class="guide-col-title">Hướng dẫn thuê tài khoản</h2>
             <p class="guide-col-subtitle">Quy trình thuê tài khoản hoàn toàn tự động 24/7</p>
             <div class="timeline">
-                <div class="timeline-item"><div class="timeline-dot blue"><i class="fas fa-list"></i></div><div class="timeline-content"><h4>Bước 1: Chọn tài khoản UnlockTool</h4><p>Chọn tài khoản còn trống trong bảng, nhấn "Thuê ngay".</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot orange"><i class="fas fa-shopping-cart"></i></div><div class="timeline-content"><h4>Bước 2: Chọn gói thuê</h4><p>Chọn gói thuê phù hợp: theo giờ, ngày, tuần.</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot green"><i class="fas fa-check-circle"></i></div><div class="timeline-content"><h4>Bước 3: Xác nhận đơn thuê</h4><p>Xác nhận thuê và kiểm tra thông tin thanh toán.</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot red"><i class="fas fa-credit-card"></i></div><div class="timeline-content"><h4>Bước 4: Thanh toán</h4><p>Quét mã QR hoặc chuyển khoản. Hệ thống tự động nhận diện giao dịch.</p></div></div>
-                <div class="timeline-item"><div class="timeline-dot purple"><i class="fas fa-unlock-alt"></i></div><div class="timeline-content"><h4>Bước 5: Nhận tài khoản</h4><p>Hệ thống tự động hiển thị thông tin tài khoản sau khi thanh toán.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot blue"><i class="fas fa-list"></i></div><div class="timeline-content"><h3>Bước 1: Chọn tài khoản UnlockTool</h3><p>Chọn tài khoản còn trống trong bảng, nhấn "Thuê ngay".</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot orange"><i class="fas fa-shopping-cart"></i></div><div class="timeline-content"><h3>Bước 2: Chọn gói thuê</h3><p>Chọn gói thuê phù hợp: theo giờ, ngày, tuần.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot green"><i class="fas fa-check-circle"></i></div><div class="timeline-content"><h3>Bước 3: Xác nhận đơn thuê</h3><p>Xác nhận thuê và kiểm tra thông tin thanh toán.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot red"><i class="fas fa-credit-card"></i></div><div class="timeline-content"><h3>Bước 4: Thanh toán</h3><p>Quét mã QR hoặc chuyển khoản. Hệ thống tự động nhận diện giao dịch.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot purple"><i class="fas fa-unlock-alt"></i></div><div class="timeline-content"><h3>Bước 5: Nhận tài khoản</h3><p>Hệ thống tự động hiển thị thông tin tài khoản sau khi thanh toán.</p></div></div>
             </div>
         </div>
         <div class="payment-col">
