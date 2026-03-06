@@ -1488,6 +1488,83 @@ body {
     transform: translateY(-1px);
 }
 
+/* === Rent Modal — Mobile Responsive === */
+@media (max-width: 576px) {
+    #rentModal .modal-dialog {
+        max-width: 92%;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    #rentModal .modal-content {
+        max-height: 80vh;
+        border-radius: 14px !important;
+    }
+
+    #rentModal .rent-modal-header {
+        padding: 14px 16px 8px !important;
+    }
+
+    #rentModal .rent-modal-title {
+        font-size: 1.1rem;
+    }
+
+    #rentModal .rent-modal-subtitle {
+        font-size: 0.78rem;
+    }
+
+    #rentModal .rent-modal-body {
+        padding: 0 14px 10px !important;
+        max-height: calc(80vh - 150px);
+        overflow-y: auto;
+    }
+
+    #rentModal .rent-package-option {
+        padding: 8px 10px;
+        margin-bottom: 5px;
+        gap: 8px;
+    }
+
+    .rent-package-name {
+        font-size: 0.8rem;
+    }
+
+    .rent-package-time {
+        font-size: 0.7rem;
+    }
+
+    .rent-package-price {
+        font-size: 0.92rem;
+    }
+
+    .rent-badge {
+        font-size: 0.62rem;
+        padding: 1px 6px;
+    }
+
+    .rent-duration-tag {
+        font-size: 0.62rem;
+        padding: 1px 6px;
+    }
+
+    #rentModal .rent-modal-footer {
+        padding: 12px 16px !important;
+        gap: 8px;
+    }
+
+    #rentModal .rent-btn-cancel {
+        padding: 9px 20px;
+        font-size: 0.82rem;
+    }
+
+    #rentModal .rent-btn-confirm {
+        padding: 9px 24px;
+        font-size: 0.82rem;
+    }
+}
+
 .floating-contact-item-name {
     font-weight: 600;
     font-size: 0.88rem;
