@@ -66,8 +66,7 @@
             <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Mở menu"><i class="fas fa-bars"></i></button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="/blog" class="mobile-link" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-align:center;border-radius:8px;padding:10px;margin-bottom:8px;"><i class="fas fa-newspaper"></i> Blog & Hướng Dẫn</a>
-            <button class="mobile-history-btn" type="button" data-toggle="modal" data-target="#historyModal"><i class="fas fa-clock-rotate-left"></i> Lịch sử thuê</button>
+            <button class="mobile-history-btn" type="button" data-toggle="modal" data-target="#historyModal" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;text-align:center;border-radius:8px;padding:10px;margin-bottom:8px;border:none;width:100%;font-weight:700;font-size:0.95rem;"><i class="fas fa-clock-rotate-left"></i> Lịch sử thuê</button>
             <div class="mobile-search-form">
                 <input type="text" id="mobileTransferContent" placeholder="Nội dung CK hoặc mã đơn">
                 <button type="button" id="mobileCheckBtn"><i class="fas fa-search"></i> Tìm đơn</button>
