@@ -13,13 +13,14 @@ class Account extends Model
     protected $fillable = [
         'username', 'password', 'type', 'is_available',
         'note', 'note_date', 'password_changed',
-        'rental_expires_at', 'rental_order_code',
+        'rental_expires_at', 'rental_order_code', 'expires_at',
     ];
 
     protected $casts = [
         'is_available' => 'boolean',
         'password_changed' => 'boolean',
         'rental_expires_at' => 'datetime',
+        'expires_at' => 'date',
     ];
 
     // === Scopes ===

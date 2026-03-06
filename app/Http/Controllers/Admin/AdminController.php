@@ -249,6 +249,7 @@ class AdminController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
             'note' => 'nullable|string',
+            'expires_at' => 'nullable|date',
         ]);
         
         DB::table('accounts')->insert([
@@ -257,6 +258,7 @@ class AdminController extends Controller
             'type' => 'Unlocktool',
             'is_available' => 1,
             'note' => $data['note'] ?? null,
+            'expires_at' => $data['expires_at'] ?? null,
         ]);
         
         return back()->with('success', 'Account added!');
