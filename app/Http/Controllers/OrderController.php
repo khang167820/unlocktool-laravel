@@ -80,7 +80,7 @@ class OrderController extends Controller
 
             if ($order->account) {
                 $data['username'] = $order->account->username;
-                $data['password'] = $order->assigned_password ?? $order->account->password;
+                $data['password'] = $order->account->password;
             }
 
             return response()->json($data);

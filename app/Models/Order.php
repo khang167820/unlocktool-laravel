@@ -12,15 +12,14 @@ class Order extends Model
 
     protected $fillable = [
         'tracking_code', 'order_code', 'hours', 'amount', 'status',
-        'created_at', 'ip_address', 'account_id', 'assigned_password',
-        'expires_at', 'paid_at', 'completed_at',
+        'created_at', 'ip_address', 'account_id',
+        'expires_at', 'paid_at',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'expires_at' => 'datetime',
         'paid_at' => 'datetime',
-        'completed_at' => 'datetime',
     ];
 
     // === Scopes ===
