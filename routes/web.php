@@ -29,6 +29,19 @@ Route::get('/api/check-payment/{code}', [OrderController::class, 'checkPayment']
 // Pay2S Webhook (no CSRF)
 Route::post('/webhook/pay2s', [WebhookController::class, 'handlePay2s'])->name('webhook.pay2s');
 
+// Quick cache clear (secret key protected)
+Route::get('/cc-unlock2026', function () {
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'All caches cleared!',
+        'time' => now()->toDateTimeString(),
+    ]);
+});
+
 // === Blog Routes ===
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
