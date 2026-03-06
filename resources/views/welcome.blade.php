@@ -464,7 +464,7 @@
                     @foreach($allPrices as $index => $price)
                         @php
                             $hours = $price->hours;
-                            if ($hours <= 6) { $badge = 'Gói Trải Nghiệm'; $badgeClass = 'badge-trial'; }
+                            if ($hours <= 6) { $badge = 'Giá tốt nhất'; $badgeClass = 'badge-trial'; }
                             elseif ($hours <= 12) { $badge = 'Phổ biến'; $badgeClass = 'badge-popular'; }
                             elseif ($hours <= 24) { $badge = 'Hot'; $badgeClass = 'badge-hot'; }
                             elseif ($hours <= 72) { $badge = 'Khuyến mại'; $badgeClass = 'badge-promo'; }
