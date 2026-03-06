@@ -187,7 +187,7 @@ class AdminController extends Controller
                     WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at >= NOW() 
                         THEN latest_orders.latest_expires_at
                     ELSE NULL 
-                END DESC
+                END ASC
             ")
             ->orderByRaw("
                 CASE 
