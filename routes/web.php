@@ -42,6 +42,18 @@ Route::get('/cc-unlock2026', function () {
     ]);
 });
 
+// Quick migrate (secret key protected)
+Route::get('/migrate-unlock2026', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+    $output = \Illuminate\Support\Facades\Artisan::output();
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'Migration completed!',
+        'output' => $output,
+        'time' => now()->toDateTimeString(),
+    ]);
+});
+
 // === Blog Routes ===
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
