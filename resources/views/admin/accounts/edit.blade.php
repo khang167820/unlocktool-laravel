@@ -74,16 +74,6 @@
                 @endif
             </div>
             
-            <div class="form-group">
-                <label class="form-label">Trạng thái hiện tại</label>
-                <div style="padding: 10px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px;">
-                    @if($account->is_available)
-                        <span style="color: #10b981; font-weight: 600;">✅ Còn trống (Chờ thuê)</span>
-                    @else
-                        <span style="color: #f97316; font-weight: 600;">🔒 Đang thuê</span>
-                    @endif
-                </div>
-            </div>
         </div>
         
         <div class="btn-row">
