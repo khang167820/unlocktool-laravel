@@ -663,7 +663,20 @@
                             <i class="fas fa-exclamation-triangle" style="color: #fbbf24;"></i>
                             <span style="color: #fde68a;">Mật khẩu đã được thay đổi</span>
                         </div>
-                        <div style="padding: 16px 20px;">
+                        <div class="os-cred-row">
+                            <span class="os-cred-label">Username</span>
+                            <div class="os-cred-value">
+                                <span>{{ $order->account->username }}</span>
+                                <button class="os-copy-btn" onclick="copyText('{{ $order->account->username }}', this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="os-cred-row">
+                            <span class="os-cred-label">Password</span>
+                            <div class="os-cred-value">
+                                <span style="color: #fbbf24;">••••••••</span>
+                            </div>
+                        </div>
+                        <div style="padding: 12px 20px;">
                             <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin: 0 0 14px; line-height: 1.6;">
                                 Mật khẩu tài khoản đã được admin thay đổi. Bạn vẫn còn thời gian thuê — vui lòng liên hệ admin để được cấp lại mật khẩu mới.
                             </p>
@@ -680,7 +693,16 @@
                             <span style="color: #fca5a5;">Phiên thuê đã kết thúc</span>
                         </div>
                         <div class="os-cred-row">
-                            <span class="os-cred-label">Thông tin tài khoản không còn khả dụng.</span>
+                            <span class="os-cred-label">Username</span>
+                            <div class="os-cred-value">
+                                <span>{{ $order->account->username }}</span>
+                            </div>
+                        </div>
+                        <div class="os-cred-row">
+                            <span class="os-cred-label">Password</span>
+                            <div class="os-cred-value">
+                                <span style="color: #f87171;">••••••••</span>
+                            </div>
                         </div>
                     </div>
                     @endif

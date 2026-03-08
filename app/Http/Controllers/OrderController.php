@@ -86,6 +86,7 @@ class OrderController extends Controller
                     $data['username'] = $order->account->username;
                     $data['password'] = $order->account->password;
                 } else {
+                    $data['username'] = $order->account->username;
                     $data['expired'] = true;
                 }
             }
