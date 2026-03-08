@@ -79,8 +79,15 @@ class OrderController extends Controller
             $data = ['status' => 'paid'];
 
             if ($order->account) {
-                $data['username'] = $order->account->username;
-                $data['password'] = $order->account->password;
+                $isExpired = $order->expires_at && $order->expires_at->isPast();
+                $canShow = !$order->account->is_available && !$order->account->password_changed && !$isExpired;
+
+                if ($canShow) {
+                    $data['username'] = $order->account->username;
+                    $data['password'] = $order->account->password;
+                } else {
+                    $data['expired'] = true;
+                }
             }
 
             return response()->json($data);

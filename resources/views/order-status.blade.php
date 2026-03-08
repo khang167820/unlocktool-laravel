@@ -630,6 +630,11 @@
             </div>
 
             @if(in_array($order->status, ['paid', 'completed']) && $order->account)
+                @php
+                    $canShowCredentials = !$order->account->is_available && !$order->account->password_changed && (!$timeRemaining || !$timeRemaining['expired']);
+                @endphp
+
+                @if($canShowCredentials)
                 <div class="os-credentials">
                     <div class="os-cred-header">
                         <i class="fas fa-key"></i>
@@ -650,6 +655,17 @@
                         </div>
                     </div>
                 </div>
+                @else
+                <div class="os-credentials" style="border-color: rgba(239,68,68,0.25); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
+                    <div class="os-cred-header" style="border-bottom-color: rgba(239,68,68,0.15);">
+                        <i class="fas fa-lock" style="color: #f87171;"></i>
+                        <span style="color: #fca5a5;">Phiên thuê đã kết thúc</span>
+                    </div>
+                    <div class="os-cred-row">
+                        <span class="os-cred-label">Thông tin tài khoản không còn khả dụng.</span>
+                    </div>
+                </div>
+                @endif
 
                 @if($timeRemaining && !$timeRemaining['expired'])
                     <div class="os-countdown">
