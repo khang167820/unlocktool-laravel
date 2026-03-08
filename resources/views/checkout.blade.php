@@ -305,9 +305,12 @@
                     <input type="hidden" name="recaptcha_token" id="recaptcha_token">
                     <div style="margin-bottom: 16px;">
                         <label style="display:block;color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:6px;font-weight:600;">
-                            <i class="fas fa-envelope" style="margin-right:4px;"></i> Gmail nhận tài khoản <span style="color:rgba(255,255,255,0.4);font-weight:400;">(không bắt buộc)</span>
+                            <i class="fas fa-envelope" style="margin-right:4px;"></i> Nhập Gmail để nhận thông tin tài khoản
                         </label>
                         <input type="email" name="customer_email" placeholder="example@gmail.com" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;transition:border-color 0.3s;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+                        <p style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin:6px 0 0;line-height:1.4;">
+                            📩 Sau khi thanh toán, tài khoản UnlockTool sẽ được gửi qua email này. Không bắt buộc — bạn vẫn nhận được trên website.
+                        </p>
                     </div>
                     <button type="submit" class="co-btn-pay" id="submitBtn">
                         <i class="fas fa-check-circle"></i> Xác nhận và Tạo đơn hàng
