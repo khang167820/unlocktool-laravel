@@ -16,10 +16,6 @@ use Illuminate\Support\Facades\Route;
 // Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Redirect service pages from blog content to homepage
-Route::get('/thue-unlocktool', fn() => redirect('/', 301));
-Route::get('/thue-tai-khoan', fn() => redirect('/', 301));
-
 // Checkout flow
 Route::post('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::post('/create-order', [CheckoutController::class, 'create'])->name('checkout.create');
