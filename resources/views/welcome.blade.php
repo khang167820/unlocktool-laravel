@@ -424,8 +424,16 @@
                                     <td><span class="badge badge-{{ $order->status === 'completed' ? 'success' : ($order->status === 'pending' ? 'warning' : 'info') }}">{{ $order->status }}</span></td>
                                     <td>
                                         @if($order->account)
+                                            @php
+                                                $orderExpired = $order->expires_at && $order->expires_at->isPast();
+                                                $canShowPw = !$order->account->is_available && !$order->account->password_changed && !$orderExpired;
+                                            @endphp
                                             <strong>{{ $order->account->username }}</strong><br>
-                                            <small class="text-muted">{{ $order->account->password }}</small>
+                                            @if($canShowPw)
+                                                <small class="text-muted">{{ $order->account->password }}</small>
+                                            @else
+                                                <small class="text-danger">Đã hết hạn</small>
+                                            @endif
                                         @else
                                             <span class="text-muted">—</span>
                                         @endif
