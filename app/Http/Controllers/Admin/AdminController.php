@@ -191,9 +191,9 @@ class AdminController extends Controller
             ")
             ->orderByRaw("
                 CASE 
-                    WHEN accounts.is_available = 1 THEN accounts.id
+                    WHEN accounts.is_available = 1 THEN COALESCE(latest_orders.latest_expires_at, accounts.created_at)
                     ELSE NULL 
-                END DESC
+                END ASC
             ")
             ->orderBy('accounts.id', 'asc')
             ->paginate(50)
