@@ -21,9 +21,14 @@ class AccountAllocationService
         try {
             DB::beginTransaction();
 
-            // Find available account with row lock (FIFO: oldest first)
+            // Find available account with longest idle time (oldest expired order first)
             $account = Account::available()
-                ->orderBy('id', 'asc')
+                ->leftJoin(
+                    DB::raw('(SELECT account_id, MAX(expires_at) as last_expires FROM orders WHERE status IN ("paid","completed") GROUP BY account_id) as lo'),
+                    'accounts.id', '=', 'lo.account_id'
+                )
+                ->orderByRaw('COALESCE(lo.last_expires, accounts.created_at) ASC')
+                ->select('accounts.*')
                 ->lockForUpdate()
                 ->first();
 
