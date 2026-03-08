@@ -303,14 +303,11 @@
                     @csrf
                     <input type="hidden" name="price_id" value="{{ $price->id }}">
                     <input type="hidden" name="recaptcha_token" id="recaptcha_token">
-                    <div style="margin-bottom: 16px;">
-                        <label style="display:block;color:#1e293b;font-size:0.85rem;margin-bottom:6px;font-weight:600;">
-                            📧 Nhập Gmail để nhận thông tin tài khoản
+                    <div style="margin-bottom: 14px;">
+                        <label style="display:block;color:#475569;font-size:0.8rem;margin-bottom:5px;font-weight:600;">
+                            📧 Gmail nhận tài khoản <span style="color:#94a3b8;font-weight:400;">(không bắt buộc)</span>
                         </label>
-                        <input type="email" name="customer_email" placeholder="example@gmail.com" style="width:100%;padding:12px 16px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;color:#1e293b;font-size:0.95rem;outline:none;transition:border-color 0.3s;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e2e8f0'">
-                        <p style="color:#64748b;font-size:0.75rem;margin:6px 0 0;line-height:1.4;">
-                            📩 Sau khi thanh toán, tài khoản UnlockTool sẽ được gửi qua email này. Không bắt buộc — bạn vẫn nhận được trên website.
-                        </p>
+                        <input type="email" name="customer_email" placeholder="Nhập email để nhận tài khoản qua Gmail" style="width:100%;padding:10px 14px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;color:#1e293b;font-size:0.9rem;outline:none;transition:border-color 0.3s;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e2e8f0'">
                     </div>
                     <button type="submit" class="co-btn-pay" id="submitBtn">
                         <i class="fas fa-check-circle"></i> Xác nhận và Tạo đơn hàng
