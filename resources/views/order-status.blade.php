@@ -656,15 +656,34 @@
                     </div>
                 </div>
                 @else
-                <div class="os-credentials" style="border-color: rgba(239,68,68,0.25); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
-                    <div class="os-cred-header" style="border-bottom-color: rgba(239,68,68,0.15);">
-                        <i class="fas fa-lock" style="color: #f87171;"></i>
-                        <span style="color: #fca5a5;">Phiên thuê đã kết thúc</span>
+                    @if($timeRemaining && !$timeRemaining['expired'])
+                    {{-- Còn thời gian nhưng admin đã đổi pass hoặc thu hồi --}}
+                    <div class="os-credentials" style="border-color: rgba(245,158,11,0.25); background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05));">
+                        <div class="os-cred-header" style="border-bottom-color: rgba(245,158,11,0.15);">
+                            <i class="fas fa-exclamation-triangle" style="color: #fbbf24;"></i>
+                            <span style="color: #fde68a;">Mật khẩu đã được thay đổi</span>
+                        </div>
+                        <div style="padding: 16px 20px;">
+                            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin: 0 0 14px; line-height: 1.6;">
+                                Mật khẩu tài khoản đã được admin thay đổi. Bạn vẫn còn thời gian thuê — vui lòng liên hệ admin để được cấp lại mật khẩu mới.
+                            </p>
+                            <a href="https://zalo.me/0777333763" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-radius: 10px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245,158,11,0.3);">
+                                <i class="fas fa-comment-dots"></i> Liên hệ Admin qua Zalo
+                            </a>
+                        </div>
                     </div>
-                    <div class="os-cred-row">
-                        <span class="os-cred-label">Thông tin tài khoản không còn khả dụng.</span>
+                    @else
+                    {{-- Hết hạn --}}
+                    <div class="os-credentials" style="border-color: rgba(239,68,68,0.25); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
+                        <div class="os-cred-header" style="border-bottom-color: rgba(239,68,68,0.15);">
+                            <i class="fas fa-lock" style="color: #f87171;"></i>
+                            <span style="color: #fca5a5;">Phiên thuê đã kết thúc</span>
+                        </div>
+                        <div class="os-cred-row">
+                            <span class="os-cred-label">Thông tin tài khoản không còn khả dụng.</span>
+                        </div>
                     </div>
-                </div>
+                    @endif
                 @endif
 
                 @if($timeRemaining && !$timeRemaining['expired'])
