@@ -22,10 +22,13 @@ class CheckoutController extends Controller
 
         $price = Price::findOrFail($request->price_id);
 
+        $accountsAvailable = \App\Models\Account::available()->count() > 0;
+
         return view('checkout', [
             'price' => $price,
             'packageName' => OrderHelper::displayPackageName($price->hours),
             'formattedPrice' => OrderHelper::formatMoney($price->price),
+            'accountsAvailable' => $accountsAvailable,
         ]);
     }
 

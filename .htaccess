@@ -2,6 +2,19 @@
     RewriteEngine On
     RewriteBase /
 
+    # Redirect test.unlocktool.us → unlocktool.us (301 permanent)
+    RewriteCond %{HTTP_HOST} ^test\.unlocktool\.us$ [NC]
+    RewriteRule ^(.*)$ https://unlocktool.us/$1 [R=301,L]
+
+    # Force HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} ^unlocktool\.us$ [NC]
+    RewriteRule ^(.*)$ https://unlocktool.us/$1 [R=301,L]
+
+    # Force non-www
+    RewriteCond %{HTTP_HOST} ^www\.unlocktool\.us$ [NC]
+    RewriteRule ^(.*)$ https://unlocktool.us/$1 [R=301,L]
+
     # If the request is for a real file or directory in public/, serve it
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]

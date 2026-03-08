@@ -258,10 +258,24 @@
                 </div>
             </div>
 
+            @if(!$accountsAvailable)
+            <div class="co-error" style="margin: 18px 20px 0; padding: 16px 18px; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 12px; display: flex; align-items: flex-start; gap: 12px;">
+                <i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-top: 2px; font-size: 1.1rem;"></i>
+                <div>
+                    <div style="font-weight: 700; color: #991b1b; margin-bottom: 4px;">Tạm hết tài khoản trống</div>
+                    <div style="font-size: 0.82rem; color: #b91c1c; line-height: 1.5;">
+                        Hiện tại tất cả tài khoản đang được thuê. Vui lòng liên hệ admin qua
+                        <a href="https://zalo.me/0777333763" style="color: #2563eb; font-weight: 700;">Zalo 0777333763</a>
+                        để được hỗ trợ hoặc quay lại sau.
+                    </div>
+                </div>
+            </div>
+            @else
             <div class="co-alert">
                 <i class="fas fa-exclamation-circle"></i>
                 <span>Kiểm tra thông tin và nhấn nút bên dưới để tiếp tục</span>
             </div>
+            @endif
 
             <div class="co-details">
                 <div class="co-detail-row">
@@ -284,6 +298,7 @@
             @endif
 
             <div class="co-actions">
+                @if($accountsAvailable)
                 <form method="post" action="{{ route('checkout.create') }}" id="checkoutForm">
                     @csrf
                     <input type="hidden" name="price_id" value="{{ $price->id }}">
@@ -292,6 +307,11 @@
                         <i class="fas fa-check-circle"></i> Xác nhận và Tạo đơn hàng
                     </button>
                 </form>
+                @else
+                <button class="co-btn-pay" disabled style="background: #9ca3af; cursor: not-allowed;">
+                    <i class="fas fa-ban"></i> Tạm hết tài khoản — Liên hệ Admin
+                </button>
+                @endif
                 <a href="{{ route('home') }}" class="co-back-link">← Quay về trang chủ</a>
             </div>
         </div>
@@ -326,17 +346,20 @@
 
 @section('scripts')
 <script>
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
-    grecaptcha.ready(function() {
-        grecaptcha.execute('{{ config("services.recaptcha.site_key") }}', {action: 'create_order'}).then(function(token) {
-            document.getElementById('recaptcha_token').value = token;
-            document.getElementById('checkoutForm').submit();
+var form = document.getElementById('checkoutForm');
+if (form) {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+        grecaptcha.ready(function() {
+            grecaptcha.execute('{{ config("services.recaptcha.site_key") }}', {action: 'create_order'}).then(function(token) {
+                document.getElementById('recaptcha_token').value = token;
+                form.submit();
+            });
         });
     });
-});
+}
 </script>
 @endsection
