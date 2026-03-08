@@ -295,6 +295,15 @@ class AdminController extends Controller
         
         DB::table('accounts')->where('id', $id)->update($updateData);
         
+        // If toggling to available, expire any active orders for this account
+        if ($newAvailable) {
+            DB::table('orders')
+                ->where('account_id', $id)
+                ->whereIn('status', ['paid', 'completed'])
+                ->where('expires_at', '>', now())
+                ->update(['expires_at' => now()]);
+        }
+        
         return redirect()->route('admin.accounts')->with('success', 'Đã cập nhật trạng thái tài khoản!');
     }
     
@@ -392,7 +401,15 @@ class AdminController extends Controller
                 'is_available' => 1,
                 'note' => null,
                 'note_date' => null,
+                'password_changed' => 0,
             ]);
+        
+        // Expire any active orders for these accounts
+        DB::table('orders')
+            ->whereIn('account_id', $ids)
+            ->whereIn('status', ['paid', 'completed'])
+            ->where('expires_at', '>', now())
+            ->update(['expires_at' => now()]);
         
         return redirect()->route('admin.accounts')->with('success', "Set {$affected} accounts to available!");
     }
