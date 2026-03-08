@@ -21,8 +21,8 @@ class BlogController extends Controller
             $query->where('category', $request->category);
         }
         
-        if ($request->filled('search')) {
-            $search = $request->search;
+        if ($request->filled('q')) {
+            $search = $request->q;
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('content', 'like', "%{$search}%");
@@ -52,18 +52,40 @@ class BlogController extends Controller
      */
     public function show($slug)
     {
-        $post = BlogPost::where('slug', $slug)->where('status', 'published')->firstOrFail();
+        $post = BlogPost::where('slug', $slug)->where('status', 'published')->first();
+        
+        if (!$post) {
+            // Try partial slug match
+            $partialPost = BlogPost::where('slug', 'LIKE', "%{$slug}%")
+                ->where('status', 'published')
+                ->first();
+            if ($partialPost) {
+                return redirect()->route('blog.show', $partialPost->slug, 301);
+            }
+            abort(404);
+        }
         
         // Increment views
         DB::table('blog_posts')->where('id', $post->id)->increment('views');
         
-        // Related posts (same category)
-        $relatedPosts = BlogPost::published()
+        // Related posts: 4 same-category + 2 cross-category popular
+        $sameCategoryPosts = BlogPost::published()
             ->where('id', '!=', $post->id)
             ->where('category', $post->category)
             ->orderBy('views', 'desc')
             ->limit(4)
             ->get();
+        
+        $sameCategoryIds = $sameCategoryPosts->pluck('id')->toArray();
+        $sameCategoryIds[] = $post->id;
+        
+        $crossCategoryPosts = BlogPost::published()
+            ->whereNotIn('id', $sameCategoryIds)
+            ->orderBy('views', 'desc')
+            ->limit(2)
+            ->get();
+        
+        $relatedPosts = $sameCategoryPosts->merge($crossCategoryPosts);
         
         // Popular posts
         $popularPosts = BlogPost::published()
@@ -72,11 +94,20 @@ class BlogController extends Controller
             ->limit(5)
             ->get();
         
-        // Prev/Next
-        $prevPost = BlogPost::published()->where('id', '<', $post->id)->orderBy('id', 'desc')->first();
-        $nextPost = BlogPost::published()->where('id', '>', $post->id)->orderBy('id', 'asc')->first();
+        // Prev/Next (by date)
+        $prevPost = BlogPost::published()
+            ->where('created_at', '<', $post->created_at)
+            ->orderBy('created_at', 'desc')
+            ->select('slug', 'title')
+            ->first();
         
-        // ===== Auto-SEO Processing (from SeoAnalyzerService) =====
+        $nextPost = BlogPost::published()
+            ->where('created_at', '>', $post->created_at)
+            ->orderBy('created_at', 'asc')
+            ->select('slug', 'title')
+            ->first();
+        
+        // ===== Auto-SEO Processing =====
         $seoAnalyzer = new \App\Services\SeoAnalyzerService();
         
         // Generate TOC from content
@@ -104,19 +135,6 @@ class BlogController extends Controller
         // Auto internal linking (max 3 links)
         $post->content = $seoAnalyzer->insertInternalLinks($post->content, $post->id, 3);
         
-        // Rating data
-        $ratingCount = 0;
-        $ratingAvg = 0;
-        $hasRated = false;
-        try {
-            $ratingCount = DB::table('blog_ratings')->where('post_id', $post->id)->count();
-            $ratingAvg = round(DB::table('blog_ratings')->where('post_id', $post->id)->avg('rating') ?? 0, 1);
-            $hasRated = DB::table('blog_ratings')
-                ->where('post_id', $post->id)
-                ->where('ip_address', request()->ip())
-                ->exists();
-        } catch (\Exception $e) {}
-        
         // FAQ & HowTo Schema
         $faqSchema = null;
         $howToSchema = null;
@@ -136,10 +154,35 @@ class BlogController extends Controller
             }
         } catch (\Exception $e) {}
         
+        // Rating data
+        $ratingCount = 0;
+        $ratingAvg = 0;
+        $hasRated = false;
+        try {
+            $ratingData = DB::table('blog_ratings')
+                ->where('blog_post_id', $post->id)
+                ->selectRaw('ROUND(AVG(rating), 1) as avg_rating, COUNT(*) as count')
+                ->first();
+            $ratingAvg = $ratingData->avg_rating ?: 0;
+            $ratingCount = $ratingData->count ?: 0;
+            $hasRated = DB::table('blog_ratings')
+                ->where('blog_post_id', $post->id)
+                ->where('ip_address', request()->ip())
+                ->exists();
+        } catch (\Exception $e) {}
+        
+        // Reading time
+        $wordCount = str_word_count(strip_tags($post->content));
+        $readingTime = max(1, ceil($wordCount / 200));
+        
+        // Structured Data Test URL
+        $structuredDataTestUrl = 'https://search.google.com/test/rich-results?url=' . urlencode(url()->current());
+        
         return view('blog.show', compact(
             'post', 'relatedPosts', 'popularPosts', 'prevPost', 'nextPost',
             'toc', 'ratingCount', 'ratingAvg', 'hasRated',
-            'faqSchema', 'howToSchema', 'videoSchema'
+            'faqSchema', 'howToSchema', 'videoSchema',
+            'readingTime', 'structuredDataTestUrl'
         ));
     }
     
