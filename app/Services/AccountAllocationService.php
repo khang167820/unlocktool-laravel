@@ -72,6 +72,17 @@ class AccountAllocationService
                 Log::error("Telegram failed for order {$order->tracking_code}: " . $e->getMessage());
             }
 
+            // Send email to customer if email provided (non-blocking)
+            if (!empty($order->customer_email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($order->customer_email)
+                        ->send(new \App\Mail\OrderCompleted($order));
+                    Log::info("Email sent to {$order->customer_email} for order {$order->tracking_code}");
+                } catch (\Exception $e) {
+                    Log::error("Email failed for order {$order->tracking_code}: " . $e->getMessage());
+                }
+            }
+
             return [
                 'success' => true,
                 'account' => $account,

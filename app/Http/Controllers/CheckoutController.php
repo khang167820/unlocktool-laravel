@@ -40,6 +40,7 @@ class CheckoutController extends Controller
         $request->validate([
             'price_id' => 'required|integer',
             'recaptcha_token' => 'required|string',
+            'customer_email' => 'nullable|email|max:255',
         ]);
 
         $ipAddress = OrderHelper::getClientIP();
@@ -85,6 +86,7 @@ class CheckoutController extends Controller
             'status' => 'pending',
             'created_at' => now(),
             'ip_address' => $ipAddress,
+            'customer_email' => $request->input('customer_email'),
         ]);
 
         DB::table('orders')->where('id', $orderId)->update(['order_code' => $orderId]);

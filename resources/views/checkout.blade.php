@@ -303,6 +303,12 @@
                     @csrf
                     <input type="hidden" name="price_id" value="{{ $price->id }}">
                     <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block;color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:6px;font-weight:600;">
+                            <i class="fas fa-envelope" style="margin-right:4px;"></i> Gmail nhận tài khoản <span style="color:rgba(255,255,255,0.4);font-weight:400;">(không bắt buộc)</span>
+                        </label>
+                        <input type="email" name="customer_email" placeholder="example@gmail.com" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;transition:border-color 0.3s;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+                    </div>
                     <button type="submit" class="co-btn-pay" id="submitBtn">
                         <i class="fas fa-check-circle"></i> Xác nhận và Tạo đơn hàng
                     </button>

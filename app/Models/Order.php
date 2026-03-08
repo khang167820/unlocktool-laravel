@@ -13,7 +13,7 @@ class Order extends Model
     protected $fillable = [
         'tracking_code', 'order_code', 'hours', 'amount', 'status',
         'created_at', 'ip_address', 'account_id',
-        'expires_at', 'paid_at',
+        'expires_at', 'paid_at', 'customer_email',
     ];
 
     protected $casts = [
