@@ -406,7 +406,7 @@
 
 {{-- History Modal --}}
 <div class="modal fade" id="historyModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document" style="max-width: 950px;">
         <div class="modal-content">
             <div class="modal-header bg-warning"><h5 class="modal-title">Lịch sử thuê tài khoản (30 ngày)</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
             <div class="modal-body">
