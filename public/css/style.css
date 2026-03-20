@@ -673,27 +673,36 @@ body {
     padding: 36px 20px 16px;
     max-width: 1200px;
     margin: 0 auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.service-strip::-webkit-scrollbar {
+    height: 0;
+    display: none;
 }
 
 .service-strip-inner {
     display: flex;
     justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
+    gap: 12px;
+    flex-wrap: nowrap;
+    min-width: max-content;
 }
 
 .service-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 20px 16px;
+    gap: 8px;
+    padding: 16px 10px;
     background: var(--white);
     border: 2px solid var(--gray-300);
     border-radius: var(--radius-md);
     cursor: pointer;
     text-decoration: none !important;
-    width: 120px;
+    width: 108px;
+    min-width: 108px;
     transition: all 0.25s ease;
     position: relative;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -723,8 +732,8 @@ body {
 }
 
 .service-icon {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     border-radius: var(--radius-md);
     background: var(--gray-50);
     display: flex;
@@ -739,13 +748,13 @@ body {
 }
 
 .service-icon img {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     object-fit: contain;
 }
 
 .service-card span {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--gray-900);
     text-align: center;
