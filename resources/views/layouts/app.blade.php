@@ -47,6 +47,7 @@
             </a>
             <div class="header-right-actions">
                 {{-- <a href="/blog" class="header-history-btn" style="text-decoration:none;"><i class="fas fa-newspaper"></i> <span>Blog</span></a> --}}
+                <a href="https://thuetaikhoan.com.vn/off-icloud" target="_blank" class="header-history-btn" style="text-decoration:none;background:linear-gradient(135deg,#0071e3,#005bb5);color:#fff;border:none;"><i class="fab fa-apple"></i> <span>Mở khóa iCloud</span></a>
                 <button class="header-history-btn" type="button" data-toggle="modal" data-target="#historyModal"><i class="fas fa-clock-rotate-left"></i> <span>Lịch sử thuê</span></button>
                 <div class="header-search-form">
                     <input type="text" id="headerTransferContent" class="header-search-input" placeholder="Nội dung CK hoặc mã đơn">
@@ -66,6 +67,7 @@
             <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Mở menu"><i class="fas fa-bars"></i></button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
+            <a href="https://thuetaikhoan.com.vn/off-icloud" target="_blank" style="display:block;background:linear-gradient(135deg,#0071e3,#005bb5);color:#fff;text-align:center;border-radius:8px;padding:10px;margin-bottom:8px;text-decoration:none;width:100%;font-weight:700;font-size:0.95rem;"><i class="fab fa-apple"></i> Mở khóa iCloud</a>
             <button class="mobile-history-btn" type="button" data-toggle="modal" data-target="#historyModal" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;text-align:center;border-radius:8px;padding:10px;margin-bottom:8px;border:none;width:100%;font-weight:700;font-size:0.95rem;"><i class="fas fa-clock-rotate-left"></i> Lịch sử thuê</button>
             <div class="mobile-search-form">
                 <input type="text" id="mobileTransferContent" placeholder="Nội dung CK hoặc mã đơn">
