@@ -280,8 +280,11 @@ class AdminController extends Controller
             $newAvailable = !$account->is_available;
         }
         
+        // Check note: use form value if sent from edit page, otherwise use DB value
+        $currentNote = request()->has('note') ? request()->input('note') : $account->note;
+        
         // Block switching to available if account still has a note
-        if ($newAvailable && !empty($account->note)) {
+        if ($newAvailable && !empty($currentNote)) {
             return redirect()->route('admin.accounts')->with('error', 'Phải xóa ghi chú trước khi chuyển sang Chờ thuê!');
         }
         
