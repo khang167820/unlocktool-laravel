@@ -161,12 +161,13 @@ class AdminController extends Controller
             ->groupBy('account_id');
 
         // Sắp xếp theo thứ tự:
-        // 1. Đang thuê - Hết hạn (expired, no note + with note)
-        // 2. Đang thuê - Còn nhiều thời gian (most time remaining first)
+        // 1. Đang thuê - Hết hạn - CHƯA ghi chú (cần xử lý gấp)
+        // 2. Đang thuê - Còn thời gian (không ghi chú)
         // 3. Đang thuê - Còn thời gian + có ghi chú
-        // 4. Đang thuê - Có ghi chú (no active order)
-        // 5. Chờ thuê - Vừa thêm mới (newest ID first)
-        // 6. Chờ thuê - Chờ lâu rồi → Chờ ít (oldest ID first among rest)
+        // 4. Đang thuê - Hết hạn - ĐÃ ghi chú (đã biết rồi)
+        // 5. Đang thuê - Có ghi chú (không có order)
+        // 6. Đang thuê - Khác
+        // 7. Chờ thuê
         $accounts = DB::table('accounts')
             ->leftJoinSub($latestOrders, 'latest_orders', function ($join) {
                 $join->on('accounts.id', '=', 'latest_orders.account_id');
@@ -174,12 +175,13 @@ class AdminController extends Controller
             ->select('accounts.*', 'latest_orders.latest_expires_at as sorting_expires_at')
             ->orderByRaw("
                 CASE 
-                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at < NOW() THEN 1
+                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at < NOW() AND (accounts.note IS NULL OR accounts.note = '') THEN 1
                     WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at >= NOW() AND (accounts.note IS NULL OR accounts.note = '') THEN 2
                     WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at >= NOW() AND accounts.note IS NOT NULL AND accounts.note != '' THEN 3
-                    WHEN accounts.is_available = 0 AND accounts.note IS NOT NULL AND accounts.note != '' THEN 4
-                    WHEN accounts.is_available = 0 THEN 5
-                    ELSE 6
+                    WHEN accounts.is_available = 0 AND latest_orders.latest_expires_at IS NOT NULL AND latest_orders.latest_expires_at < NOW() AND accounts.note IS NOT NULL AND accounts.note != '' THEN 4
+                    WHEN accounts.is_available = 0 AND accounts.note IS NOT NULL AND accounts.note != '' THEN 5
+                    WHEN accounts.is_available = 0 THEN 6
+                    ELSE 7
                 END ASC
             ")
             ->orderByRaw("
@@ -276,6 +278,11 @@ class AdminController extends Controller
             $newAvailable = false;
         } else {
             $newAvailable = !$account->is_available;
+        }
+        
+        // Block switching to available if account still has a note
+        if ($newAvailable && !empty($account->note)) {
+            return redirect()->route('admin.accounts')->with('error', 'Phải xóa ghi chú trước khi chuyển sang Chờ thuê!');
         }
         
         $updateData = ['is_available' => $newAvailable ? 1 : 0];
@@ -395,8 +402,28 @@ class AdminController extends Controller
             return redirect()->route('admin.accounts')->with('error', 'No accounts selected!');
         }
         
-        $affected = DB::table('accounts')
+        // Filter out accounts that still have notes
+        $accountsWithNotes = DB::table('accounts')
             ->whereIn('id', $ids)
+            ->whereNotNull('note')
+            ->where('note', '!=', '')
+            ->pluck('username')
+            ->toArray();
+        
+        $idsWithoutNotes = DB::table('accounts')
+            ->whereIn('id', $ids)
+            ->where(function($q) {
+                $q->whereNull('note')->orWhere('note', '');
+            })
+            ->pluck('id')
+            ->toArray();
+        
+        if (empty($idsWithoutNotes) && !empty($accountsWithNotes)) {
+            return redirect()->route('admin.accounts')->with('error', 'Tất cả tài khoản đã chọn đều có ghi chú. Phải xóa ghi chú trước khi chuyển sang Chờ thuê!');
+        }
+        
+        $affected = DB::table('accounts')
+            ->whereIn('id', $idsWithoutNotes)
             ->update([
                 'is_available' => 1,
                 'note' => null,
@@ -406,12 +433,18 @@ class AdminController extends Controller
         
         // Expire any active orders for these accounts
         DB::table('orders')
-            ->whereIn('account_id', $ids)
+            ->whereIn('account_id', $idsWithoutNotes)
             ->whereIn('status', ['paid', 'completed'])
             ->where('expires_at', '>', now())
             ->update(['expires_at' => now()]);
         
-        return redirect()->route('admin.accounts')->with('success', "Set {$affected} accounts to available!");
+        $message = "Đã chuyển {$affected} tài khoản sang Chờ thuê!";
+        if (!empty($accountsWithNotes)) {
+            $skipped = implode(', ', $accountsWithNotes);
+            return redirect()->route('admin.accounts')->with('warning', "{$message} Bỏ qua (có ghi chú): {$skipped}");
+        }
+        
+        return redirect()->route('admin.accounts')->with('success', $message);
     }
     
     // ==================== PRICES ====================

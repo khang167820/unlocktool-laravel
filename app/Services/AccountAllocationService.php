@@ -128,18 +128,23 @@ class AccountAllocationService
                     if ($account && !$account->is_available) {
                         $order->update(['status' => 'expired']);
 
-                        // Only release if no admin note
-                        if (empty($account->note)) {
+                        // Only auto-release if: no note AND password already changed
+                        if (empty($account->note) && $account->password_changed) {
                             $account->update([
                                 'is_available' => true,
                                 'rental_expires_at' => null,
                                 'rental_order_code' => null,
+                                'password_changed' => 0,
                             ]);
                         }
 
+                        $reason = [];
+                        if (!empty($account->note)) $reason[] = 'has note';
+                        if (!$account->password_changed) $reason[] = 'password not changed';
+                        $kept = !empty($reason) ? ' (kept locked: ' . implode(', ', $reason) . ')' : '';
+                        
                         $count++;
-                        Log::info("Reclaimed account: #{$account->id} from order: {$order->tracking_code}" .
-                            (!empty($account->note) ? ' (kept locked due to note)' : ''));
+                        Log::info("Reclaimed account: #{$account->id} from order: {$order->tracking_code}{$kept}");
                     }
 
                     DB::commit();
