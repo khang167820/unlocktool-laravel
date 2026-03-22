@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Tự động thu hồi tài khoản hết hạn mỗi 5 phút
-Schedule::command('accounts:reclaim')->everyFiveMinutes();
+Schedule::command('accounts:reclaim')->everyMinute();
