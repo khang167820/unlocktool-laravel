@@ -126,25 +126,25 @@ class AccountAllocationService
                         ->first();
 
                     if ($account && !$account->is_available) {
-                        $order->update(['status' => 'expired']);
-
                         // Only auto-release if: no note AND password already changed
                         if (empty($account->note) && $account->password_changed) {
+                            // All conditions met → release account and expire order
+                            $order->update(['status' => 'expired']);
                             $account->update([
                                 'is_available' => true,
                                 'rental_expires_at' => null,
                                 'rental_order_code' => null,
                                 'password_changed' => 0,
                             ]);
+                            $count++;
+                            Log::info("Reclaimed account: #{$account->id} from order: {$order->tracking_code}");
+                        } else {
+                            // Conditions not met → keep order as 'completed', don't release
+                            $reason = [];
+                            if (!empty($account->note)) $reason[] = 'has note';
+                            if (!$account->password_changed) $reason[] = 'password not changed';
+                            Log::info("Skipped reclaim for account #{$account->id}: " . implode(', ', $reason));
                         }
-
-                        $reason = [];
-                        if (!empty($account->note)) $reason[] = 'has note';
-                        if (!$account->password_changed) $reason[] = 'password not changed';
-                        $kept = !empty($reason) ? ' (kept locked: ' . implode(', ', $reason) . ')' : '';
-                        
-                        $count++;
-                        Log::info("Reclaimed account: #{$account->id} from order: {$order->tracking_code}{$kept}");
                     }
 
                     DB::commit();
