@@ -41,8 +41,7 @@
                 <div class="input-group">
                     <input type="text" name="password" id="password" class="form-input" 
                            value="{{ $account->password }}">
-                    <button type="button" class="btn-suggest" onclick="suggestPassword(this)">Đề xuất</button>
-                    <button type="button" class="btn-copy" onclick="copyText('password', this)">Copy MK</button>
+                    <button type="button" class="btn-suggest" onclick="suggestAndCopy(this)">Đề xuất & Copy</button>
                 </div>
             </div>
         </div>
@@ -147,13 +146,14 @@ function copyText(inputId, btn) {
     }, 1500);
 }
 
-function suggestPassword(btn) {
+function suggestAndCopy(btn) {
     const randomNum = Math.floor(Math.random() * 900) + 100;
     const password = 'Unlock' + randomNum;
     document.getElementById('password').value = password;
+    navigator.clipboard.writeText(password);
     
     const originalText = btn.innerText;
-    btn.innerText = '✅';
+    btn.innerText = '✅ Đã copy';
     btn.style.background = '#10b981';
     
     setTimeout(() => {
