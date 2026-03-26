@@ -1,9 +1,7 @@
 /* ==========================================================================
-   UnlockTool.us — Premium UI Design System
+   UnlockTool.us — Premium UI Design System v6.0
    Rich, vibrant, multi-color. Fast & SEO-optimized (no blur effects).
    ========================================================================== */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 /* === DESIGN TOKENS === */
 :root {
@@ -983,23 +981,31 @@ body {
 }
 
 .btn-blink {
-    animation: greenPulse 2s ease-in-out infinite;
     font-weight: 700;
     position: relative;
+    animation: greenPulse 2s ease-in-out infinite;
+    will-change: transform;
+}
+
+.btn-blink::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 2px solid rgba(67, 160, 71, 0.3);
+    animation: greenPulseRing 2s ease-in-out infinite;
+    will-change: transform, opacity;
+    pointer-events: none;
 }
 
 @keyframes greenPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
 
-    0%,
-    100% {
-        box-shadow: 0 2px 8px rgba(67, 160, 71, 0.3);
-        transform: scale(1);
-    }
-
-    50% {
-        box-shadow: 0 4px 24px rgba(67, 160, 71, 0.6), 0 0 0 4px rgba(67, 160, 71, 0.15);
-        transform: scale(1.05);
-    }
+@keyframes greenPulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 0; }
 }
 
 .copy-btn {
@@ -1036,6 +1042,7 @@ body {
     bottom: 24px;
     right: 24px;
     z-index: 999;
+    will-change: transform;
 }
 
 /* === Main Button === */
@@ -1099,6 +1106,7 @@ body {
     border: 2px solid rgba(0, 104, 255, 0.5);
     animation: fabPulse 2s ease-out infinite;
     pointer-events: none;
+    will-change: transform, opacity;
 }
 
 .fab-pulse-ring-2 {
@@ -1170,9 +1178,10 @@ body {
     text-decoration: none !important;
     color: #1f2937 !important;
     border-bottom: 1px solid #f3f4f6;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
     opacity: 0;
     transform: translateX(20px);
+    will-change: transform, opacity;
 }
 
 .fab-contact-wrapper.open .fab-menu-item {
@@ -2279,18 +2288,12 @@ body {
     color: var(--accent);
     margin-left: 10px;
     animation: blink 1.5s infinite;
+    will-change: opacity;
 }
 
 @keyframes blink {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.3;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
 
 .alert-info {
