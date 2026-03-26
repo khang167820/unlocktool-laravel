@@ -28,51 +28,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    {{-- Critical CSS: Inline above-the-fold styles for instant FCP --}}
-    <style>
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        :root{--primary:#2196F3;--primary-light:#42a5f5;--primary-dark:#1976D2;--primary-50:#e3f2fd;--accent:#f59e0b;--accent-light:#fbbf24;--accent-dark:#d97706;--teal:#26a69a;--teal-light:#4db6ac;--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-full:9999px;--shadow-sm:0 1px 2px rgba(0,0,0,0.05)}
-        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:var(--white)!important;color:var(--gray-900)!important;font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-        .main-header{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 24px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-        .header-container{width:100%}
-        .header-row-1{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
-        .logo-section{display:flex;align-items:center;gap:12px;text-decoration:none!important;flex-shrink:0}
-        .logo-icon{width:40px;height:40px;border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0}
-        .logo-icon img{width:40px;height:40px;object-fit:cover}
-        .logo-text{display:flex;flex-direction:column}
-        .logo-title{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0;line-height:1.2}
-        .logo-subtitle{font-size:11px;color:var(--gray-500);margin:0;font-weight:500}
-        .header-right-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-        .header-history-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-full);border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
-        .mobile-menu-toggle{display:none;background:var(--white);border:1px solid var(--gray-300);color:var(--gray-700);padding:8px 12px;border-radius:var(--radius-sm);font-size:1.1rem;cursor:pointer}
-        .mobile-menu{display:none}
-        @media(max-width:992px){.header-right-actions{display:none}.mobile-menu-toggle{display:block}}
-        .hero-banner{position:relative;padding:48px 24px 36px;text-align:center;background:linear-gradient(135deg,#0e0e1a 0%,#1a1a2e 40%,#2d2d44 70%,#1a1a2e 100%);overflow:hidden}
-        .hero-particles{display:none}
-        .hero-content{max-width:700px;margin:0 auto;position:relative;z-index:1}
-        .hero-title{font-size:clamp(28px,4.5vw,42px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:12px;letter-spacing:-0.5px}
-        .hero-highlight{background:linear-gradient(135deg,var(--accent-light),#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .hero-subtitle{font-size:14px;color:rgba(255,255,255,0.75);max-width:560px;margin:0 auto 20px;line-height:1.6}
-        .hero-search{display:flex;max-width:520px;margin:0 auto 24px;border-radius:var(--radius-full);overflow:hidden;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2)}
-        .hero-search-input{flex:1;padding:14px 20px;border:none;background:transparent;color:#fff;font-size:15px;outline:none}
-        .hero-search-input::placeholder{color:rgba(255,255,255,0.5)}
-        .hero-search-btn{padding:14px 28px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}
-        .hero-stats{display:flex;justify-content:center;gap:48px}
-        .hero-stat-number{font-size:1.8rem;font-weight:900;color:#fff}
-        .hero-stat-label{font-size:0.72rem;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;font-weight:700}
-        @media(max-width:768px){.hero-banner{padding:48px 16px 40px}.hero-title{font-size:1.8rem}.hero-stats{gap:24px}.hero-stat-number{font-size:1.5rem}.hero-search{flex-direction:column;border-radius:var(--radius-lg)}.hero-search-btn{border-radius:0}.main-header{padding:0 12px}}
-        @media(max-width:480px){.hero-title{font-size:1.5rem}.hero-subtitle{font-size:0.88rem}.hero-stats{gap:16px}.hero-stat-number{font-size:1.2rem}.main-header{padding:0 12px}}
-    </style>
+    {{-- Layout-critical CSS: Load synchronously to prevent CLS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=6.1">
 
-    {{-- Non-critical CSS: Load async with preload pattern --}}
+    {{-- Non-layout CSS: Defer fonts & icons (no CLS impact) --}}
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"></noscript>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=6.0" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=6.0"></noscript>
     @yield('schema')
     @yield('head')
 </head>
@@ -210,9 +174,9 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" defer></script>
-<script src="{{ asset('js/app.js') }}?v=6.0" defer></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/app.js') }}?v=6.1"></script>
 @yield('scripts')
 </body>
 </html>

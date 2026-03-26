@@ -108,13 +108,7 @@ function createVirtualRentingAccounts() {
 }
 
 // ===== jQuery-dependent functionality =====
-// Wrap in a function that waits for jQuery to be available (deferred loading)
-function initJQueryFeatures() {
-    if (typeof jQuery === 'undefined') {
-        setTimeout(initJQueryFeatures, 50);
-        return;
-    }
-    var $ = jQuery;
+$(document).ready(function () {
     createVirtualRentingAccounts();
     setTimeout(updateCountdowns, 100);
 
@@ -182,11 +176,4 @@ function initJQueryFeatures() {
     }
     $(document).on('click', '#heroSearchBtn', doHeroSearch);
     $(document).on('keypress', '#heroSearchInput', function (e) { if (e.which === 13) doHeroSearch(); });
-}
-
-// Start initialization when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initJQueryFeatures);
-} else {
-    initJQueryFeatures();
-}
+});
