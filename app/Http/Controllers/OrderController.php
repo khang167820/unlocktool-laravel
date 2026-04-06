@@ -56,11 +56,21 @@ class OrderController extends Controller
             }
         }
 
+        // Rental period dates
+        $rentalStart = $order->paid_at 
+            ? $order->paid_at->setTimezone('Asia/Ho_Chi_Minh')->format('H:i - d/m/Y') 
+            : null;
+        $rentalEnd = $order->expires_at 
+            ? $order->expires_at->setTimezone('Asia/Ho_Chi_Minh')->format('H:i - d/m/Y') 
+            : null;
+
         return view('order-status', [
             'order' => $order,
             'packageName' => OrderHelper::displayPackageName($order->hours),
             'formattedAmount' => OrderHelper::formatMoney($order->amount),
             'timeRemaining' => $timeRemaining,
+            'rentalStart' => $rentalStart,
+            'rentalEnd' => $rentalEnd,
         ]);
     }
 

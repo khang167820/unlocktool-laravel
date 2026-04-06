@@ -220,6 +220,53 @@
     font-weight: 800;
 }
 
+/* ===== RENTAL PERIOD ===== */
+.os-rental-period {
+    margin: 6px 20px 16px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+}
+.os-rental-period::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent);
+}
+.os-rental-row {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(99,102,241,0.1);
+}
+.os-rental-row:last-child { border-bottom: none; }
+.os-rental-label {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.os-rental-label .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.os-rental-label .dot.start { background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.4); }
+.os-rental-label .dot.end { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.4); }
+.os-rental-value {
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    letter-spacing: 0.5px;
+}
+
 /* ===== CREDENTIALS (PREMIUM) ===== */
 .os-credentials {
     margin: 6px 20px 16px;
@@ -560,7 +607,7 @@
     .os-step-line { width: 28px; }
     .os-step-dot { width: 42px; height: 42px; font-size: 0.85rem; }
     .os-card-header, .os-info, .os-actions { padding-left: 16px; padding-right: 16px; }
-    .os-credentials, .os-countdown, .os-waiting, .os-pending { margin-left: 16px; margin-right: 16px; }
+    .os-credentials, .os-countdown, .os-waiting, .os-pending, .os-rental-period { margin-left: 16px; margin-right: 16px; }
     .os-actions { flex-direction: column; }
     .os-countdown-value { font-size: 1.15rem; }
 }
@@ -628,6 +675,19 @@
                     <div class="os-info-value">{{ $formattedAmount }}</div>
                 </div>
             </div>
+
+            @if($rentalStart && $rentalEnd)
+            <div class="os-rental-period">
+                <div class="os-rental-row">
+                    <span class="os-rental-label"><span class="dot start"></span> Bắt đầu thuê</span>
+                    <span class="os-rental-value">{{ $rentalStart }}</span>
+                </div>
+                <div class="os-rental-row">
+                    <span class="os-rental-label"><span class="dot end"></span> Hết hạn</span>
+                    <span class="os-rental-value">{{ $rentalEnd }}</span>
+                </div>
+            </div>
+            @endif
 
             @if(in_array($order->status, ['paid', 'completed']) && $order->account)
                 @php
