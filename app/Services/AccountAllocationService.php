@@ -16,7 +16,7 @@ class AccountAllocationService
      * @param Order $order The order to allocate account for
      * @return array{success: bool, account: ?Account, error: ?string}
      */
-    public static function allocateAccount(Order $order): array
+    public static function allocateAccount(Order $order, int $retryCount = 0): array
     {
         try {
             DB::beginTransaction();
@@ -40,6 +40,23 @@ class AccountAllocationService
                     'account' => null,
                     'error' => 'Không còn tài khoản trống. Vui lòng liên hệ admin.',
                 ];
+            }
+
+            // Safety: double-check no active rental exists for this account
+            $hasActiveRental = Order::where('account_id', $account->id)
+                ->whereIn('status', ['paid', 'completed'])
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '>', now())
+                ->exists();
+
+            if ($hasActiveRental) {
+                $account->update(['is_available' => false]);
+                DB::commit();
+                Log::warning("Account #{$account->id} has active rental but was marked available. Fixed.");
+                if ($retryCount < 3) {
+                    return static::allocateAccount($order, $retryCount + 1);
+                }
+                return ['success' => false, 'account' => null, 'error' => 'Không tìm được tài khoản trống.'];
             }
 
             // Calculate expiry time
@@ -111,25 +128,42 @@ class AccountAllocationService
         $count = 0;
 
         try {
-            $expiredOrders = Order::where('status', 'completed')
-                ->whereNotNull('account_id')
-                ->whereNotNull('expires_at')
-                ->where('expires_at', '<', now())
-                ->get();
+            $rentingAccounts = Account::where('is_available', false)->get();
 
-            foreach ($expiredOrders as $order) {
+            foreach ($rentingAccounts as $account) {
                 try {
+                    // Skip if account has ANY active (non-expired) order
+                    $hasActiveOrder = Order::where('account_id', $account->id)
+                        ->whereIn('status', ['paid', 'completed'])
+                        ->whereNotNull('expires_at')
+                        ->where('expires_at', '>', now())
+                        ->exists();
+
+                    if ($hasActiveOrder) continue;
+
+                    // Check at least one expired order exists
+                    $hasExpiredOrder = Order::where('account_id', $account->id)
+                        ->whereIn('status', ['paid', 'completed'])
+                        ->whereNotNull('expires_at')
+                        ->where('expires_at', '<', now())
+                        ->exists();
+
+                    if (!$hasExpiredOrder) continue;
+
                     DB::beginTransaction();
 
-                    $account = Account::where('id', $order->account_id)
+                    $account = Account::where('id', $account->id)
                         ->lockForUpdate()
                         ->first();
 
                     if ($account && !$account->is_available) {
-                        // Only auto-release if: no note AND password already changed
                         if (empty($account->note) && $account->password_changed) {
-                            // All conditions met → release account and expire order
-                            $order->update(['status' => 'expired']);
+                            Order::where('account_id', $account->id)
+                                ->where('status', 'completed')
+                                ->whereNotNull('expires_at')
+                                ->where('expires_at', '<', now())
+                                ->update(['status' => 'expired']);
+
                             $account->update([
                                 'is_available' => true,
                                 'rental_expires_at' => null,
@@ -137,9 +171,8 @@ class AccountAllocationService
                                 'password_changed' => 0,
                             ]);
                             $count++;
-                            Log::info("Reclaimed account: #{$account->id} from order: {$order->tracking_code}");
+                            Log::info("Reclaimed account: #{$account->id} ({$account->username})");
                         } else {
-                            // Conditions not met → keep order as 'completed', don't release
                             $reason = [];
                             if (!empty($account->note)) $reason[] = 'has note';
                             if (!$account->password_changed) $reason[] = 'password not changed';
@@ -150,7 +183,7 @@ class AccountAllocationService
                     DB::commit();
                 } catch (\Exception $e) {
                     DB::rollBack();
-                    Log::error("Failed to reclaim account for order {$order->tracking_code}: " . $e->getMessage());
+                    Log::error("Failed to reclaim account #{$account->id}: " . $e->getMessage());
                 }
             }
 
