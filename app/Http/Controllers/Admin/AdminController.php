@@ -150,6 +150,45 @@ class AdminController extends Controller
         return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
     }
     
+    /**
+     * Reissue password for an order's account.
+     */
+    public function reissueOrderPassword(Request $request, $id)
+    {
+        $order = Order::with('account')->findOrFail($id);
+        
+        if (!$order->account) {
+            return back()->with('error', 'Đơn hàng chưa được cấp tài khoản!');
+        }
+        
+        $request->validate([
+            'new_password' => 'required|string|min:1',
+            'extend_hours' => 'nullable|integer|min:0',
+        ]);
+        
+        DB::table('accounts')->where('id', $order->account->id)->update([
+            'password' => $request->new_password,
+            'password_changed' => 0,
+            'is_available' => 0,
+        ]);
+        
+        $extendHours = (int) $request->input('extend_hours', 0);
+        if ($extendHours > 0) {
+            $currentExpiry = $order->expires_at;
+            $baseTime = ($currentExpiry && $currentExpiry->isFuture()) ? $currentExpiry : now();
+            $newExpiry = $baseTime->copy()->addHours($extendHours);
+            $order->expires_at = $newExpiry;
+            $order->save();
+        }
+        
+        Log::info("Admin reissued password for order #{$order->tracking_code}, account: {$order->account->username}, extend: {$extendHours}h");
+        
+        $msg = "Đã cấp lại MK cho {$order->tracking_code} (TK: {$order->account->username})";
+        if ($extendHours > 0) $msg .= " + gia hạn {$extendHours}h";
+        
+        return back()->with('success', $msg);
+    }
+    
     // ==================== ACCOUNTS ====================
     
     public function accounts(Request $request)

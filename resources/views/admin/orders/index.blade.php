@@ -82,15 +82,22 @@
                     @endif
                 </td>
                 <td>
-                    <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" style="display: inline;">
-                        @csrf
-                        <select name="status" class="form-select" style="width: 130px; font-size: 12px; padding: 6px 8px;" onchange="this.form.submit()">
-                            <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                            <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                            <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Hoàn thành</option>
-                            <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                        </select>
-                    </form>
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                        <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <select name="status" class="form-select" style="width: 130px; font-size: 12px; padding: 6px 8px;" onchange="this.form.submit()">
+                                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                                <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                            </select>
+                        </form>
+                        @if($order->account && in_array($order->status, ['paid', 'completed']))
+                        <button type="button" onclick="openReissueModal({{ $order->id }}, '{{ $order->tracking_code }}', '{{ $order->account->username }}', '{{ $order->account->password }}')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;" title="Cấp lại mật khẩu">
+                            🔄 Cấp MK
+                        </button>
+                        @endif
+                    </div>
                 </td>
             </tr>
             @empty
@@ -106,4 +113,56 @@
 @if($orders->hasPages())
 <div class="pagination">{{ $orders->links() }}</div>
 @endif
+
+{{-- Reissue Password Modal --}}
+<div id="reissue-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+    <div style="background: var(--card-bg, #1e293b); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px; max-width: 440px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #f59e0b;">🔄 Cấp lại mật khẩu</h3>
+            <button onclick="closeReissueModal()" style="background: none; border: none; color: rgba(255,255,255,0.5); font-size: 1.3rem; cursor: pointer;">&times;</button>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
+            <div style="font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 4px;">Đơn hàng</div>
+            <div style="font-weight: 700; color: #fff;" id="reissue-order-code"></div>
+            <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;" id="reissue-account-name"></div>
+        </div>
+        <form id="reissue-form" method="POST">
+            @csrf
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.82rem; color: rgba(255,255,255,0.6); font-weight: 600; margin-bottom: 6px;">Mật khẩu mới <span style="color: #ef4444;">*</span></label>
+                <input type="text" name="new_password" id="reissue-password" required class="form-input" style="width: 100%; font-family: monospace; font-size: 0.95rem;" placeholder="Nhập mật khẩu mới...">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.82rem; color: rgba(255,255,255,0.6); font-weight: 600; margin-bottom: 6px;">Gia hạn thêm (giờ) <span style="color: rgba(255,255,255,0.3); font-weight: 400;">— tuỳ chọn</span></label>
+                <input type="number" name="extend_hours" class="form-input" style="width: 100%;" min="0" value="0" placeholder="0 = không gia hạn">
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 4px;">Nếu đơn đã hết hạn, thời gian tính từ bây giờ + số giờ nhập.</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="closeReissueModal()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: rgba(255,255,255,0.6); font-weight: 600; cursor: pointer; font-size: 0.88rem;">Huỷ</button>
+                <button type="submit" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(245,158,11,0.3);">✓ Cấp lại</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openReissueModal(orderId, orderCode, accountName, currentPassword) {
+    document.getElementById('reissue-order-code').textContent = orderCode;
+    document.getElementById('reissue-account-name').textContent = '🔑 ' + accountName;
+    document.getElementById('reissue-password').value = currentPassword;
+    document.getElementById('reissue-form').action = '/admin/orders/' + orderId + '/reissue-password';
+    var modal = document.getElementById('reissue-modal');
+    modal.style.display = 'flex';
+    setTimeout(function() { document.getElementById('reissue-password').select(); }, 100);
+}
+function closeReissueModal() {
+    document.getElementById('reissue-modal').style.display = 'none';
+}
+document.getElementById('reissue-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeReissueModal();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeReissueModal();
+});
+</script>
 @endsection

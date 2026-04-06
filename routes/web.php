@@ -108,6 +108,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     // Orders
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.status');
+    Route::post('/orders/{id}/reissue-password', [AdminController::class, 'reissueOrderPassword'])->name('admin.orders.reissue-password');
     
     // Accounts
     Route::get('/accounts', [AdminController::class, 'accounts'])->name('admin.accounts');
