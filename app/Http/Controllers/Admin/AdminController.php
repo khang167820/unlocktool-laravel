@@ -209,10 +209,17 @@ class AdminController extends Controller
         
         $rentalInfo = [];
         if (!empty($rentedAccountIds)) {
-            $rentalInfo = DB::table('orders')
+            // Get only the LATEST order per account (highest ID = most recent)
+            $latestOrderIds = DB::table('orders')
+                ->select(DB::raw('MAX(id) as id'))
                 ->whereIn('account_id', $rentedAccountIds)
                 ->whereIn('status', ['paid', 'completed'])
                 ->whereNotNull('expires_at')
+                ->groupBy('account_id')
+                ->pluck('id');
+            
+            $rentalInfo = DB::table('orders')
+                ->whereIn('id', $latestOrderIds)
                 ->select('account_id', 'tracking_code', 'expires_at', 'ip_address')
                 ->get()
                 ->keyBy('account_id');
