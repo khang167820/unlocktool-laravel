@@ -157,26 +157,38 @@ class AccountAllocationService
                         ->first();
 
                     if ($account && !$account->is_available) {
-                        if (empty($account->note) && $account->password_changed) {
+                        if (empty($account->note)) {
+                            // Auto-generate new password for rotation
+                            $newPass = 'Unlock' . random_int(100, 999);
+                            
                             Order::where('account_id', $account->id)
                                 ->where('status', 'completed')
                                 ->whereNotNull('expires_at')
                                 ->where('expires_at', '<', now())
                                 ->update(['status' => 'expired']);
 
-                            $account->update([
-                                'is_available' => true,
-                                'rental_expires_at' => null,
-                                'rental_order_code' => null,
-                                'password_changed' => 0,
-                            ]);
+                            try {
+                                $account->update([
+                                    'is_available' => true,
+                                    'rental_expires_at' => null,
+                                    'rental_order_code' => null,
+                                    'needs_password_sync' => 1,
+                                    'new_password' => $newPass,
+                                    'password_changed' => 0,
+                                ]);
+                            } catch (\Exception $e) {
+                                // Fallback if columns don't exist yet
+                                $account->update([
+                                    'is_available' => true,
+                                    'rental_expires_at' => null,
+                                    'rental_order_code' => null,
+                                    'password_changed' => 0,
+                                ]);
+                            }
                             $count++;
-                            Log::info("Reclaimed account: #{$account->id} ({$account->username})");
+                            Log::info("Reclaimed account: #{$account->id} ({$account->username}), new pass generated");
                         } else {
-                            $reason = [];
-                            if (!empty($account->note)) $reason[] = 'has note';
-                            if (!$account->password_changed) $reason[] = 'password not changed';
-                            Log::info("Skipped reclaim for account #{$account->id}: " . implode(', ', $reason));
+                            Log::info("Skipped reclaim for account #{$account->id}: has note");
                         }
                     }
 

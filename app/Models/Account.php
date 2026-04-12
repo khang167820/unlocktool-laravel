@@ -13,13 +13,16 @@ class Account extends Model
     protected $fillable = [
         'username', 'password', 'type', 'is_available',
         'note', 'note_date', 'password_changed',
+        'needs_password_sync', 'new_password', 'password_synced_at',
         'rental_expires_at', 'rental_order_code', 'expires_at',
     ];
 
     protected $casts = [
         'is_available' => 'boolean',
         'password_changed' => 'boolean',
+        'needs_password_sync' => 'boolean',
         'rental_expires_at' => 'datetime',
+        'password_synced_at' => 'datetime',
         'expires_at' => 'date',
     ];
 

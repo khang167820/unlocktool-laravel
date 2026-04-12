@@ -1310,6 +1310,187 @@ class AdminController extends Controller
         exit;
     }
     
+    
+    // ==================== PASSWORD ROTATION ====================
+    
+    /**
+     * Password Rotation page — Show accounts that need password change.
+     */
+    public function passwordRotation(Request $request)
+    {
+        $serviceColors = [
+            'Unlocktool' => '#f97316',
+        ];
+        $typeLabels = [
+            'Unlocktool' => 'UnlockTool',
+        ];
+        
+        $currentType = $request->get('type');
+        $soonThreshold = now()->addMinutes(45);
+        
+        $query = DB::table('accounts')
+            ->leftJoin('orders', function ($join) {
+                $join->on('accounts.id', '=', 'orders.account_id')
+                     ->whereIn('orders.status', ['completed', 'expired'])
+                     ->whereNotNull('orders.expires_at');
+            })
+            ->select(
+                'accounts.id', 'accounts.username', 'accounts.password',
+                'accounts.type', 'accounts.is_available',
+                'accounts.new_password', 'accounts.needs_password_sync',
+                'accounts.password_synced_at',
+                DB::raw('MAX(orders.expires_at) as expired_at'),
+                DB::raw('MAX(orders.tracking_code) as order_code')
+            )
+            // Only accounts WITHOUT notes
+            ->where(function ($noteQ) {
+                $noteQ->whereNull('accounts.note')->orWhere('accounts.note', '');
+            })
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('accounts.is_available', 1)
+                       ->where(function ($q3) {
+                           $q3->where('accounts.password_changed', 0)
+                              ->orWhereNull('accounts.password_changed');
+                       });
+                })
+                ->orWhere('accounts.is_available', 0)
+                ->orWhere('accounts.needs_password_sync', 1);
+            })
+            ->groupBy(
+                'accounts.id', 'accounts.username', 'accounts.password',
+                'accounts.type', 'accounts.is_available', 'accounts.new_password',
+                'accounts.needs_password_sync', 'accounts.password_synced_at'
+            )
+            ->having(DB::raw('MAX(orders.expires_at)'), '<', $soonThreshold)
+            ->orHaving(DB::raw('accounts.needs_password_sync'), '=', 1);
+        
+        if ($currentType) {
+            $query->where('accounts.type', $currentType);
+        }
+        
+        $accounts = $query->orderBy('expired_at', 'asc')->get();
+        
+        // Auto-generate new password if not set
+        foreach ($accounts as $account) {
+            if (empty($account->new_password)) {
+                $newPass = 'Unlock' . random_int(100, 999);
+                DB::table('accounts')->where('id', $account->id)->update([
+                    'new_password' => $newPass,
+                    'needs_password_sync' => 1,
+                ]);
+                $account->new_password = $newPass;
+            }
+        }
+        
+        // Count per type (only types with accounts needing change)
+        $allTypes = array_keys($typeLabels);
+        $typeCounts = [];
+        foreach ($allTypes as $type) {
+            $c = $accounts->where('type', $type)->count();
+            if ($c > 0) $typeCounts[$type] = $c;
+        }
+        
+        // Stats
+        $stats = [
+            'needs_sync'    => $accounts->count(),
+            'expiring_soon' => $accounts->filter(fn($a) => $a->expired_at && \Carbon\Carbon::parse($a->expired_at)->isFuture())->count(),
+            'synced_today'  => DB::table('accounts')->whereNotNull('password_synced_at')->whereDate('password_synced_at', today())->count(),
+            'total_accounts'=> DB::table('accounts')->count(),
+        ];
+        
+        // Recently synced today
+        $recentlySynced = DB::table('accounts')
+            ->whereNotNull('password_synced_at')
+            ->whereDate('password_synced_at', today())
+            ->orderBy('password_synced_at', 'desc')
+            ->limit(10)->get();
+        
+        return view('admin.accounts.password-rotation', compact(
+            'accounts', 'stats', 'typeCounts', 'typeLabels', 'serviceColors', 'recentlySynced'
+        ));
+    }
+    
+    /**
+     * AJAX: Mark account password as synced.
+     */
+    public function markPasswordSynced($id)
+    {
+        $account = DB::table('accounts')->where('id', $id)->first();
+        if (!$account) {
+            return response()->json(['success' => false, 'error' => 'Account không tồn tại!']);
+        }
+        
+        $updateData = [
+            'is_available'        => 1,
+            'password_changed'    => 1,
+            'needs_password_sync' => 0,
+            'password_synced_at'  => now(),
+        ];
+        
+        if (!empty($account->new_password)) {
+            $updateData['password'] = $account->new_password;
+            $updateData['new_password'] = null;
+        }
+        
+        DB::table('accounts')->where('id', $id)->update($updateData);
+        Log::info("Password synced: #{$id} ({$account->username})");
+        
+        return response()->json(['success' => true]);
+    }
+    
+    /**
+     * Generate new passwords in bulk.
+     */
+    public function generateAllPasswords(Request $request)
+    {
+        $query = DB::table('accounts')->where('needs_password_sync', 1);
+        if ($type = $request->input('type')) {
+            $query->where('type', $type);
+        }
+        $count = 0;
+        foreach ($query->get() as $account) {
+            DB::table('accounts')->where('id', $account->id)->update([
+                'new_password' => 'Unlock' . random_int(100, 999),
+            ]);
+            $count++;
+        }
+        return back()->with('success', "Đã sinh password mới cho {$count} tài khoản!");
+    }
+    
+    /**
+     * Get count for sidebar badge (static method).
+     */
+    public static function getPasswordRotationCount(): int
+    {
+        try {
+            $soonThreshold = now()->addMinutes(45);
+            return DB::table('accounts')
+                ->where(function ($noteQ) {
+                    $noteQ->whereNull('note')->orWhere('note', '');
+                })
+                ->where(function ($q) use ($soonThreshold) {
+                    $q->where('needs_password_sync', 1)
+                      ->orWhere(function ($q2) use ($soonThreshold) {
+                          $q2->where('is_available', 1)
+                             ->where(function ($q3) {
+                                 $q3->where('password_changed', 0)
+                                    ->orWhereNull('password_changed');
+                             });
+                      })
+                      ->orWhereExists(function ($sub) use ($soonThreshold) {
+                          $sub->select(DB::raw(1))->from('orders')
+                              ->whereColumn('orders.account_id', 'accounts.id')
+                              ->whereIn('orders.status', ['completed', 'expired'])
+                              ->where('orders.expires_at', '<', $soonThreshold);
+                      });
+                })
+                ->count();
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+    
     // ==================== UNDERPAID ORDERS ====================
     
     public function underpaidOrders()

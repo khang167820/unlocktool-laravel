@@ -390,9 +390,17 @@
                 
                 <div class="admin-nav-section">
                     <div class="admin-nav-title">Quản lý</div>
-                    <a href="{{ route('admin.accounts') }}" class="admin-nav-item {{ request()->routeIs('admin.accounts*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.accounts') }}" class="admin-nav-item {{ request()->routeIs('admin.accounts*') && !request()->routeIs('admin.password-rotation*') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         Tài khoản
+                    </a>
+                    @php $prCount = \App\Http\Controllers\Admin\AdminController::getPasswordRotationCount(); @endphp
+                    <a href="{{ route('admin.password-rotation') }}" class="admin-nav-item {{ request()->routeIs('admin.password-rotation*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        🔑 Đổi Pass
+                        @if($prCount > 0)
+                            <span class="admin-nav-badge">{{ $prCount }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('admin.prices') }}" class="admin-nav-item {{ request()->routeIs('admin.prices') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
