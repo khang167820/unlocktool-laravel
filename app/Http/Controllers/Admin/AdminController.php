@@ -1347,15 +1347,8 @@ class AdminController extends Controller
                 $noteQ->whereNull('accounts.note')->orWhere('accounts.note', '');
             })
             ->where(function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('accounts.is_available', 1)
-                       ->where(function ($q3) {
-                           $q3->where('accounts.password_changed', 0)
-                              ->orWhereNull('accounts.password_changed');
-                       });
-                })
-                ->orWhere('accounts.is_available', 0)
-                ->orWhere('accounts.needs_password_sync', 1);
+                $q->where('accounts.needs_password_sync', 1)
+                  ->orWhere('accounts.is_available', 0); // Đang thuê sắp hết hạn
             })
             ->groupBy(
                 'accounts.id', 'accounts.username', 'accounts.password',
@@ -1422,8 +1415,8 @@ class AdminController extends Controller
         }
         
         $updateData = [
-            'is_available'        => 1,
-            'password_changed'    => 1,
+            'is_available'        => 1,  // Chuyển sang chờ thuê
+            'password_changed'    => 0,  // Giữ đèn đỏ để khách mới xem được pass
             'needs_password_sync' => 0,
             'password_synced_at'  => now(),
         ];
@@ -1472,17 +1465,13 @@ class AdminController extends Controller
                 ->where(function ($q) use ($soonThreshold) {
                     $q->where('needs_password_sync', 1)
                       ->orWhere(function ($q2) use ($soonThreshold) {
-                          $q2->where('is_available', 1)
-                             ->where(function ($q3) {
-                                 $q3->where('password_changed', 0)
-                                    ->orWhereNull('password_changed');
+                          $q2->where('is_available', 0)
+                             ->whereExists(function ($sub) use ($soonThreshold) {
+                                 $sub->select(DB::raw(1))->from('orders')
+                                     ->whereColumn('orders.account_id', 'accounts.id')
+                                     ->whereIn('orders.status', ['completed', 'expired'])
+                                     ->where('orders.expires_at', '<', $soonThreshold);
                              });
-                      })
-                      ->orWhereExists(function ($sub) use ($soonThreshold) {
-                          $sub->select(DB::raw(1))->from('orders')
-                              ->whereColumn('orders.account_id', 'accounts.id')
-                              ->whereIn('orders.status', ['completed', 'expired'])
-                              ->where('orders.expires_at', '<', $soonThreshold);
                       });
                 })
                 ->count();
