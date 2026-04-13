@@ -1412,12 +1412,27 @@ class AdminController extends Controller
             return response()->json(['success' => false, 'error' => 'Account không tồn tại!']);
         }
         
+        // Check xem order mới nhất đã hết hạn chưa
+        $latestOrder = DB::table('orders')
+            ->where('account_id', $id)
+            ->whereIn('status', ['completed', 'expired'])
+            ->whereNotNull('expires_at')
+            ->orderBy('expires_at', 'desc')
+            ->first();
+        
+        $isExpired = !$latestOrder || \Carbon\Carbon::parse($latestOrder->expires_at)->isPast();
+        
         $updateData = [
-            'is_available'        => 1,  // Chuyển sang chờ thuê
-            'password_changed'    => 0,  // Giữ đèn đỏ để khách mới xem được pass
+            'password_changed'    => 0,
             'needs_password_sync' => 0,
             'password_synced_at'  => now(),
         ];
+        
+        // Chỉ chuyển "chờ thuê" nếu order đã hết hạn
+        // Nếu còn thời gian → giữ is_available=0, chờ hết hạn tự nhiên
+        if ($isExpired) {
+            $updateData['is_available'] = 1;
+        }
         
         if (!empty($account->new_password)) {
             $updateData['password'] = $account->new_password;
@@ -1425,9 +1440,10 @@ class AdminController extends Controller
         }
         
         DB::table('accounts')->where('id', $id)->update($updateData);
-        Log::info("Password synced: #{$id} ({$account->username})");
+        $status = $isExpired ? 'chờ thuê' : 'giữ đang thuê (còn hạn)';
+        Log::info("Password synced: #{$id} ({$account->username}) → {$status}");
         
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'released' => $isExpired]);
     }
     
     /**
