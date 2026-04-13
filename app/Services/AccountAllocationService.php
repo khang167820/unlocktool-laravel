@@ -158,38 +158,51 @@ class AccountAllocationService
 
                     if ($account && !$account->is_available) {
                         if (empty($account->note)) {
-                            // Auto-generate new password for rotation
-                            $newPass = 'Unlock' . random_int(100, 999);
-                            
                             Order::where('account_id', $account->id)
                                 ->where('status', 'completed')
                                 ->whereNotNull('expires_at')
                                 ->where('expires_at', '<', now())
                                 ->update(['status' => 'expired']);
 
-                            try {
-                                // KHÔNG set is_available=1 ngay!
-                                // Giữ is_available=0 cho đến khi admin đổi pass xong bấm "Đã đổi"
-                                // Tránh khách mới thuê trúng acc mà khách cũ còn đăng nhập
+                            // Nếu admin đã đổi pass trước khi hết hạn → không cần đổi lần 2
+                            // Điều kiện: needs_password_sync=0 VÀ password_synced_at gần đây (trong 24h)
+                            $alreadySynced = !$account->needs_password_sync
+                                && $account->password_synced_at
+                                && $account->password_synced_at->gt(now()->subHours(24));
+
+                            if ($alreadySynced) {
+                                // Đã đổi pass rồi → mở cho thuê luôn
                                 $account->update([
-                                    'is_available' => false,  // Giữ khóa
+                                    'is_available' => true,
                                     'rental_expires_at' => null,
                                     'rental_order_code' => null,
-                                    'needs_password_sync' => 1,
-                                    'new_password' => $newPass,
-                                    'password_changed' => 0,
                                 ]);
-                            } catch (\Exception $e) {
-                                // Fallback if columns don't exist yet
-                                $account->update([
-                                    'is_available' => false,
-                                    'rental_expires_at' => null,
-                                    'rental_order_code' => null,
-                                    'password_changed' => 0,
-                                ]);
+                                $count++;
+                                Log::info("Account #{$account->id} ({$account->username}) released (password already synced at {$account->password_synced_at})");
+                            } else {
+                                // Chưa đổi pass → giữ khóa, chờ admin đổi
+                                $newPass = 'Unlock' . random_int(100, 999);
+                                try {
+                                    $account->update([
+                                        'is_available' => false,  // Giữ khóa
+                                        'rental_expires_at' => null,
+                                        'rental_order_code' => null,
+                                        'needs_password_sync' => 1,
+                                        'new_password' => $newPass,
+                                        'password_changed' => 0,
+                                    ]);
+                                } catch (\Exception $e) {
+                                    // Fallback if columns don't exist yet
+                                    $account->update([
+                                        'is_available' => false,
+                                        'rental_expires_at' => null,
+                                        'rental_order_code' => null,
+                                        'password_changed' => 0,
+                                    ]);
+                                }
+                                $count++;
+                                Log::info("Account #{$account->id} ({$account->username}) expired, waiting for password sync");
                             }
-                            $count++;
-                            Log::info("Account #{$account->id} ({$account->username}) expired, waiting for password sync");
                         } else {
                             Log::info("Skipped reclaim for account #{$account->id}: has note");
                         }
