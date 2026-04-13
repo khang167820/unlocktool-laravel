@@ -168,8 +168,11 @@ class AccountAllocationService
                                 ->update(['status' => 'expired']);
 
                             try {
+                                // KHÔNG set is_available=1 ngay!
+                                // Giữ is_available=0 cho đến khi admin đổi pass xong bấm "Đã đổi"
+                                // Tránh khách mới thuê trúng acc mà khách cũ còn đăng nhập
                                 $account->update([
-                                    'is_available' => true,
+                                    'is_available' => false,  // Giữ khóa
                                     'rental_expires_at' => null,
                                     'rental_order_code' => null,
                                     'needs_password_sync' => 1,
@@ -179,14 +182,14 @@ class AccountAllocationService
                             } catch (\Exception $e) {
                                 // Fallback if columns don't exist yet
                                 $account->update([
-                                    'is_available' => true,
+                                    'is_available' => false,
                                     'rental_expires_at' => null,
                                     'rental_order_code' => null,
                                     'password_changed' => 0,
                                 ]);
                             }
                             $count++;
-                            Log::info("Reclaimed account: #{$account->id} ({$account->username}), new pass generated");
+                            Log::info("Account #{$account->id} ({$account->username}) expired, waiting for password sync");
                         } else {
                             Log::info("Skipped reclaim for account #{$account->id}: has note");
                         }
