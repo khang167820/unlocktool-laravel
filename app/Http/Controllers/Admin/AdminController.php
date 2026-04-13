@@ -1346,17 +1346,15 @@ class AdminController extends Controller
             ->where(function ($noteQ) {
                 $noteQ->whereNull('accounts.note')->orWhere('accounts.note', '');
             })
-            ->where(function ($q) {
-                $q->where('accounts.needs_password_sync', 1)
-                  ->orWhere('accounts.is_available', 0); // Đang thuê sắp hết hạn
-            })
+            // CHỈ hiện acc đang thuê (is_available=0), ẩn acc đã chờ thuê (is_available=1)
+            ->where('accounts.is_available', 0)
             ->groupBy(
                 'accounts.id', 'accounts.username', 'accounts.password',
                 'accounts.type', 'accounts.is_available', 'accounts.new_password',
                 'accounts.needs_password_sync', 'accounts.password_synced_at'
             )
-            ->having(DB::raw('MAX(orders.expires_at)'), '<', $soonThreshold)
-            ->orHaving(DB::raw('accounts.needs_password_sync'), '=', 1);
+            // Chỉ hiện acc hết hạn hoặc còn dưới 45 phút
+            ->having(DB::raw('MAX(orders.expires_at)'), '<', $soonThreshold);
         
         if ($currentType) {
             $query->where('accounts.type', $currentType);
@@ -1462,17 +1460,13 @@ class AdminController extends Controller
                 ->where(function ($noteQ) {
                     $noteQ->whereNull('note')->orWhere('note', '');
                 })
-                ->where(function ($q) use ($soonThreshold) {
-                    $q->where('needs_password_sync', 1)
-                      ->orWhere(function ($q2) use ($soonThreshold) {
-                          $q2->where('is_available', 0)
-                             ->whereExists(function ($sub) use ($soonThreshold) {
-                                 $sub->select(DB::raw(1))->from('orders')
-                                     ->whereColumn('orders.account_id', 'accounts.id')
-                                     ->whereIn('orders.status', ['completed', 'expired'])
-                                     ->where('orders.expires_at', '<', $soonThreshold);
-                             });
-                      });
+                // CHỈ đếm acc đang thuê (is_available=0)
+                ->where('is_available', 0)
+                ->whereExists(function ($sub) use ($soonThreshold) {
+                    $sub->select(DB::raw(1))->from('orders')
+                        ->whereColumn('orders.account_id', 'accounts.id')
+                        ->whereIn('orders.status', ['completed', 'expired'])
+                        ->where('orders.expires_at', '<', $soonThreshold);
                 })
                 ->count();
         } catch (\Exception $e) {
