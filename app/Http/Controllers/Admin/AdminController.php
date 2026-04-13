@@ -1423,7 +1423,9 @@ class AdminController extends Controller
         $isExpired = !$latestOrder || \Carbon\Carbon::parse($latestOrder->expires_at)->isPast();
         
         $updateData = [
-            'password_changed'    => 0,
+            // Nếu còn hạn → password_changed=1 để khách thấy "MK đã thay đổi" (pass mới không dùng được)
+            // Nếu hết hạn → password_changed=0 (khách thấy "Phiên thuê đã kết thúc" anyway)
+            'password_changed'    => $isExpired ? 0 : 1,
             'needs_password_sync' => 0,
             'password_synced_at'  => now(),
         ];
