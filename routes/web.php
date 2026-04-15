@@ -54,6 +54,22 @@ Route::get('/migrate-unlock2026', function () {
     ]);
 });
 
+// === Blog 301 Redirects (Keyword Cannibalization Fix - 2026-04-16) ===
+// Old duplicate slugs → new canonical slugs
+$blogRedirects = [
+    'icloud-iphone-7-bypass'    => 'bypass-icloud-iphone-7',     // ID:12 → ID:152
+    'icloud-iphone-8-bypass'    => 'bypass-icloud-iphone-8',     // ID:20 → ID:151
+    'flash-firmware-samsung-odin' => 'flash-samsung-odin',       // ID:16 → ID:41
+    'jailbreak-iphone-2026'     => 'jailbreak-iphone',           // ID:17 → ID:126
+    'bang-gia-dich-vu-2026'     => 'bang-gia-dich-vu',           // ID:31 → ID:138
+    'dich-vu-sua-chua-dien-thoai' => 'sua-chua-dien-thoai',     // ID:25 → ID:132
+];
+foreach ($blogRedirects as $oldSlug => $newSlug) {
+    Route::get("/blog/{$oldSlug}", function () use ($newSlug) {
+        return redirect("/blog/{$newSlug}", 301);
+    });
+}
+
 // === Blog Routes ===
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/category/{category}', [BlogController::class, 'category'])->name('blog.category');
