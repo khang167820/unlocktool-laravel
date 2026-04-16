@@ -684,8 +684,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 12px;
-    flex-wrap: nowrap;
-    min-width: max-content;
+    flex-wrap: wrap;
 }
 
 .service-card {
