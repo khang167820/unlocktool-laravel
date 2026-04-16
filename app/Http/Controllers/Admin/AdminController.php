@@ -381,6 +381,9 @@ class AdminController extends Controller
             DB::table('accounts')->where('id', $id)->update($data);
         }
         
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Cập nhật thành công!']);
+        }
         return redirect()->route('admin.accounts')->with('success', 'Cập nhật tài khoản thành công!');
     }
     

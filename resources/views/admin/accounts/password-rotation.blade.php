@@ -61,6 +61,15 @@
 .pr-batch-bar { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; }
 .pr-batch-actions { display: flex; gap: 6px; }
 .pr-batch-count { font-size: 12px; color: var(--text-muted); }
+/* Date Edit */
+.pr-expiry-row { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+.pr-edit-date-btn { background: none; border: none; cursor: pointer; font-size: 11px; padding: 1px 4px; border-radius: 4px; opacity: 0.4; transition: all 0.15s; }
+.pr-edit-date-btn:hover { opacity: 1; background: var(--bg-hover); }
+.pr-date-edit { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.pr-date-input { padding: 3px 6px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 11px; background: var(--bg-primary); color: var(--text-primary); width: 120px; }
+.pr-date-save, .pr-date-cancel { background: none; border: none; cursor: pointer; font-size: 12px; padding: 2px 4px; border-radius: 4px; transition: all 0.15s; }
+.pr-date-save:hover { background: rgba(16,185,129,0.15); }
+.pr-date-cancel:hover { background: rgba(239,68,68,0.15); }
 @media (max-width: 768px) { .pr-stats-grid { grid-template-columns: 1fr 1fr; } .pr-table-wrap { overflow-x: auto; } .pr-table { min-width: 650px; } }
 @media (max-width: 480px) { .pr-stats-grid { grid-template-columns: 1fr; } }
 </style>
@@ -105,7 +114,7 @@
 <div class="pr-table-wrap">
     @if($accounts->count() > 0)
     <table class="pr-table" id="pr-table">
-        <thead><tr><th>Tài khoản</th><th>Hạn TK</th><th>Password</th><th>Trạng thái</th><th style="text-align:right;">Hành động</th></tr></thead>
+        <thead><tr><th>Tài khoản</th><th>Password</th><th>Trạng thái</th><th style="text-align:right;">Hành động</th></tr></thead>
         <tbody>
             @foreach($accounts as $account)
             <tr id="pr-row-{{ $account->id }}">
@@ -119,25 +128,31 @@
                     </div>
                 </td>
                 <td>
-                    @if(isset($account->expires_at) && $account->expires_at)
-                        @php $expiryDate = \Carbon\Carbon::parse($account->expires_at); @endphp
-                        @if($expiryDate->isPast())
-                            <div style="color:#ef4444; font-size:11px; font-weight:600;">⚠️ Hết hạn TK!</div>
-                            <div style="font-size:10px; color:#94a3b8;">{{ $expiryDate->format('d/m/Y') }}</div>
-                        @else
-                            <div style="color:#10b981; font-size:11px; font-weight:600;">{{ $expiryDate->format('d/m/Y') }}</div>
-                            <div style="font-size:10px; color:#64748b;">Còn {{ now()->diffInDays($expiryDate) }}d</div>
-                        @endif
-                    @else
-                        <span style="color:#cbd5e1; font-size:11px;">—</span>
-                    @endif
-                </td>
-                <td>
                     <span class="pr-pass pr-pass-old">{{ $account->password }}</span>
                     <span class="pr-pass-arrow">→</span>
                     <span class="pr-pass pr-pass-new">{{ $account->new_password ?? '—' }}</span>
                 </td>
                 <td>
+                    {{-- Ngày hết hạn TK (expires_at) --}}
+                    <div class="pr-expiry-row" id="pr-expiry-{{ $account->id }}">
+                        @if(isset($account->expires_at) && $account->expires_at)
+                            @php $expiryDate = \Carbon\Carbon::parse($account->expires_at); @endphp
+                            @if($expiryDate->isPast())
+                                <span style="color:#ef4444; font-size:11px; font-weight:600;">⚠️ {{ $expiryDate->format('d/m/Y') }}</span>
+                            @else
+                                <span style="color:#10b981; font-size:11px; font-weight:600;">📅 {{ $expiryDate->format('d/m/Y') }}</span>
+                            @endif
+                        @else
+                            <span style="color:#94a3b8; font-size:11px;">📅 —</span>
+                        @endif
+                        <button class="pr-edit-date-btn" onclick="showDateEdit({{ $account->id }}, '{{ $account->expires_at ? \Carbon\Carbon::parse($account->expires_at)->format('Y-m-d') : '' }}')" title="Sửa ngày hết hạn">✏️</button>
+                    </div>
+                    <div class="pr-date-edit" id="pr-date-edit-{{ $account->id }}" style="display:none;">
+                        <input type="date" id="pr-date-input-{{ $account->id }}" value="{{ $account->expires_at ? \Carbon\Carbon::parse($account->expires_at)->format('Y-m-d') : '' }}" class="pr-date-input">
+                        <button class="pr-date-save" onclick="saveDate({{ $account->id }})">💾</button>
+                        <button class="pr-date-cancel" onclick="hideDateEdit({{ $account->id }})">✖</button>
+                    </div>
+                    {{-- Trạng thái rental (expired_at) --}}
                     @if($account->expired_at)
                         @php $exp = \Carbon\Carbon::parse($account->expired_at); @endphp
                         @if($exp->isPast())
@@ -225,6 +240,57 @@ function markSynced(id, btn) {
         btn.classList.remove('loading'); btn.innerHTML = '✅ Đã đổi';
         alert('Lỗi kết nối!');
     });
+}
+
+// === Date Edit Functions ===
+function showDateEdit(id, currentDate) {
+    document.getElementById(`pr-expiry-${id}`).style.display = 'none';
+    document.getElementById(`pr-date-edit-${id}`).style.display = 'flex';
+    if (currentDate) document.getElementById(`pr-date-input-${id}`).value = currentDate;
+}
+
+function hideDateEdit(id) {
+    document.getElementById(`pr-date-edit-${id}`).style.display = 'none';
+    document.getElementById(`pr-expiry-${id}`).style.display = 'flex';
+}
+
+function saveDate(id) {
+    const input = document.getElementById(`pr-date-input-${id}`);
+    const newDate = input.value;
+    
+    fetch(`{{ url('/admin/accounts') }}/${id}/update`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ expires_at: newDate || null })
+    }).then(r => r.json()).then(d => {
+        if (d.success) {
+            // Update display
+            const expiryRow = document.getElementById(`pr-expiry-${id}`);
+            if (newDate) {
+                const parts = newDate.split('-');
+                const formatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                const today = new Date();
+                const expDate = new Date(newDate);
+                const isPast = expDate < today;
+                expiryRow.innerHTML = `
+                    <span style="color:${isPast ? '#ef4444' : '#10b981'}; font-size:11px; font-weight:600;">${isPast ? '⚠️' : '📅'} ${formatted}</span>
+                    <button class="pr-edit-date-btn" onclick="showDateEdit(${id}, '${newDate}')" title="Sửa ngày hết hạn">✏️</button>
+                `;
+            } else {
+                expiryRow.innerHTML = `
+                    <span style="color:#94a3b8; font-size:11px;">📅 —</span>
+                    <button class="pr-edit-date-btn" onclick="showDateEdit(${id}, '')" title="Sửa ngày hết hạn">✏️</button>
+                `;
+            }
+            hideDateEdit(id);
+        } else {
+            alert(d.error || 'Lỗi cập nhật!');
+        }
+    }).catch(() => alert('Lỗi kết nối!'));
 }
 </script>
 @endsection
