@@ -1338,7 +1338,7 @@ class AdminController extends Controller
                 'accounts.id', 'accounts.username', 'accounts.password',
                 'accounts.type', 'accounts.is_available',
                 'accounts.new_password', 'accounts.needs_password_sync',
-                'accounts.password_synced_at',
+                'accounts.password_synced_at', 'accounts.expires_at',
                 DB::raw('MAX(orders.expires_at) as expired_at'),
                 DB::raw('MAX(orders.tracking_code) as order_code')
             )
@@ -1351,7 +1351,8 @@ class AdminController extends Controller
             ->groupBy(
                 'accounts.id', 'accounts.username', 'accounts.password',
                 'accounts.type', 'accounts.is_available', 'accounts.new_password',
-                'accounts.needs_password_sync', 'accounts.password_synced_at'
+                'accounts.needs_password_sync', 'accounts.password_synced_at',
+                'accounts.expires_at'
             )
             // Chỉ hiện acc hết hạn hoặc còn dưới 45 phút
             ->having(DB::raw('MAX(orders.expires_at)'), '<', $soonThreshold);

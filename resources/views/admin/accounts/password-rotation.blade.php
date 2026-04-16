@@ -105,7 +105,7 @@
 <div class="pr-table-wrap">
     @if($accounts->count() > 0)
     <table class="pr-table" id="pr-table">
-        <thead><tr><th>Tài khoản</th><th>Password</th><th>Trạng thái</th><th style="text-align:right;">Hành động</th></tr></thead>
+        <thead><tr><th>Tài khoản</th><th>Hạn TK</th><th>Password</th><th>Trạng thái</th><th style="text-align:right;">Hành động</th></tr></thead>
         <tbody>
             @foreach($accounts as $account)
             <tr id="pr-row-{{ $account->id }}">
@@ -117,6 +117,20 @@
                             <div class="pr-account-meta">{{ $typeLabels[$account->type] ?? $account->type }} · #{{ $account->id }}</div>
                         </div>
                     </div>
+                </td>
+                <td>
+                    @if(isset($account->expires_at) && $account->expires_at)
+                        @php $expiryDate = \Carbon\Carbon::parse($account->expires_at); @endphp
+                        @if($expiryDate->isPast())
+                            <div style="color:#ef4444; font-size:11px; font-weight:600;">⚠️ Hết hạn TK!</div>
+                            <div style="font-size:10px; color:#94a3b8;">{{ $expiryDate->format('d/m/Y') }}</div>
+                        @else
+                            <div style="color:#10b981; font-size:11px; font-weight:600;">{{ $expiryDate->format('d/m/Y') }}</div>
+                            <div style="font-size:10px; color:#64748b;">Còn {{ now()->diffInDays($expiryDate) }}d</div>
+                        @endif
+                    @else
+                        <span style="color:#cbd5e1; font-size:11px;">—</span>
+                    @endif
                 </td>
                 <td>
                     <span class="pr-pass pr-pass-old">{{ $account->password }}</span>
