@@ -247,6 +247,9 @@
         <a class="service-card" href="https://thuetaikhoan.net/thue-dft.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/dft-pro.webp') }}" alt="Thuê DFT Pro unlock Samsung" loading="lazy" width="68" height="68"></div><span>DFT Pro</span></a>
         <a class="service-card" href="https://thuetaikhoan.net/thue-samsung-tool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/samsung-tool.webp') }}" alt="Thuê Samsung Tool bypass KG Lock" loading="lazy" width="68" height="68"></div><span>Samsung Tool</span></a>
         <a class="service-card" href="https://thuetaikhoan.com.vn/thue-cheetah-tool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/cheetah-tool.webp') }}" alt="Thuê Cheetah Tool unlock điện thoại" loading="lazy" width="68" height="68"></div><span>Cheetah Tool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-sigma-plus" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/sigma-plus.webp') }}" alt="Thuê Sigma Plus unlock điện thoại" loading="lazy" width="68" height="68"></div><span>Sigma Plus</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-chimera-tool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/chimera.webp') }}" alt="Thuê Chimera Tool unlock điện thoại" loading="lazy" width="68" height="68"></div><span>Chimera</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-androidwintool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/androidwintool.webp') }}" alt="Thuê Android Win Tool GSM" loading="lazy" width="68" height="68"></div><span>Android Win Tool</span></a>
     </div>
 </section>
 
