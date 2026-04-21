@@ -152,8 +152,14 @@
     @media(max-width:480px){.hero-title{font-size:1.5rem}.hero-subtitle{font-size:.88rem}.hero-stats{gap:16px}.hero-stat-number{font-size:1.2rem}.main-header{padding:0 12px}.seo-section-title{font-size:1.3rem}.seo-section{padding:36px 16px}}
     </style>
 
-    {{-- CSS: No Bootstrap CSS (162KB eliminated — all styles covered by inline + style.min.css) --}}
-    <link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.1">
+    {{-- Preconnect CDN origins --}}
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    {{-- CSS: async load to avoid render-blocking (CLS=0 maintained by inline critical CSS + display=optional) --}}
+    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.2" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.2"></noscript>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional"></noscript>
     @yield('schema')
