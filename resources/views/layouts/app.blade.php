@@ -107,7 +107,7 @@
     .hero-stat-label{font-size:.72rem;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;font-weight:700}
 
     /* Service Strip — explicit min-height to prevent CLS */
-    .service-strip{background:var(--white);padding:20px 16px;border-bottom:1px solid var(--gray-200);min-height:130px;contain:layout style}
+    .service-strip{background:var(--white);padding:20px 16px;border-bottom:1px solid var(--gray-200);min-height:130px}
     .service-strip-inner{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
     .service-strip-inner::-webkit-scrollbar{display:none}
     .service-card{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:80px;padding:12px 8px;border-radius:var(--radius-md);text-decoration:none!important;color:var(--gray-700)!important;font-size:.72rem;font-weight:600;text-align:center;scroll-snap-align:start;transition:background .15s ease;flex-shrink:0}
@@ -153,10 +153,9 @@
     </style>
 
     {{-- CSS: No Bootstrap CSS (162KB eliminated — all styles covered by inline + style.min.css) --}}
-    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.0" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.0"></noscript>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
+    <link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.1">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional"></noscript>
     @yield('schema')
     @yield('head')
 </head>
@@ -294,9 +293,9 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" defer></script>
-<script src="{{ asset('js/app.js') }}?v=7.0" defer></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/app.js') }}?v=7.1"></script>
 {{-- Font Awesome deferred to end of body (non-critical icons) --}}
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
