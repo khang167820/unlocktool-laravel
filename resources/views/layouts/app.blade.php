@@ -124,7 +124,7 @@
     .modal{display:none;padding-right:0!important}
     .modal-backdrop{display:none}
     body.modal-open{padding-right:0!important;overflow:hidden}
-    .modal-dialog{margin-left:auto!important;margin-right:auto!important}
+    #rentModal .modal-dialog{max-width:520px;width:calc(100% - 2rem);margin:1rem auto!important}
 
     /* Mobile responsive */
     @media(max-width:992px){.header-right-actions{display:none}.mobile-menu-toggle{display:block}}
