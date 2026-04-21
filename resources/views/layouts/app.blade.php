@@ -41,13 +41,15 @@
     /* Bootstrap essentials */
     .container,.container-fluid{width:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}
     .row{display:flex;flex-wrap:wrap;margin-right:-15px;margin-left:-15px}
-    .table{width:100%;margin-bottom:1rem;color:var(--gray-900)!important;font-size:14px;border-collapse:collapse}
-    .table th,.table td{padding:.75rem;vertical-align:middle;border-top:1px solid var(--gray-200)}
-    .table thead th{vertical-align:bottom;border-bottom:2px solid var(--gray-200);font-size:13px;font-weight:700;color:var(--gray-500)!important;text-transform:uppercase;letter-spacing:.5px}
-    .table tbody td{font-size:14px;font-weight:500}
+    .table{width:100%;margin:0;color:var(--gray-900)!important;font-size:14px;border-collapse:separate;border-spacing:0}
+    .table th,.table td{padding:14px 16px;vertical-align:middle;border:none}
+    .table thead th{vertical-align:bottom;border-bottom:none;font-size:13px;font-weight:700;color:#fff!important;text-transform:uppercase;letter-spacing:.5px;background:linear-gradient(135deg,#1e3a5f,#0e2442);position:sticky;top:0;z-index:2}
+    .table tbody td{font-size:14px;font-weight:500;padding:12px 16px;border-bottom:1px solid var(--gray-200)}
+    .table tbody tr{transition:background .15s ease}
+    .table tbody tr:nth-child(even){background:var(--gray-50)}
     .table-bordered{border:1px solid var(--gray-200)!important}
     .table-bordered th,.table-bordered td{border:1px solid var(--gray-100)!important}
-    .table-responsive{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .table-responsive{display:block;width:100%;overflow-x:auto;overflow-y:auto;max-height:520px;-webkit-overflow-scrolling:touch;border-radius:var(--radius-lg)}
     .text-center{text-align:center!important}
     .text-muted{color:var(--gray-400)!important}
     .text-success{color:var(--success)!important}
@@ -144,6 +146,17 @@
     .alert{position:relative;padding:.75rem 1.25rem;margin-bottom:1rem;border:1px solid transparent;border-radius:.25rem}
     .alert-info{color:#0c5460;background-color:#d1ecf1;border-color:#bee5eb}
     .bg-warning{background-color:#ffc107!important}
+
+    /* Footer — dimensions match style.min.css */
+    .site-footer{background:#1e293b!important;border-top:none;padding:56px 24px 0;margin-top:0}
+    .footer-container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
+    .footer-col h4{font-size:1rem;font-weight:700;color:#fff;margin-bottom:16px}
+    .footer-col p{font-size:.85rem;color:rgba(255,255,255,.6);line-height:1.65}
+    .footer-col ul{list-style:none;padding:0;margin:0}
+    .footer-col ul li{margin-bottom:8px}
+    .footer-col ul li a{color:rgba(255,255,255,.6)!important;text-decoration:none!important;font-size:.85rem;display:flex;align-items:center;gap:8px;padding:2px 0}
+    .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:20px 0;text-align:center;margin-top:32px}
+    .footer-bottom p{font-size:.82rem;color:rgba(255,255,255,.4);margin:0}
 
     /* Mobile responsive */
     @media(max-width:992px){.header-right-actions{display:none}.mobile-menu-toggle{display:block}}
