@@ -130,15 +130,17 @@
     @media(max-width:480px){.hero-title{font-size:1.5rem}.hero-subtitle{font-size:.88rem}.hero-stats{gap:16px}.hero-stat-number{font-size:1.2rem}.main-header{padding:0 12px}.seo-section-title{font-size:1.3rem}.seo-section{padding:36px 16px}}
     </style>
 
-    {{-- ALL CSS loaded async (non-blocking) --}}
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"></noscript>
-    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=6.4" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=6.4"></noscript>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
+    {{-- Bootstrap CSS: synchronous load (prevents CLS from async override of inline styles) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    {{-- Non-critical CSS: async load --}}
+    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=6.5" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=6.5"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional"></noscript>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    {{-- Prevent FA icon font swap CLS --}}
+    <style>@font-face{font-family:'Font Awesome 6 Free';font-display:optional}@font-face{font-family:'Font Awesome 6 Brands';font-display:optional}</style>
     @yield('schema')
     @yield('head')
 </head>
