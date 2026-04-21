@@ -1,5 +1,9 @@
-/* UnlockTool.us - Main JavaScript */
-/* Ported from original index.php inline scripts */
+/* UnlockTool.us - Main JavaScript v7.0 (Performance Optimized) */
+/* Key optimizations:
+   - Combined countdown intervals into one (reduce TBT)
+   - Virtual accounts use DocumentFragment (batch DOM)
+   - Deferred virtual accounts via requestIdleCallback
+*/
 
 // ===== Mobile Menu Toggle =====
 document.getElementById('mobileMenuToggle')?.addEventListener('click', function () {
@@ -27,90 +31,111 @@ document.addEventListener('click', function (e) {
     if (dd && btn && !dd.contains(e.target) && !btn.contains(e.target)) dd.classList.remove('show');
 });
 
-// ===== Countdown Timers =====
-function updateCountdowns() {
-    document.querySelectorAll('[data-expire]').forEach(el => {
-        const t = parseInt(el.dataset.expire) * 1000;
-        const d = t - Date.now();
+// ===== Combined Countdown Timer (single interval for both) =====
+function updateAllTimers() {
+    const now = Date.now();
+    // Countdown timers
+    document.querySelectorAll('[data-expire]').forEach(function(el) {
+        var t = parseInt(el.dataset.expire) * 1000;
+        var d = t - now;
         if (d <= 0) { el.innerText = 'Đã hết hạn'; return; }
-        const h = Math.floor(d / 3600000);
-        const m = Math.floor((d % 3600000) / 60000);
-        const s = Math.floor((d % 60000) / 1000);
-        el.innerText = `${h}h ${m}m ${s}s`;
+        var h = Math.floor(d / 3600000);
+        var m = Math.floor((d % 3600000) / 60000);
+        var s = Math.floor((d % 60000) / 1000);
+        el.innerText = h + 'h ' + m + 'm ' + s + 's';
     });
-}
-function updateWaitingTime() {
-    document.querySelectorAll('[data-waiting]').forEach(el => {
-        const waited = Date.now() - parseInt(el.dataset.waiting) * 1000;
+    // Waiting timers
+    document.querySelectorAll('[data-waiting]').forEach(function(el) {
+        var waited = now - parseInt(el.dataset.waiting) * 1000;
         if (waited > 0) {
-            const h = Math.floor(waited / 3600000);
-            const m = Math.floor((waited % 3600000) / 60000);
-            const s = Math.floor((waited % 60000) / 1000);
-            el.innerText = h > 0 ? `⏳ ${h}h ${m}m ${s}s` : m > 0 ? `⏳ ${m}m ${s}s` : `⏳ ${s}s`;
+            var h = Math.floor(waited / 3600000);
+            var m = Math.floor((waited % 3600000) / 60000);
+            var s = Math.floor((waited % 60000) / 1000);
+            el.innerText = h > 0 ? '⏳ ' + h + 'h ' + m + 'm ' + s + 's' : m > 0 ? '⏳ ' + m + 'm ' + s + 's' : '⏳ ' + s + 's';
         }
     });
 }
-setInterval(updateCountdowns, 1000);
-setInterval(updateWaitingTime, 1000);
-window.addEventListener('load', function () { updateCountdowns(); updateWaitingTime(); });
+setInterval(updateAllTimers, 1000);
 
-// ===== Virtual Accounts (60 fake renting accounts) =====
+// ===== Virtual Accounts (60 fake renting accounts) — Optimized with DocumentFragment =====
 function createVirtualRentingAccounts() {
-    const tbody = document.querySelector('table tbody');
+    var tbody = document.querySelector('table tbody');
     if (!tbody) return;
-    const STORAGE_KEY = 'virtual_accounts_timers';
-    let savedTimers = {};
-    try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) savedTimers = JSON.parse(saved); } catch (e) { }
-    const newTimers = {};
-    const virtualAccounts = [];
-    for (let i = 0; i < 60; i++) {
-        const virtualId = 200 + i;
-        const timerKey = 'virtual_' + virtualId;
-        let expireTimestamp;
-        if (savedTimers[timerKey] && savedTimers[timerKey] > Math.floor(Date.now() / 1000)) {
+    var STORAGE_KEY = 'virtual_accounts_timers';
+    var savedTimers = {};
+    try { var saved = localStorage.getItem(STORAGE_KEY); if (saved) savedTimers = JSON.parse(saved); } catch (e) { }
+    var newTimers = {};
+    var virtualAccounts = [];
+    var nowSec = Math.floor(Date.now() / 1000);
+
+    for (var i = 0; i < 60; i++) {
+        var virtualId = 200 + i;
+        var timerKey = 'virtual_' + virtualId;
+        var expireTimestamp;
+        if (savedTimers[timerKey] && savedTimers[timerKey] > nowSec) {
             expireTimestamp = savedTimers[timerKey];
         } else {
-            const seed = virtualId * 12345;
-            const randomHours = (seed % 649) + 1;
-            const randomMinutes = ((seed * 7) % 60);
-            const randomSeconds = ((seed * 13) % 60);
-            expireTimestamp = Math.floor(Date.now() / 1000) + (randomHours * 3600) + (randomMinutes * 60) + randomSeconds;
+            var seed = virtualId * 12345;
+            var randomHours = (seed % 649) + 1;
+            var randomMinutes = ((seed * 7) % 60);
+            var randomSeconds = ((seed * 13) % 60);
+            expireTimestamp = nowSec + (randomHours * 3600) + (randomMinutes * 60) + randomSeconds;
         }
         newTimers[timerKey] = expireTimestamp;
-        const now = Math.floor(Date.now() / 1000);
-        const remaining = expireTimestamp - now;
-        const dH = Math.floor(remaining / 3600);
-        const dM = Math.floor((remaining % 3600) / 60);
-        const dS = remaining % 60;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${virtualId}</td><td>Unlocktool</td><td><button class="btn btn-secondary btn-sm" disabled>Đang thuê</button></td><td><span class="badge badge-danger">Đang thuê</span></td><td>M*********</td><td>U*******</td><td><span data-expire="${expireTimestamp}">${dH}h ${dM}m ${dS}s</span></td>`;
+        var remaining = expireTimestamp - nowSec;
+        var dH = Math.floor(remaining / 3600);
+        var dM = Math.floor((remaining % 3600) / 60);
+        var dS = remaining % 60;
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + virtualId + '</td><td>Unlocktool</td><td><button class="btn btn-secondary btn-sm" disabled>Đang thuê</button></td><td><span class="badge badge-danger">Đang thuê</span></td><td>M*********</td><td>U*******</td><td><span data-expire="' + expireTimestamp + '">' + dH + 'h ' + dM + 'm ' + dS + 's</span></td>';
         virtualAccounts.push({ element: tr, expireTimestamp: expireTimestamp });
     }
-    const allRows = Array.from(tbody.querySelectorAll('tr'));
-    const waitingAccounts = [], expiredAccounts = [], rentingAccounts = [];
-    allRows.forEach(tr => {
-        const badge = tr.querySelector('.badge');
-        const isWaiting = badge && badge.textContent.trim() === 'Chờ thuê';
-        const waitingSpan = tr.querySelector('[data-waiting]');
-        const expireSpan = tr.querySelector('[data-expire]');
+
+    // Sort existing rows
+    var allRows = Array.from(tbody.querySelectorAll('tr'));
+    var waitingAccounts = [], expiredAccounts = [], rentingAccounts = [];
+    allRows.forEach(function(tr) {
+        var badge = tr.querySelector('.badge');
+        var isWaiting = badge && badge.textContent.trim() === 'Chờ thuê';
+        var waitingSpan = tr.querySelector('[data-waiting]');
+        var expireSpan = tr.querySelector('[data-expire]');
         if (isWaiting) { waitingAccounts.push({ element: tr, expireTimestamp: 0 }); }
         else if (waitingSpan) { expiredAccounts.push({ element: tr, expireTimestamp: parseInt(waitingSpan.getAttribute('data-waiting')) }); }
         else if (expireSpan) { rentingAccounts.push({ element: tr, expireTimestamp: parseInt(expireSpan.getAttribute('data-expire')) }); }
         else { rentingAccounts.push({ element: tr, expireTimestamp: Number.MAX_SAFE_INTEGER }); }
     });
-    rentingAccounts.push(...virtualAccounts);
-    expiredAccounts.sort((a, b) => a.expireTimestamp - b.expireTimestamp);
-    rentingAccounts.sort((a, b) => a.expireTimestamp - b.expireTimestamp);
-    const allAccounts = [...waitingAccounts, ...expiredAccounts, ...rentingAccounts];
+
+    rentingAccounts.push.apply(rentingAccounts, virtualAccounts);
+    expiredAccounts.sort(function(a, b) { return a.expireTimestamp - b.expireTimestamp; });
+    rentingAccounts.sort(function(a, b) { return a.expireTimestamp - b.expireTimestamp; });
+
+    var allAccounts = waitingAccounts.concat(expiredAccounts, rentingAccounts);
+
+    // Use DocumentFragment for batch DOM insertion
+    var fragment = document.createDocumentFragment();
+    for (var j = 0; j < allAccounts.length; j++) {
+        fragment.appendChild(allAccounts[j].element);
+    }
     tbody.innerHTML = '';
-    allAccounts.forEach(a => tbody.appendChild(a.element));
+    tbody.appendChild(fragment);
+
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(newTimers)); } catch (e) { }
 }
 
 // ===== jQuery-dependent functionality =====
 $(document).ready(function () {
-    createVirtualRentingAccounts();
-    setTimeout(updateCountdowns, 100);
+    // Defer virtual accounts to idle time (reduce TBT)
+    if (typeof requestIdleCallback === 'function') {
+        requestIdleCallback(function() {
+            createVirtualRentingAccounts();
+            updateAllTimers();
+        });
+    } else {
+        setTimeout(function() {
+            createVirtualRentingAccounts();
+            updateAllTimers();
+        }, 50);
+    }
 
     // Package selection (radio button cards)
     $('.rent-package-option').click(function () {
@@ -132,9 +157,9 @@ $(document).ready(function () {
 
     // Search handlers
     function doSearch(inputId) {
-        const raw = $(inputId).val().trim();
+        var raw = $(inputId).val().trim();
         if (!raw) { alert('Vui lòng nhập mã đơn hàng.'); return; }
-        const match = raw.match(/(?:DH|RENT)?\d+/gi);
+        var match = raw.match(/(?:DH|RENT)?\d+/gi);
         if (!match) { alert('Không tìm thấy mã đơn hàng.'); return; }
         window.location.href = '/order-status?orderCode=' + encodeURIComponent(match[match.length - 1]);
     }
@@ -153,8 +178,8 @@ $(document).ready(function () {
 
     // Copy button
     $(document).on('click', '.copy-btn', function () {
-        const text = $(this).data('copy');
-        navigator.clipboard.writeText(text).then(() => alert('Đã sao chép: ' + text));
+        var text = $(this).data('copy');
+        navigator.clipboard.writeText(text).then(function() { alert('Đã sao chép: ' + text); });
     });
 
     // Floating Contact — Premium FAB
@@ -163,7 +188,7 @@ $(document).ready(function () {
         $('#fabContactWrapper').toggleClass('open');
     });
     $(document).on('click', function (e) {
-        const w = $('#fabContactWrapper');
+        var w = $('#fabContactWrapper');
         if (w.length && !w[0].contains(e.target)) {
             w.removeClass('open');
         }

@@ -45,6 +45,12 @@
     # Security headers
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
+
+    # Vary header for proper CDN/proxy caching
+    Header append Vary Accept-Encoding
+
+    # Connection keep-alive
+    Header set Connection keep-alive
 </IfModule>
 
 # ============================================================

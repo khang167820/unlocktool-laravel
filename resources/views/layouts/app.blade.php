@@ -33,7 +33,9 @@
     /* Reset + Variables */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--primary:#2196F3;--primary-light:#42a5f5;--primary-dark:#1976D2;--primary-50:#e3f2fd;--primary-100:#bbdefb;--accent:#f59e0b;--accent-light:#fbbf24;--accent-dark:#d97706;--teal:#26a69a;--teal-light:#4db6ac;--teal-dark:#00897b;--success:#43a047;--danger:#ef4444;--warning:#f59e0b;--info:#06b6d4;--white:#fff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;--navy:#0D47A1;--shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -2px rgba(0,0,0,.05);--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;--radius-full:9999px}
-    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:var(--white)!important;color:var(--gray-900)!important;font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    /* Font fallback with size-adjust to prevent CLS */
+    @font-face{font-family:'Inter Fallback';src:local('Segoe UI'),local('Arial');size-adjust:107%;ascent-override:90%;descent-override:22%;line-gap-override:0%}
+    body{font-family:'Inter','Inter Fallback',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:var(--white)!important;color:var(--gray-900)!important;font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
     img{max-width:100%;height:auto}a{color:var(--primary);text-decoration:none}
 
     /* Bootstrap essentials */
@@ -51,6 +53,9 @@
     .text-success{color:var(--success)!important}
     .text-danger{color:var(--danger)!important}
     .py-3{padding-top:1rem!important;padding-bottom:1rem!important}
+    .d-none{display:none!important}
+    .d-flex{display:flex!important}
+    .align-items-center{align-items:center!important}
 
     /* Badge */
     .badge{display:inline-block;padding:.35em .65em;font-size:.75em;font-weight:700;line-height:1;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.375rem}
@@ -58,6 +63,8 @@
     .badge-danger{color:#fff;background-color:var(--danger)}
     .badge-primary{color:#fff;background-color:var(--primary)}
     .badge-secondary{color:#fff;background-color:var(--gray-500)}
+    .badge-warning{color:#fff;background-color:var(--warning)}
+    .badge-info{color:#fff;background-color:var(--info)}
 
     /* Button */
     .btn{display:inline-block;font-weight:600;text-align:center;vertical-align:middle;cursor:pointer;user-select:none;border:1px solid transparent;padding:8px 20px;font-size:.88rem;line-height:1.5;border-radius:var(--radius-sm);transition:all .15s ease}
@@ -84,8 +91,8 @@
     .mobile-menu-toggle{display:none;background:var(--white);border:1px solid var(--gray-300);color:var(--gray-700);padding:8px 12px;border-radius:var(--radius-sm);font-size:1.1rem;cursor:pointer}
     .mobile-menu{display:none}
 
-    /* Hero */
-    .hero-banner{position:relative;padding:48px 24px 36px;text-align:center;background:linear-gradient(135deg,#0e0e1a 0%,#1a1a2e 40%,#2d2d44 70%,#1a1a2e 100%);overflow:hidden}
+    /* Hero — reserve space to prevent CLS */
+    .hero-banner{position:relative;padding:48px 24px 36px;text-align:center;background:linear-gradient(135deg,#0e0e1a 0%,#1a1a2e 40%,#2d2d44 70%,#1a1a2e 100%);overflow:hidden;min-height:320px}
     .hero-particles{display:none}
     .hero-content{max-width:700px;margin:0 auto;position:relative;z-index:1}
     .hero-title{font-size:clamp(28px,4.5vw,42px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:12px;letter-spacing:-.5px}
@@ -99,13 +106,13 @@
     .hero-stat-number{font-size:1.8rem;font-weight:900;color:#fff}
     .hero-stat-label{font-size:.72rem;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;font-weight:700}
 
-    /* Service Strip */
-    .service-strip{background:var(--white);padding:20px 16px;border-bottom:1px solid var(--gray-200)}
+    /* Service Strip — explicit min-height to prevent CLS */
+    .service-strip{background:var(--white);padding:20px 16px;border-bottom:1px solid var(--gray-200);min-height:130px;contain:layout style}
     .service-strip-inner{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
     .service-strip-inner::-webkit-scrollbar{display:none}
     .service-card{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:80px;padding:12px 8px;border-radius:var(--radius-md);text-decoration:none!important;color:var(--gray-700)!important;font-size:.72rem;font-weight:600;text-align:center;scroll-snap-align:start;transition:background .15s ease;flex-shrink:0}
     .service-card:hover{background:var(--gray-50);color:var(--primary)!important}
-    .service-icon{width:52px;height:52px;border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--gray-50);border:1px solid var(--gray-200)}
+    .service-icon{width:52px;height:52px;border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--gray-50);border:1px solid var(--gray-200);aspect-ratio:1/1}
     .service-icon img{width:68px;height:68px;object-fit:contain}
 
     /* Accounts overlay */
@@ -120,25 +127,36 @@
     #account-table .table td{border-color:#cbd5e1;font-weight:500;color:#1e293b}
     #account-table .table tbody tr:nth-child(even){background:#f8fafc}
 
-    /* Modal base - prevent flash */
-    .modal{display:none}
-    .modal-backdrop{display:none}
+    /* Modal/Fade — inline to prevent CLS from Bootstrap async load */
+    .modal{display:none;position:fixed;top:0;left:0;z-index:1050;width:100%;height:100%;overflow-x:hidden;overflow-y:auto;outline:0}
+    .modal-backdrop{display:none;position:fixed;top:0;left:0;z-index:1040;width:100vw;height:100vh;background-color:#000}
+    .modal-backdrop.show{display:block;opacity:.5}
+    .modal.show{display:block}
+    .modal-dialog{position:relative;width:auto;margin:.5rem;pointer-events:none}
+    .modal-dialog-centered{display:flex;align-items:center;min-height:calc(100% - 1rem)}
+    .modal-content{position:relative;display:flex;flex-direction:column;pointer-events:auto;background-color:#fff;border:1px solid rgba(0,0,0,.2);border-radius:.3rem;outline:0}
+    .modal-header{display:flex;align-items:flex-start;justify-content:space-between;padding:1rem;border-bottom:1px solid #dee2e6}
+    .modal-body{position:relative;flex:1 1 auto;padding:1rem}
+    .modal-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;padding:.75rem;border-top:1px solid #dee2e6}
+    .modal-xl{max-width:1140px}
+    .close{float:right;font-size:1.5rem;font-weight:700;line-height:1;color:#000;text-shadow:0 1px 0 #fff;opacity:.5;background:transparent;border:0;padding:0;cursor:pointer}
+    .fade{opacity:0;transition:opacity .15s linear}
+    .fade.show{opacity:1}
+    .alert{position:relative;padding:.75rem 1.25rem;margin-bottom:1rem;border:1px solid transparent;border-radius:.25rem}
+    .alert-info{color:#0c5460;background-color:#d1ecf1;border-color:#bee5eb}
+    .bg-warning{background-color:#ffc107!important}
 
     /* Mobile responsive */
     @media(max-width:992px){.header-right-actions{display:none}.mobile-menu-toggle{display:block}}
-    @media(max-width:768px){.hero-banner{padding:48px 16px 40px}.hero-title{font-size:1.8rem}.hero-stats{gap:24px}.hero-stat-number{font-size:1.5rem}.hero-search{flex-direction:column;border-radius:var(--radius-lg)}.hero-search-btn{border-radius:0}.main-header{padding:0 12px}}
+    @media(max-width:768px){.hero-banner{padding:48px 16px 40px;min-height:360px}.hero-title{font-size:1.8rem}.hero-stats{gap:24px}.hero-stat-number{font-size:1.5rem}.hero-search{flex-direction:column;border-radius:var(--radius-lg)}.hero-search-btn{border-radius:0}.main-header{padding:0 12px}.service-strip{min-height:280px}}
     @media(max-width:480px){.hero-title{font-size:1.5rem}.hero-subtitle{font-size:.88rem}.hero-stats{gap:16px}.hero-stat-number{font-size:1.2rem}.main-header{padding:0 12px}.seo-section-title{font-size:1.3rem}.seo-section{padding:36px 16px}}
     </style>
 
-    {{-- ALL CSS loaded async (non-blocking) --}}
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"></noscript>
-    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=6.4" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=6.4"></noscript>
+    {{-- CSS: No Bootstrap CSS (162KB eliminated — all styles covered by inline + style.min.css) --}}
+    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.0" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.0"></noscript>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     @yield('schema')
     @yield('head')
 </head>
@@ -276,9 +294,12 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ asset('js/app.js') }}?v=6.1"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="{{ asset('js/app.js') }}?v=7.0" defer></script>
+{{-- Font Awesome deferred to end of body (non-critical icons) --}}
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 @yield('scripts')
 </body>
 </html>
