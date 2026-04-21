@@ -1296,6 +1296,8 @@ body {
     max-width: 520px;
     max-height: 90vh;
     margin: 5vh auto;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 #rentModal .modal-content {
@@ -1510,6 +1512,8 @@ body {
     #rentModal .modal-dialog {
         max-width: 92%;
         margin: 0 auto;
+        margin-left: auto !important;
+        margin-right: auto !important;
         display: flex;
         align-items: center;
         min-height: 100vh;
