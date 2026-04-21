@@ -57,19 +57,19 @@
     .d-flex{display:flex!important}
     .align-items-center{align-items:center!important}
 
-    /* Badge */
-    .badge{display:inline-block;padding:.35em .65em;font-size:.75em;font-weight:700;line-height:1;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.375rem}
-    .badge-success{color:#fff;background-color:var(--success)}
-    .badge-danger{color:#fff;background-color:var(--danger)}
-    .badge-primary{color:#fff;background-color:var(--primary)}
-    .badge-secondary{color:#fff;background-color:var(--gray-500)}
-    .badge-warning{color:#fff;background-color:var(--warning)}
-    .badge-info{color:#fff;background-color:var(--info)}
+    /* Badge — match style.min.css gradient pills to prevent CLS */
+    .badge{display:inline-block;padding:.35em .65em;font-size:.75em;font-weight:700;line-height:1;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:var(--radius-full)}
+    .badge-success{background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#15803d;padding:5px 14px;font-size:.8rem;font-weight:600;border:1px solid #86efac}
+    .badge-danger{background:linear-gradient(135deg,#fef2f2,#fee2e2);color:#b91c1c;padding:5px 14px;font-size:.8rem;font-weight:600;border:1px solid #fca5a5}
+    .badge-primary{color:#fff;background-color:var(--primary);padding:5px 14px;font-size:.8rem;font-weight:600}
+    .badge-secondary{color:#fff;background-color:var(--gray-500);padding:5px 14px;font-size:.8rem;font-weight:600}
+    .badge-warning{background:linear-gradient(135deg,#fffbeb,#fef3c7);color:#b45309;padding:5px 14px;font-size:.8rem;font-weight:600;border:1px solid #fcd34d}
+    .badge-info{background:linear-gradient(135deg,#eff6ff,#dbeafe);color:#1d4ed8;padding:5px 14px;font-size:.8rem;font-weight:600;border:1px solid #93c5fd}
 
-    /* Button */
-    .btn{display:inline-block;font-weight:600;text-align:center;vertical-align:middle;cursor:pointer;user-select:none;border:1px solid transparent;padding:8px 20px;font-size:.88rem;line-height:1.5;border-radius:var(--radius-sm);transition:all .15s ease}
-    .btn-primary{color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-color:var(--primary)}
-    .btn-secondary{color:#fff;background:var(--gray-400);border-color:var(--gray-400)}
+    /* Button — match style.min.css final dimensions */
+    .btn{display:inline-block;font-weight:600;text-align:center;vertical-align:middle;cursor:pointer;user-select:none;border:none;padding:8px 20px;font-size:13px;line-height:1.5;border-radius:var(--radius-full);transition:all .2s ease}
+    .btn-primary{color:#fff;background:linear-gradient(135deg,#43a047,#388e3c);box-shadow:0 2px 8px rgba(67,160,71,.25)}
+    .btn-secondary{background:var(--gray-100);color:var(--gray-600);border:1px solid var(--gray-300)}
     .btn-sm{padding:5px 14px;font-size:.82rem;border-radius:var(--radius-sm)}
     .btn:disabled,.btn[disabled]{opacity:.55;cursor:not-allowed}
     .btn-blink{font-weight:700;position:relative;animation:greenPulse 2s ease-in-out infinite;will-change:transform}
@@ -106,17 +106,16 @@
     .hero-stat-number{font-size:1.8rem;font-weight:900;color:#fff}
     .hero-stat-label{font-size:.72rem;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;font-weight:700}
 
-    /* Service Strip — explicit min-height to prevent CLS */
-    .service-strip{background:var(--white);padding:20px 16px;border-bottom:1px solid var(--gray-200);min-height:130px}
-    .service-strip-inner{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
-    .service-strip-inner::-webkit-scrollbar{display:none}
-    .service-card{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:80px;padding:12px 8px;border-radius:var(--radius-md);text-decoration:none!important;color:var(--gray-700)!important;font-size:.72rem;font-weight:600;text-align:center;scroll-snap-align:start;transition:background .15s ease;flex-shrink:0}
+    /* Service Strip — dimensions match style.min.css to prevent CLS on async load */
+    .service-strip{background:var(--white);padding:36px 20px 16px;border-bottom:1px solid var(--gray-200);min-height:130px;max-width:1200px;margin:0 auto}
+    .service-strip-inner{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .service-card{display:flex;flex-direction:column;align-items:center;gap:8px;width:108px;min-width:108px;padding:16px 10px;border-radius:var(--radius-md);text-decoration:none!important;color:var(--gray-700)!important;font-size:12px;font-weight:700;text-align:center;transition:all .25s ease;flex-shrink:0;background:var(--white);border:2px solid var(--gray-300);box-shadow:0 2px 8px rgba(0,0,0,.06)}
     .service-card:hover{background:var(--gray-50);color:var(--primary)!important}
-    .service-icon{width:52px;height:52px;border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--gray-50);border:1px solid var(--gray-200);aspect-ratio:1/1}
-    .service-icon img{width:68px;height:68px;object-fit:contain}
+    .service-icon{width:56px;height:56px;border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--gray-50);border:1px solid var(--gray-200);aspect-ratio:1/1}
+    .service-icon img{width:56px;height:56px;object-fit:contain}
 
-    /* Accounts overlay */
-    .overlay{max-width:1200px;margin:0 auto;padding:16px}
+    /* Accounts overlay — dimensions match style.min.css final state */
+    .overlay{max-width:1200px;margin:16px auto 0;padding:0;border-radius:var(--radius-lg);background:var(--white);border:2px solid var(--gray-300);box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden}
     .seo-section{padding:48px 24px}
     .seo-section-title{font-size:1.5rem;font-weight:800;text-align:center;color:var(--gray-900);margin-bottom:8px}
     .seo-section-subtitle{text-align:center;color:var(--gray-500);font-size:.88rem;margin-bottom:32px;max-width:560px;margin-left:auto;margin-right:auto}
@@ -148,14 +147,13 @@
 
     /* Mobile responsive */
     @media(max-width:992px){.header-right-actions{display:none}.mobile-menu-toggle{display:block}}
-    @media(max-width:768px){.hero-banner{padding:48px 16px 40px;min-height:360px}.hero-title{font-size:1.8rem}.hero-stats{gap:24px}.hero-stat-number{font-size:1.5rem}.hero-search{flex-direction:column;border-radius:var(--radius-lg)}.hero-search-btn{border-radius:0}.main-header{padding:0 12px}.service-strip{min-height:280px}}
-    @media(max-width:480px){.hero-title{font-size:1.5rem}.hero-subtitle{font-size:.88rem}.hero-stats{gap:16px}.hero-stat-number{font-size:1.2rem}.main-header{padding:0 12px}.seo-section-title{font-size:1.3rem}.seo-section{padding:36px 16px}}
+    @media(max-width:768px){.hero-banner{padding:48px 16px 40px;min-height:360px}.hero-title{font-size:1.8rem}.hero-stats{gap:24px}.hero-stat-number{font-size:1.5rem}.hero-search{flex-direction:column;border-radius:var(--radius-lg)}.hero-search-btn{border-radius:0}.main-header{padding:0 12px}.service-strip-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.service-card{width:auto;min-width:auto;padding:14px 8px}.service-icon{width:50px;height:50px}.service-icon img{width:50px;height:50px}.service-card span{font-size:.72rem}}
+    @media(max-width:480px){.hero-title{font-size:1.5rem}.hero-subtitle{font-size:.88rem}.hero-stats{gap:16px}.hero-stat-number{font-size:1.2rem}.main-header{padding:0 12px}.seo-section-title{font-size:1.3rem}.seo-section{padding:36px 16px}.service-strip-inner{grid-template-columns:repeat(4,1fr);gap:8px}.service-strip{padding:24px 12px 12px}.service-card{padding:10px 4px;gap:6px}.service-icon{width:44px;height:44px}.service-icon img{width:44px;height:44px}.service-card{font-size:.68rem}}
     </style>
 
-    {{-- Preconnect CDN origins --}}
+    {{-- Preconnect CDN origins (max 4) --}}
     <link rel="preconnect" href="https://code.jquery.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
     {{-- CSS: async load to avoid render-blocking (CLS=0 maintained by inline critical CSS + display=optional) --}}
     <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.2" as="style" onload="this.onload=null;this.rel='stylesheet'">
