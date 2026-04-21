@@ -120,9 +120,11 @@
     #account-table .table td{border-color:#cbd5e1;font-weight:500;color:#1e293b}
     #account-table .table tbody tr:nth-child(even){background:#f8fafc}
 
-    /* Modal base - prevent flash */
-    .modal{display:none}
+    /* Modal base - prevent flash + fix centering */
+    .modal{display:none;padding-right:0!important}
     .modal-backdrop{display:none}
+    body.modal-open{padding-right:0!important;overflow:hidden}
+    .modal-dialog{margin-left:auto!important;margin-right:auto!important}
 
     /* Mobile responsive */
     @media(max-width:992px){.header-right-actions{display:none}.mobile-menu-toggle{display:block}}
