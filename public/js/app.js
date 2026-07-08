@@ -194,20 +194,4 @@ $(document).ready(function () {
         }
     });
 
-    // Hero search → thuetaikhoan.net
-    function doHeroSearch() {
-        var q = document.getElementById('heroSearchInput');
-        if (q && q.value.trim()) window.open('https://thuetaikhoan.net/ord-services?q=' + encodeURIComponent(q.value.trim()), '_blank');
-    }
-    $(document).on('click', '#heroSearchBtn', doHeroSearch);
-    $(document).on('keypress', '#heroSearchInput', function (e) { if (e.which === 13) doHeroSearch(); });
-    // Hero popular tags click → fill search and trigger
-    $(document).on('click', '.hero-tag', function (e) {
-        e.preventDefault();
-        var term = $(this).data('search');
-        if (term) {
-            $('#heroSearchInput').val(term);
-            doHeroSearch();
-        }
-    });
 });

@@ -223,23 +223,23 @@
     <div class="hero-content">
         <h1 class="hero-title">Thuê Tài Khoản <span class="hero-highlight">GSM Tool</span> Tự Động 24/7</h1>
         <p class="hero-subtitle">Hệ thống cho thuê tài khoản UnlockTool, Vietmap, Griffin, Samsung Tool và hơn 20+ công cụ GSM khác. Nhận tài khoản ngay sau khi thanh toán!</p>
-        <div class="hero-search">
-            <input type="text" id="heroSearchInput" placeholder="Tìm kiếm: Mua sơ đồ, Unlocktool, Tool FRP, Credits, Bypass A12..." class="hero-search-input">
-            <button id="heroSearchBtn" class="hero-search-btn">Tìm kiếm</button>
-        </div>
+        <form class="hero-search" action="https://thuetaikhoan.com.vn/ord-services" method="GET" id="heroSearchForm" target="_blank">
+            <input type="text" name="q" id="heroSearchInput" placeholder="Tìm kiếm: Mua sơ đồ, Unlocktool, Tool FRP, Credits, Bypass A12..." class="hero-search-input">
+            <button type="submit" id="heroSearchBtn" class="hero-search-btn">Tìm kiếm</button>
+        </form>
         <div class="hero-tags">
             <span class="hero-tags-label">Phổ biến:</span>
-            <a href="#" class="hero-tag" data-search="unlocktool">unlocktool</a>
-            <a href="#" class="hero-tag" data-search="griffin">griffin</a>
-            <a href="#" class="hero-tag" data-search="hfz">hfz</a>
-            <a href="#" class="hero-tag" data-search="samsung tool">samsung tool</a>
-            <a href="#" class="hero-tag" data-search="bypass icloud">bypass icloud</a>
-            <a href="#" class="hero-tag" data-search="credits">credits</a>
-            <a href="#" class="hero-tag" data-search="sơ đồ">sơ đồ</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services?q=unlocktool" target="_blank" class="hero-tag">unlocktool</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services?q=griffin" target="_blank" class="hero-tag">griffin</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services?q=hfz" target="_blank" class="hero-tag">hfz</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services?q=samsung+tool" target="_blank" class="hero-tag">samsung tool</a>
+            <a href="https://thuetaikhoan.com.vn/bypass-icloud" target="_blank" class="hero-tag">bypass icloud</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services?q=credits" target="_blank" class="hero-tag">credits</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services?cat=Mobile+Phone+Tools&subcat=Schematics+%2F+S%C6%A1+%C4%91%E1%BB%93" target="_blank" class="hero-tag">sơ đồ</a>
         </div>
         <div class="hero-cta-row">
-            <a href="https://thuetaikhoan.com.vn/check-imei" target="_blank" class="hero-cta-btn hero-cta-dark"><i class="fas fa-mobile-alt"></i> Check IMEI</a>
-            <a href="#account-table" class="hero-cta-btn hero-cta-orange">Tất cả dịch vụ →</a>
+            <a href="https://thuetaikhoan.com.vn/check-imei" target="_blank" class="hero-cta-btn hero-cta-dark"><i class="fas fa-info-circle"></i> Check IMEI</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services" target="_blank" class="hero-cta-btn hero-cta-orange">Tất cả dịch vụ →</a>
         </div>
         <div class="hero-stats">
             <div class="hero-stat"><div class="hero-stat-number">500.000</div><div class="hero-stat-label">ĐƠN HÀNG</div></div>
