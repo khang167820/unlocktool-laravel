@@ -221,10 +221,10 @@
 <section class="hero-banner" id="hero">
     <div class="hero-particles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <div class="hero-content">
-        <h1 class="hero-title">Thuê Tài Khoản <span class="hero-highlight">GSM Tool</span> Tự Động 24/7</h1>
-        <p class="hero-subtitle">Hệ thống cho thuê tài khoản UnlockTool, Vietmap, Griffin, Samsung Tool và hơn 20+ công cụ GSM khác. Nhận tài khoản ngay sau khi thanh toán!</p>
+        <h1 class="hero-title">Thuê Tài Khoản <span class="hero-highlight">UnlockTool</span> Giá Rẻ Từ 8K</h1>
+        <p class="hero-subtitle">Chuyên cho thuê UnlockTool, Griffin, Samsung Tool — hỗ trợ FRP Bypass, xóa Mi Account, mở khóa mạng. Hệ thống tự động, nhận tài khoản ngay 30 giây sau thanh toán!</p>
         <form class="hero-search" action="https://thuetaikhoan.com.vn/ord-services" method="GET" id="heroSearchForm" target="_blank">
-            <input type="text" name="q" id="heroSearchInput" placeholder="Tìm kiếm: Mua sơ đồ, Unlocktool, Tool FRP, Credits, Bypass A12..." class="hero-search-input">
+            <input type="text" name="q" id="heroSearchInput" placeholder="Tìm kiếm: Unlocktool, FRP Bypass, Griffin, Credits, Sơ đồ mạch..." class="hero-search-input">
             <button type="submit" id="heroSearchBtn" class="hero-search-btn">Tìm kiếm</button>
         </form>
         <div class="hero-tags">
@@ -242,9 +242,9 @@
             <a href="https://thuetaikhoan.com.vn/ord-services" target="_blank" class="hero-cta-btn hero-cta-orange">Tất cả dịch vụ →</a>
         </div>
         <div class="hero-stats">
-            <div class="hero-stat"><div class="hero-stat-number">500.000</div><div class="hero-stat-label">ĐƠN HÀNG</div></div>
-            <div class="hero-stat"><div class="hero-stat-number">99</div><div class="hero-stat-label">% HÀI LÒNG</div></div>
-            <div class="hero-stat"><div class="hero-stat-number">7.000</div><div class="hero-stat-label">DỊCH VỤ</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">6.500+</div><div class="hero-stat-label">ĐƠN HÀNG</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">99%</div><div class="hero-stat-label">HÀI LÒNG</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">10+</div><div class="hero-stat-label">DỊCH VỤ</div></div>
         </div>
     </div>
 </section>
