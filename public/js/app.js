@@ -201,4 +201,13 @@ $(document).ready(function () {
     }
     $(document).on('click', '#heroSearchBtn', doHeroSearch);
     $(document).on('keypress', '#heroSearchInput', function (e) { if (e.which === 13) doHeroSearch(); });
+    // Hero popular tags click → fill search and trigger
+    $(document).on('click', '.hero-tag', function (e) {
+        e.preventDefault();
+        var term = $(this).data('search');
+        if (term) {
+            $('#heroSearchInput').val(term);
+            doHeroSearch();
+        }
+    });
 });

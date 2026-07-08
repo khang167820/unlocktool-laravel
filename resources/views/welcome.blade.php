@@ -221,16 +221,30 @@
 <section class="hero-banner" id="hero">
     <div class="hero-particles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <div class="hero-content">
-        <h1 class="hero-title">Thuê Tài Khoản <span class="hero-highlight">UnlockTool</span> Tự Động 24/7</h1>
-        <p class="hero-subtitle">Hệ thống cho thuê tài khoản UnlockTool, Griffin, Samsung Tool và hơn 10+ công cụ GSM khác. Nhận tài khoản ngay sau khi thanh toán!</p>
+        <h1 class="hero-title">Thuê Tài Khoản <span class="hero-highlight">GSM Tool</span> Tự Động 24/7</h1>
+        <p class="hero-subtitle">Hệ thống cho thuê tài khoản UnlockTool, Vietmap, Griffin, Samsung Tool và hơn 20+ công cụ GSM khác. Nhận tài khoản ngay sau khi thanh toán!</p>
         <div class="hero-search">
-            <input type="text" id="heroSearchInput" placeholder="Tìm kiếm: Mua sơ đồ, Unlocktool, tool FRP, Credits, Bypass A12..." class="hero-search-input">
-            <button id="heroSearchBtn" class="hero-search-btn"><i class="fas fa-search"></i> Tìm kiếm</button>
+            <input type="text" id="heroSearchInput" placeholder="Tìm kiếm: Mua sơ đồ, Unlocktool, Tool FRP, Credits, Bypass A12..." class="hero-search-input">
+            <button id="heroSearchBtn" class="hero-search-btn">Tìm kiếm</button>
+        </div>
+        <div class="hero-tags">
+            <span class="hero-tags-label">Phổ biến:</span>
+            <a href="#" class="hero-tag" data-search="unlocktool">unlocktool</a>
+            <a href="#" class="hero-tag" data-search="griffin">griffin</a>
+            <a href="#" class="hero-tag" data-search="hfz">hfz</a>
+            <a href="#" class="hero-tag" data-search="samsung tool">samsung tool</a>
+            <a href="#" class="hero-tag" data-search="bypass icloud">bypass icloud</a>
+            <a href="#" class="hero-tag" data-search="credits">credits</a>
+            <a href="#" class="hero-tag" data-search="sơ đồ">sơ đồ</a>
+        </div>
+        <div class="hero-cta-row">
+            <a href="https://thuetaikhoan.com.vn/check-imei" target="_blank" class="hero-cta-btn hero-cta-dark"><i class="fas fa-mobile-alt"></i> Check IMEI</a>
+            <a href="#account-table" class="hero-cta-btn hero-cta-orange">Tất cả dịch vụ →</a>
         </div>
         <div class="hero-stats">
-            <div class="hero-stat"><div class="hero-stat-number">6,500+</div><div class="hero-stat-label">Đơn hàng</div></div>
-            <div class="hero-stat"><div class="hero-stat-number">99%</div><div class="hero-stat-label">Hài lòng</div></div>
-            <div class="hero-stat"><div class="hero-stat-number">10+</div><div class="hero-stat-label">Dịch vụ</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">500.000</div><div class="hero-stat-label">ĐƠN HÀNG</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">99</div><div class="hero-stat-label">% HÀI LÒNG</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">7.000</div><div class="hero-stat-label">DỊCH VỤ</div></div>
         </div>
     </div>
 </section>
