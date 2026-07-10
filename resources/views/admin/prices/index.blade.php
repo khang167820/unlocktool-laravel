@@ -71,14 +71,14 @@
                     </td>
                     <td style="font-weight: 600; color: #10b981;">{{ number_format($price->price) }}đ</td>
                     <td>
-                        @if($price->night_price)
+                        @if(($price->night_price ?? null))
                             <div style="font-weight: 600; color: #f59e0b;">{{ number_format($price->night_price) }}đ</div>
                             <div style="font-size: 11px; color: #64748b;">{{ $price->night_start ?? '21:00' }} → {{ $price->night_end ?? '09:00' }}</div>
                             @php
                                 $priceModel = new \App\Models\Price();
                                 $priceModel->night_price = $price->night_price;
-                                $priceModel->night_start = $price->night_start;
-                                $priceModel->night_end = $price->night_end;
+                                $priceModel->night_start = $price->night_start ?? '21:00';
+                                $priceModel->night_end = $price->night_end ?? '09:00';
                                 $isNight = $priceModel->isNightTime();
                             @endphp
                             <span class="badge {{ $isNight ? 'badge-active' : 'badge-pending' }}" style="font-size: 10px;">{{ $isNight ? '🌙 Đang áp dụng' : '☀️ Giá ngày' }}</span>
