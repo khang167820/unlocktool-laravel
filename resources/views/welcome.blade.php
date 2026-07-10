@@ -212,6 +212,23 @@
     ]
 }
 </script>
+
+<!-- 6. WebPage Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://unlocktool.us/#webpage",
+    "url": "https://unlocktool.us/",
+    "name": "Thuê UnlockTool Giá Rẻ Từ 8K - Tự Động 24/7 | UnlockTool.us",
+    "description": "Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau thanh toán.",
+    "isPartOf": {"@id": "https://unlocktool.us/#website"},
+    "about": {"@id": "https://unlocktool.us/#organization"},
+    "dateModified": "{{ now()->toIso8601String() }}",
+    "inLanguage": "vi",
+    "potentialAction": [{"@type": "ReadAction", "target": ["https://unlocktool.us/"]}]
+}
+</script>
 @endverbatim
 @endsection
 
