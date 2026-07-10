@@ -49,7 +49,7 @@
     .table tbody tr:nth-child(even){background:var(--gray-50)}
     .table-bordered{border:1px solid var(--gray-200)!important}
     .table-bordered th,.table-bordered td{border:1px solid var(--gray-100)!important}
-    .table-responsive{display:block;width:100%;overflow-x:auto;overflow-y:auto;max-height:520px;-webkit-overflow-scrolling:touch;border-radius:var(--radius-lg)}
+    .table-responsive{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius-lg)}
     .text-center{text-align:center!important}
     .text-muted{color:var(--gray-400)!important}
     .text-success{color:var(--success)!important}
@@ -176,8 +176,8 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
     {{-- CSS: async load to avoid render-blocking (CLS=0 maintained by inline critical CSS + display=optional) --}}
-    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.4" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.4"></noscript>
+    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.5" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.5"></noscript>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional"></noscript>
     @yield('schema')
@@ -319,7 +319,7 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ asset('js/app.js') }}?v=7.3"></script>
+<script src="{{ asset('js/app.js') }}?v=7.4"></script>
 {{-- Font Awesome deferred to end of body (non-critical icons) --}}
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>

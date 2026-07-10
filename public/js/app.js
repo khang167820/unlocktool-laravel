@@ -121,6 +121,81 @@ function createVirtualRentingAccounts() {
 
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(newTimers)); } catch (e) { }
 }
+// ===== Table Pagination =====
+var ROWS_PER_PAGE = 10;
+var currentPage = 1;
+
+function initPagination() {
+    var tbody = document.querySelector('#account-table table tbody');
+    if (!tbody) return;
+    var rows = tbody.querySelectorAll('tr');
+    var totalPages = Math.ceil(rows.length / ROWS_PER_PAGE);
+    if (totalPages <= 1) {
+        var pag = document.getElementById('tablePagination');
+        if (pag) pag.style.display = 'none';
+        return;
+    }
+    showPage(1, rows, totalPages);
+}
+
+function showPage(page, rows, totalPages) {
+    if (!rows) {
+        var tbody = document.querySelector('#account-table table tbody');
+        if (!tbody) return;
+        rows = tbody.querySelectorAll('tr');
+        totalPages = Math.ceil(rows.length / ROWS_PER_PAGE);
+    }
+    currentPage = page;
+    var start = (page - 1) * ROWS_PER_PAGE;
+    var end = start + ROWS_PER_PAGE;
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].style.display = (i >= start && i < end) ? '' : 'none';
+    }
+    renderPageNumbers(page, totalPages);
+    // Scroll to table top
+    var table = document.getElementById('account-table');
+    if (table && page > 1) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderPageNumbers(current, total) {
+    var container = document.getElementById('pageNumbers');
+    var prevBtn = document.getElementById('pagePrev');
+    var nextBtn = document.getElementById('pageNext');
+    if (!container) return;
+    container.innerHTML = '';
+    prevBtn.disabled = current <= 1;
+    nextBtn.disabled = current >= total;
+    prevBtn.onclick = function() { if (current > 1) showPage(current - 1); };
+    nextBtn.onclick = function() { if (current < total) showPage(current + 1); };
+
+    var pages = [];
+    if (total <= 7) {
+        for (var i = 1; i <= total; i++) pages.push(i);
+    } else {
+        pages.push(1);
+        if (current > 3) pages.push('...');
+        var s = Math.max(2, current - 1);
+        var e = Math.min(total - 1, current + 1);
+        for (var j = s; j <= e; j++) pages.push(j);
+        if (current < total - 2) pages.push('...');
+        pages.push(total);
+    }
+
+    pages.forEach(function(p) {
+        if (p === '...') {
+            var span = document.createElement('span');
+            span.className = 'page-ellipsis';
+            span.textContent = '...';
+            container.appendChild(span);
+        } else {
+            var btn = document.createElement('button');
+            btn.className = 'page-btn' + (p === current ? ' active' : '');
+            btn.textContent = p;
+            btn.onclick = (function(pg) { return function() { showPage(pg); }; })(p);
+            container.appendChild(btn);
+        }
+    });
+}
 
 // ===== jQuery-dependent functionality =====
 $(document).ready(function () {
@@ -129,11 +204,13 @@ $(document).ready(function () {
         requestIdleCallback(function() {
             createVirtualRentingAccounts();
             updateAllTimers();
+            initPagination();
         });
     } else {
         setTimeout(function() {
             createVirtualRentingAccounts();
             updateAllTimers();
+            initPagination();
         }, 50);
     }
 

@@ -328,6 +328,11 @@
             </tbody>
         </table>
     </div>
+    <div class="table-pagination" id="tablePagination">
+        <button class="page-btn page-prev" id="pagePrev" title="Trang trước">‹</button>
+        <div class="page-numbers" id="pageNumbers"></div>
+        <button class="page-btn page-next" id="pageNext" title="Trang sau">›</button>
+    </div>
 </div>
 
 {{-- ===== GUIDE + PAYMENT ===== --}}
