@@ -27,7 +27,7 @@ class CheckoutController extends Controller
         return view('checkout', [
             'price' => $price,
             'packageName' => OrderHelper::displayPackageName($price->hours),
-            'formattedPrice' => OrderHelper::formatMoney($price->price),
+            'formattedPrice' => OrderHelper::formatMoney($price->getEffectivePrice()),
             'accountsAvailable' => $accountsAvailable,
         ]);
     }
@@ -62,7 +62,7 @@ class CheckoutController extends Controller
         // === CREATE ORDER ===
 
         $price = Price::findOrFail($request->price_id);
-        $amount = (int) $price->price;
+        $amount = $price->getEffectivePrice();
 
         if ($amount < 1000 || $amount > 10000000000) {
             abort(400, 'Số tiền thuê không hợp lệ.');

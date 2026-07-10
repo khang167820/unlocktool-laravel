@@ -502,7 +502,9 @@
                             elseif ($hours <= 168) { $badge = 'Đặc biệt'; $badgeClass = 'badge-special'; }
                             else { $badge = 'Flash Sale'; $badgeClass = 'badge-flash'; }
                             $displayName = \App\Helpers\OrderHelper::displayPackageName($hours);
-                            $displayPrice = \App\Helpers\OrderHelper::formatMoney($price->price);
+                            $effectivePrice = $price->effective_price ?? $price->price;
+                            $displayPrice = \App\Helpers\OrderHelper::formatMoney($effectivePrice);
+                            $isNight = $price->is_night ?? false;
                         @endphp
                         <label class="rent-package-option {{ $index === 0 ? 'selected' : '' }}" data-price-id="{{ $price->id }}">
                             <input type="radio" name="package_radio" {{ $index === 0 ? 'checked' : '' }}>
@@ -510,11 +512,17 @@
                                 <div class="rent-package-badges">
                                     <span class="rent-badge {{ $badgeClass }}">{{ $badge }}</span>
                                     <span class="rent-duration-tag">{{ $displayName }}</span>
+                                    @if($isNight)
+                                        <span class="rent-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-size: 10px;">🌙 Giá đêm</span>
+                                    @endif
                                 </div>
                                 <div class="rent-package-name">UnlockTool {{ $displayName }}</div>
                                 <div class="rent-package-time">Thời hạn: {{ $hours }} giờ</div>
                             </div>
                             <div class="rent-package-price">
+                                @if($isNight && $price->price != $effectivePrice)
+                                    <div style="text-decoration: line-through; color: #94a3b8; font-size: 12px;">{{ \App\Helpers\OrderHelper::formatMoney($price->price) }}</div>
+                                @endif
                                 <strong>{{ $displayPrice }}</strong>
                             </div>
                         </label>

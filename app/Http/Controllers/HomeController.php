@@ -13,8 +13,12 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // Get all prices
+        // Get all prices and apply night discount
         $allPrices = Price::orderBy('hours', 'asc')->get();
+        foreach ($allPrices as $price) {
+            $price->effective_price = $price->getEffectivePrice();
+            $price->is_night = $price->isNightTime();
+        }
 
         // Get accounts list - available first, then by ID
         $accounts = Account::select('accounts.*', DB::raw('

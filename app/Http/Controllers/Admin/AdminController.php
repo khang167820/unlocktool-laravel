@@ -519,7 +519,13 @@ class AdminController extends Controller
             'discount_percent' => 'nullable|integer',
             'promo_badge' => 'nullable|string',
             'promo_end' => 'nullable|date',
+            'night_price' => 'nullable|integer|min:0',
+            'night_start' => 'nullable|string|max:5',
+            'night_end' => 'nullable|string|max:5',
         ]);
+        
+        // If night_price is 0 or empty, treat as disabled
+        $nightPrice = !empty($data['night_price']) ? $data['night_price'] : null;
         
         $priceData = [
             'hours' => $data['hours'],
@@ -529,6 +535,9 @@ class AdminController extends Controller
             'discount_percent' => $data['discount_percent'] ?? null,
             'promo_badge' => $data['promo_badge'] ?? null,
             'promo_end' => $data['promo_end'] ?? null,
+            'night_price' => $nightPrice,
+            'night_start' => $nightPrice ? ($data['night_start'] ?? '21:00') : null,
+            'night_end' => $nightPrice ? ($data['night_end'] ?? '09:00') : null,
         ];
         
         if ($id) {
