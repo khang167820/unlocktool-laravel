@@ -189,6 +189,130 @@ class AdminController extends Controller
         return back()->with('success', $msg);
     }
     
+    /**
+     * Get available accounts for reassignment (AJAX).
+     */
+    public function getAvailableAccounts($id)
+    {
+        $order = Order::with('account')->findOrFail($id);
+        
+        $accounts = DB::table('accounts')
+            ->where('is_available', 1)
+            ->where(function ($q) {
+                $q->whereNull('note')->orWhere('note', '');
+            })
+            ->orderBy('id', 'asc')
+            ->get(['id', 'username', 'password']);
+        
+        return response()->json([
+            'accounts' => $accounts,
+            'current_account_id' => $order->account_id,
+            'current_username' => $order->account->username ?? null,
+        ]);
+    }
+    
+    /**
+     * Reassign a different account to an order.
+     */
+    public function reassignAccount(Request $request, $id)
+    {
+        $order = Order::with('account')->findOrFail($id);
+        
+        $request->validate([
+            'account_id' => 'nullable|integer',
+            'custom_username' => 'nullable|string|max:255',
+            'custom_password' => 'nullable|string|max:255',
+        ]);
+        
+        $oldAccountId = $order->account_id;
+        
+        // Option 1: Select from available accounts
+        if ($request->filled('account_id')) {
+            $newAccount = DB::table('accounts')->where('id', $request->account_id)->first();
+            
+            if (!$newAccount) {
+                return back()->with('error', 'Tài khoản không tồn tại!');
+            }
+            
+            // Release old account + generate new password
+            if ($oldAccountId && $oldAccountId != $request->account_id) {
+                $newPass = 'Unlock' . random_int(100, 999);
+                DB::table('accounts')->where('id', $oldAccountId)->update([
+                    'is_available' => 1,
+                    'note' => null,
+                    'note_date' => null,
+                    'new_password' => $newPass,
+                    'needs_password_sync' => 1,
+                    'password_changed' => 0,
+                    'rental_expires_at' => null,
+                    'rental_order_code' => null,
+                ]);
+            }
+            
+            // Assign new account to order
+            $order->account_id = $newAccount->id;
+            $order->save();
+            
+            // Lock new account
+            DB::table('accounts')->where('id', $newAccount->id)->update([
+                'is_available' => 0,
+                'rental_expires_at' => $order->expires_at,
+                'rental_order_code' => $order->tracking_code,
+                'password_synced_at' => null,
+                'needs_password_sync' => 0,
+                'new_password' => null,
+            ]);
+            
+            Log::info("Admin reassigned order #{$order->id} ({$order->tracking_code}): account #{$oldAccountId} → #{$newAccount->id} ({$newAccount->username})");
+            
+            return back()->with('success', "Đã đổi tài khoản thành {$newAccount->username} cho đơn #{$order->id}!");
+        }
+        
+        // Option 2: Custom username/password (manual entry)
+        if ($request->filled('custom_username') && $request->filled('custom_password')) {
+            // Release old account
+            if ($oldAccountId) {
+                $newPass = 'Unlock' . random_int(100, 999);
+                DB::table('accounts')->where('id', $oldAccountId)->update([
+                    'is_available' => 1,
+                    'note' => null,
+                    'note_date' => null,
+                    'new_password' => $newPass,
+                    'needs_password_sync' => 1,
+                    'password_changed' => 0,
+                    'rental_expires_at' => null,
+                    'rental_order_code' => null,
+                ]);
+            }
+            
+            // Try to find existing account by username
+            $existingAccount = DB::table('accounts')
+                ->where('username', $request->custom_username)
+                ->first();
+            
+            if ($existingAccount) {
+                $order->account_id = $existingAccount->id;
+                $order->save();
+                
+                DB::table('accounts')->where('id', $existingAccount->id)->update([
+                    'is_available' => 0,
+                    'password' => $request->custom_password,
+                    'rental_expires_at' => $order->expires_at,
+                    'rental_order_code' => $order->tracking_code,
+                ]);
+            } else {
+                $order->account_id = null;
+                $order->save();
+            }
+            
+            Log::info("Admin manually reassigned order #{$order->id} ({$order->tracking_code}): custom account {$request->custom_username}");
+            
+            return back()->with('success', "Đã cập nhật tài khoản {$request->custom_username} cho đơn #{$order->id}!");
+        }
+        
+        return back()->with('error', 'Vui lòng chọn tài khoản hoặc nhập thông tin tài khoản!');
+    }
+    
     // ==================== ACCOUNTS ====================
     
     public function accounts(Request $request)

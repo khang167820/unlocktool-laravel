@@ -59,15 +59,33 @@
                         <span class="badge badge-cancelled">{{ $order->status }}</span>
                     @endif
                 </td>
-                <td>
+                <td style="font-size: 13px;">
                     @if($order->account)
-                        <div>
-                            <span style="color: #3b82f6; cursor: pointer;" title="{{ $order->account->username }}">
-                                🔑 <strong>{{ $order->account->username }}</strong>
-                            </span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div>
+                                <div style="color: #3b82f6; font-weight: 600;">
+                                    🔑 {{ $order->account->username }}
+                                </div>
+                                <div style="color: var(--text-muted); font-family: monospace; font-size: 11px;">
+                                    🔒 {{ $order->assigned_password ?? $order->account->password }}
+                                </div>
+                            </div>
+                            @if(in_array($order->status, ['paid', 'completed']))
+                            <button type="button" onclick="openReassignModal({{ $order->id }}, '{{ $order->tracking_code }}')"
+                                title="Đổi tài khoản"
+                                style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 6px; cursor: pointer; font-size: 12px; line-height: 1; color: var(--text-muted); flex-shrink: 0; transition: all 0.15s;">
+                                🔄
+                            </button>
+                            @endif
                         </div>
-                        <div style="font-size: 13px; color: var(--text-muted); font-family: monospace;">
-                            {{ $order->assigned_password ?? $order->account->password }}
+                    @elseif(in_array($order->status, ['paid', 'completed']))
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="color: #f59e0b;">⚠️ Chưa gán</span>
+                            <button type="button" onclick="openReassignModal({{ $order->id }}, '{{ $order->tracking_code }}')"
+                                title="Gán tài khoản"
+                                style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; padding: 4px 6px; cursor: pointer; font-size: 12px; line-height: 1; color: #f59e0b; flex-shrink: 0;">
+                                ➕
+                            </button>
                         </div>
                     @else
                         <span style="color: var(--text-dimmed);">—</span>
@@ -145,7 +163,80 @@
     </div>
 </div>
 
+{{-- Reassign Account Modal --}}
+<div id="reassignModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center; padding:20px;">
+    <div style="background: var(--bg-secondary, #1e293b); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; width: 480px; max-width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.6);">
+        {{-- Header --}}
+        <div style="padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary, #f1f5f9);">🔄 Đổi tài khoản</h3>
+                <p style="margin: 4px 0 0; font-size: 13px; color: var(--text-dimmed, #64748b);" id="reassignOrderInfo"></p>
+            </div>
+            <button onclick="closeReassignModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-dimmed, #64748b); padding: 4px;">&times;</button>
+        </div>
+        
+        {{-- Body --}}
+        <div style="padding: 24px;">
+            {{-- Tab buttons --}}
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                <button type="button" onclick="switchReassignTab('select')" id="tabSelect"
+                    style="flex: 1; padding: 10px; border: 2px solid #3b82f6; background: rgba(59,130,246,0.15); color: #3b82f6; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s;">
+                    📋 Chọn từ kho
+                </button>
+                <button type="button" onclick="switchReassignTab('custom')" id="tabCustom"
+                    style="flex: 1; padding: 10px; border: 2px solid rgba(255,255,255,0.1); background: transparent; color: var(--text-dimmed, #64748b); border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s;">
+                    ✏️ Nhập thủ công
+                </button>
+            </div>
+            
+            {{-- Tab 1: Select from available accounts --}}
+            <div id="panelSelect">
+                <div id="accountsLoading" style="text-align: center; padding: 20px; color: var(--text-dimmed, #64748b);">
+                    ⏳ Đang tải danh sách tài khoản...
+                </div>
+                <div id="accountsList" style="display: none;">
+                    <p style="margin: 0 0 12px; font-size: 13px; color: var(--text-muted, #94a3b8);">
+                        <span id="accountsCount"></span> tài khoản <strong style="color: #3b82f6;">Unlocktool</strong> đang rảnh:
+                    </p>
+                    <form id="reassignSelectForm" method="POST">
+                        @csrf
+                        <div id="accountsRadioList" style="max-height: 280px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;"></div>
+                        <button type="submit" style="width: 100%; margin-top: 16px; padding: 12px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3); transition: all 0.2s;">
+                            ✅ Xác nhận đổi
+                        </button>
+                    </form>
+                </div>
+                <div id="accountsEmpty" style="display: none; text-align: center; padding: 20px;">
+                    <p style="color: #f59e0b; font-weight: 600;">⚠️ Không có tài khoản nào đang rảnh</p>
+                    <p style="color: var(--text-dimmed, #64748b); font-size: 13px;">Chuyển sang tab "Nhập thủ công" để nhập tài khoản</p>
+                </div>
+            </div>
+            
+            {{-- Tab 2: Custom input --}}
+            <div id="panelCustom" style="display: none;">
+                <form id="reassignCustomForm" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: 600; color: var(--text-muted, #94a3b8); margin-bottom: 6px; font-size: 13px;">Tên tài khoản</label>
+                        <input type="text" name="custom_username" required placeholder="VD: Maiquyen05"
+                            class="form-input" style="width: 100%; font-size: 14px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; color: var(--text-muted, #94a3b8); margin-bottom: 6px; font-size: 13px;">Mật khẩu</label>
+                        <input type="text" name="custom_password" required placeholder="VD: unlock123"
+                            class="form-input" style="width: 100%; font-size: 14px; font-family: monospace;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3); transition: all 0.2s;">
+                        ✅ Xác nhận cập nhật
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+// === Reissue Password Modal ===
 function openReissueModal(orderId, orderCode, accountName, currentPassword) {
     document.getElementById('reissue-order-code').textContent = orderCode;
     document.getElementById('reissue-account-name').textContent = '🔑 ' + accountName;
@@ -161,8 +252,107 @@ function closeReissueModal() {
 document.getElementById('reissue-modal').addEventListener('click', function(e) {
     if (e.target === this) closeReissueModal();
 });
+
+// === Reassign Account Modal ===
+let currentReassignOrderId = null;
+
+function openReassignModal(orderId, trackingCode) {
+    currentReassignOrderId = orderId;
+    document.getElementById('reassignOrderInfo').textContent = 'Đơn #' + orderId + ' — ' + trackingCode;
+    document.getElementById('reassignModal').style.display = 'flex';
+    document.getElementById('reassignSelectForm').action = '/admin/orders/' + orderId + '/reassign-account';
+    document.getElementById('reassignCustomForm').action = '/admin/orders/' + orderId + '/reassign-account';
+    
+    switchReassignTab('select');
+    loadAvailableAccounts(orderId);
+}
+
+function closeReassignModal() {
+    document.getElementById('reassignModal').style.display = 'none';
+    currentReassignOrderId = null;
+}
+
+function switchReassignTab(tab) {
+    const tabSelect = document.getElementById('tabSelect');
+    const tabCustom = document.getElementById('tabCustom');
+    const panelSelect = document.getElementById('panelSelect');
+    const panelCustom = document.getElementById('panelCustom');
+    
+    if (tab === 'select') {
+        tabSelect.style.borderColor = '#3b82f6';
+        tabSelect.style.background = 'rgba(59,130,246,0.15)';
+        tabSelect.style.color = '#3b82f6';
+        tabCustom.style.borderColor = 'rgba(255,255,255,0.1)';
+        tabCustom.style.background = 'transparent';
+        tabCustom.style.color = 'var(--text-dimmed, #64748b)';
+        panelSelect.style.display = 'block';
+        panelCustom.style.display = 'none';
+    } else {
+        tabCustom.style.borderColor = '#10b981';
+        tabCustom.style.background = 'rgba(16,185,129,0.15)';
+        tabCustom.style.color = '#10b981';
+        tabSelect.style.borderColor = 'rgba(255,255,255,0.1)';
+        tabSelect.style.background = 'transparent';
+        tabSelect.style.color = 'var(--text-dimmed, #64748b)';
+        panelSelect.style.display = 'none';
+        panelCustom.style.display = 'block';
+    }
+}
+
+function loadAvailableAccounts(orderId) {
+    const loading = document.getElementById('accountsLoading');
+    const list = document.getElementById('accountsList');
+    const empty = document.getElementById('accountsEmpty');
+    
+    loading.style.display = 'block';
+    list.style.display = 'none';
+    empty.style.display = 'none';
+    
+    fetch('/admin/orders/' + orderId + '/available-accounts')
+        .then(r => r.json())
+        .then(data => {
+            loading.style.display = 'none';
+            
+            if (data.accounts.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+            
+            list.style.display = 'block';
+            document.getElementById('accountsCount').textContent = data.accounts.length;
+            
+            const radioList = document.getElementById('accountsRadioList');
+            radioList.innerHTML = data.accounts.map((acc, i) => `
+                <label style="display:flex; align-items:center; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer; gap:10px; transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                    <input type="radio" name="account_id" value="${acc.id}" ${i === 0 ? 'checked' : ''}
+                        style="accent-color:#3b82f6; width:16px; height:16px; flex-shrink:0;">
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:600; color:var(--text-primary, #f1f5f9); font-size:13px;">${acc.username}</div>
+                        <div style="color:var(--text-dimmed, #64748b); font-family:monospace; font-size:11px;">🔒 ${acc.password}</div>
+                    </div>
+                    <span style="font-size:11px; color:var(--text-dimmed, #64748b);">#${acc.id}</span>
+                </label>
+            `).join('');
+        })
+        .catch(err => {
+            loading.style.display = 'none';
+            empty.style.display = 'block';
+            console.error('Load accounts error:', err);
+        });
+}
+
+// Close modals on backdrop click
+document.getElementById('reassignModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReassignModal();
+});
+
+// Close modals on Escape key
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeReissueModal();
+    if (e.key === 'Escape') {
+        closeReissueModal();
+        closeReassignModal();
+    }
 });
 </script>
 @endsection

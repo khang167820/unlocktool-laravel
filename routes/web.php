@@ -125,6 +125,8 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.status');
     Route::post('/orders/{id}/reissue-password', [AdminController::class, 'reissueOrderPassword'])->name('admin.orders.reissue-password');
+    Route::post('/orders/{id}/reassign-account', [AdminController::class, 'reassignAccount'])->name('admin.orders.reassign');
+    Route::get('/orders/{id}/available-accounts', [AdminController::class, 'getAvailableAccounts'])->name('admin.orders.available-accounts');
     
     // Password Rotation
     Route::get('/password-rotation', [AdminController::class, 'passwordRotation'])->name('admin.password-rotation');
