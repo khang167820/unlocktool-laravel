@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Thuê UnlockTool Giá Rẻ Từ 8K - Tự Động 24/7 | Uy Tín 2026')
+@section('title', 'Thuê Tài Khoản UnlockTool Giá Rẻ Từ 8K | UnlockTool.us - Tự Động 24/7')
 
 @section('meta_description', 'Thuê tài khoản UnlockTool giá rẻ chỉ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay 30 giây. Hỗ trợ FRP Bypass Samsung, Xiaomi. Uy tín 6.500+ đơn.')
 
@@ -267,7 +267,9 @@
 </section>
 
 {{-- ===== SERVICE STRIP ===== --}}
-<section class="service-strip">
+<section class="service-strip" id="dich-vu">
+    <h2 class="seo-section-title" style="margin-bottom:8px;">Dịch Vụ Cho Thuê Phần Mềm Mở Khóa</h2>
+    <p class="seo-section-subtitle">Đa dạng công cụ chuyên dụng: UnlockTool, Griffin, Samsung Tool, AMT, DFT Pro và nhiều hơn nữa</p>
     <div class="service-strip-inner">
         <a class="service-card" href="https://thuetaikhoan.net/thue-unlocktool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Thuê tài khoản Unlocktool giá rẻ" loading="lazy" decoding="async" width="68" height="68"></div><span>Unlocktool</span></a>
         <a class="service-card" href="https://thuetaikhoan.net/thue-griffin.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/griffin.webp') }}" alt="Thuê tài khoản Griffin Unlocker" loading="lazy" decoding="async" width="68" height="68"></div><span>Griffin</span></a>
@@ -285,6 +287,10 @@
 </section>
 
 {{-- ===== ACCOUNTS TABLE ===== --}}
+<section class="seo-section" id="bang-tai-khoan" style="padding-bottom:0;">
+    <h2 class="seo-section-title">Bảng Tài Khoản UnlockTool — Thuê Ngay</h2>
+    <p class="seo-section-subtitle">Chọn tài khoản có trạng thái "Chờ thuê" và nhấn nút <strong>Thuê ngay</strong> để bắt đầu. Hiện có <strong>{{ $availableCount }}</strong> tài khoản sẵn sàng.</p>
+</section>
 <div class="overlay" id="account-table">
     <div class="table-responsive">
         <table class="table table-bordered text-center">
@@ -439,6 +445,37 @@
         <div class="faq-item"><div class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span>UnlockTool hỗ trợ những dòng máy nào?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Samsung, Xiaomi/Redmi/POCO, Oppo, Vivo, Realme, Huawei, LG, Motorola, iPhone.</div></div>
         <div class="faq-item"><div class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span>Giá đại lý có không?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Có. Liên hệ Zalo để nhận giá đại lý tốt nhất.</div></div>
         <div class="faq-item"><div class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span>Quên thông tin tài khoản thì sao?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Tra cứu lại bằng mã đơn hoặc nội dung chuyển khoản trên website, hoặc liên hệ Zalo.</div></div>
+    </div>
+</section>
+
+{{-- ===== GIỚI THIỆU UNLOCKTOOL (SEO CONTENT) ===== --}}
+<section class="seo-section" id="gioi-thieu">
+    <h2 class="seo-section-title">UnlockTool Là Gì? Tại Sao Nên Thuê Thay Vì Mua?</h2>
+    <p class="seo-section-subtitle">Tìm hiểu về phần mềm UnlockTool và lợi ích khi thuê tài khoản tại UnlockTool.us</p>
+    <div class="seo-content-block" style="max-width:900px;margin:0 auto;line-height:1.85;color:#475569;font-size:15px;">
+        <h3 style="font-size:1.15rem;font-weight:700;color:#1e293b;margin-bottom:10px;">UnlockTool — Phần Mềm Mở Khóa Điện Thoại Chuyên Nghiệp</h3>
+        <p style="margin-bottom:16px;"><strong>UnlockTool</strong> là phần mềm mở khóa điện thoại hàng đầu thế giới, được phát triển bởi đội ngũ chuyên gia bảo mật di động. Phần mềm hỗ trợ xử lý hầu hết các vấn đề về khóa trên smartphone hiện đại: <strong>xóa FRP (Factory Reset Protection)</strong> trên Samsung, Xiaomi, Oppo, Vivo; <strong>bypass iCloud</strong> trên iPhone; <strong>xóa Mi Account</strong> trên Xiaomi/Redmi/POCO; <strong>mở khóa mạng (unlock network)</strong>; và <strong>flash firmware</strong> cho nhiều dòng máy.</p>
+        
+        <h3 style="font-size:1.15rem;font-weight:700;color:#1e293b;margin-bottom:10px;">Tại Sao Nên Thuê UnlockTool Thay Vì Mua License?</h3>
+        <p style="margin-bottom:16px;">License chính hãng UnlockTool có giá khoảng <strong>$46 USD/năm (~1.150.000đ)</strong>. Nếu bạn là thợ sửa điện thoại nhỏ lẻ, chỉ thỉnh thoảng cần mở khóa máy cho khách, việc mua license cả năm sẽ rất lãng phí. Với dịch vụ thuê tại <strong>UnlockTool.us</strong>, bạn chỉ trả <strong>từ 8.000đ cho 6 giờ sử dụng</strong> — tiết kiệm hơn <strong>99%</strong> so với mua license. Bạn được sử dụng <strong>full tính năng</strong> giống hệt bản mua, không bị cắt xén bất kỳ chức năng nào.</p>
+
+        <h3 style="font-size:1.15rem;font-weight:700;color:#1e293b;margin-bottom:10px;">UnlockTool Hỗ Trợ Những Dòng Máy Nào?</h3>
+        <p style="margin-bottom:16px;">UnlockTool hỗ trợ rất đa dạng các thương hiệu và dòng máy phổ biến tại Việt Nam:</p>
+        <ul style="margin-bottom:16px;padding-left:20px;">
+            <li style="margin-bottom:6px;"><strong>Samsung:</strong> Xóa FRP, bypass Knox Guard (KG Lock), flash firmware qua Odin. Hỗ trợ Galaxy A, S, M, Tab series.</li>
+            <li style="margin-bottom:6px;"><strong>Xiaomi / Redmi / POCO:</strong> Xóa Mi Account, FRP bypass, unlock bootloader, flash ROM MIUI/HyperOS.</li>
+            <li style="margin-bottom:6px;"><strong>Oppo / Realme / OnePlus:</strong> Xóa tài khoản Google, FRP bypass, pattern unlock.</li>
+            <li style="margin-bottom:6px;"><strong>Vivo:</strong> FRP bypass, demo remove, flash firmware.</li>
+            <li style="margin-bottom:6px;"><strong>iPhone (qua module bypass):</strong> Bypass iCloud, Hello Screen bypass cho các đời iPhone 7 đến iPhone X.</li>
+            <li style="margin-bottom:6px;"><strong>Huawei, LG, Motorola:</strong> FRP bypass, unlock network, flash firmware.</li>
+        </ul>
+
+        <h3 style="font-size:1.15rem;font-weight:700;color:#1e293b;margin-bottom:10px;">Quy Trình Thuê Tại UnlockTool.us</h3>
+        <p style="margin-bottom:16px;">Hệ thống của chúng tôi hoạt động <strong>hoàn toàn tự động 24/7</strong>. Bạn chỉ cần chọn tài khoản trống trong bảng, chọn gói thuê phù hợp, thanh toán qua chuyển khoản ngân hàng (quét QR), và nhận thông tin tài khoản <strong>ngay lập tức trong 30 giây</strong>. Không cần chờ admin xác nhận, không cần liên hệ qua Zalo. Thời gian thuê được tính real-time từ lúc nhận tài khoản và đếm ngược liên tục 24/7.</p>
+        
+        <p style="margin-bottom:0;text-align:center;">
+            <a href="/#account-table" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:linear-gradient(135deg,#43a047,#388e3c);color:#fff;border-radius:9999px;font-weight:700;font-size:14px;text-decoration:none;box-shadow:0 4px 16px rgba(67,160,71,.3);transition:all .25s;"><i class="fas fa-unlock-alt"></i> Thuê UnlockTool Ngay — Từ 8.000đ</a>
+        </p>
     </div>
 </section>
 
