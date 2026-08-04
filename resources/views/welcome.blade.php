@@ -255,8 +255,9 @@
             <a href="https://thuetaikhoan.com.vn/ord-services?cat=Mobile+Phone+Tools&subcat=Schematics+%2F+S%C6%A1+%C4%91%E1%BB%93" target="_blank" class="hero-tag">sơ đồ</a>
         </div>
         <div class="hero-cta-row">
+            <a href="#account-table" class="hero-cta-btn hero-cta-orange" style="font-size:15px;padding:13px 32px;animation:greenPulse 2s ease-in-out infinite;"><i class="fas fa-unlock-alt"></i> Thuê UnlockTool Ngay</a>
             <a href="https://thuetaikhoan.com.vn/check-imei" target="_blank" class="hero-cta-btn hero-cta-dark"><i class="fas fa-info-circle"></i> Check IMEI</a>
-            <a href="https://thuetaikhoan.com.vn/ord-services" target="_blank" class="hero-cta-btn hero-cta-orange">Tất cả dịch vụ →</a>
+            <a href="https://thuetaikhoan.com.vn/ord-services" target="_blank" class="hero-cta-btn hero-cta-dark">Tất cả dịch vụ →</a>
         </div>
         <div class="hero-stats">
             <div class="hero-stat"><div class="hero-stat-number">6.500+</div><div class="hero-stat-label">ĐƠN HÀNG</div></div>
