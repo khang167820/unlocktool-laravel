@@ -52,7 +52,11 @@ class BlogController extends Controller
      */
     public function show($slug)
     {
-        $post = BlogPost::where('slug', $slug)->where('status', 'published')->firstOrFail();
+        $post = BlogPost::where('slug', $slug)->where('status', 'published')->first();
+        
+        if (!$post) {
+            return redirect()->route('blog.index')->with('info', 'Bài viết không tồn tại hoặc chưa được xuất bản.');
+        }
         
         // Increment views
         DB::table('blog_posts')->where('id', $post->id)->increment('views');

@@ -286,21 +286,21 @@
         <div class="footer-col">
             <h4>Hướng Dẫn</h4>
             <ul>
-                <li><a href="/blog/cach-su-dung-unlocktool"><i class="fas fa-angle-right"></i> Cách sử dụng UnlockTool</a></li>
-                <li><a href="/blog/tai-unlocktool"><i class="fas fa-angle-right"></i> Tải UnlockTool</a></li>
-                <li><a href="/blog/cai-driver-unlocktool"><i class="fas fa-angle-right"></i> Cài Driver</a></li>
-                <li><a href="/blog/huong-dan-thanh-toan"><i class="fas fa-angle-right"></i> Hướng dẫn thanh toán</a></li>
-                <li><a href="/blog/cau-hoi-thuong-gap"><i class="fas fa-angle-right"></i> Câu hỏi thường gặp</a></li>
+                <li><a href="/#huong-dan"><i class="fas fa-angle-right"></i> Cách thuê tài khoản</a></li>
+                <li><a href="https://unlocktool.net/" target="_blank"><i class="fas fa-angle-right"></i> Tải UnlockTool</a></li>
+                <li><a href="/#huong-dan"><i class="fas fa-angle-right"></i> Hướng dẫn thanh toán</a></li>
+                <li><a href="/#faq"><i class="fas fa-angle-right"></i> Câu hỏi thường gặp</a></li>
+                <li><a href="/blog"><i class="fas fa-angle-right"></i> Blog hướng dẫn</a></li>
             </ul>
         </div>
         <div class="footer-col">
             <h4>Dịch Vụ</h4>
             <ul>
-                <li><a href="/blog/thue-unlocktool-gia-re"><i class="fas fa-angle-right"></i> Thuê UnlockTool giá rẻ</a></li>
-                <li><a href="/blog/xoa-frp-samsung"><i class="fas fa-angle-right"></i> Xóa FRP Samsung</a></li>
-                <li><a href="/blog/bypass-icloud-iphone"><i class="fas fa-angle-right"></i> Bypass iCloud iPhone</a></li>
-                <li><a href="/blog/xoa-mi-account-xiaomi"><i class="fas fa-angle-right"></i> Xóa Mi Account</a></li>
-                <li><a href="/blog/vietmap-live-pro"><i class="fas fa-angle-right"></i> Thuê Vietmap Live Pro</a></li>
+                <li><a href="/#account-table"><i class="fas fa-angle-right"></i> Thuê UnlockTool giá rẻ</a></li>
+                <li><a href="https://thuetaikhoan.com.vn/ord-services?q=unlocktool" target="_blank"><i class="fas fa-angle-right"></i> Xóa FRP Samsung</a></li>
+                <li><a href="https://thuetaikhoan.com.vn/off-icloud" target="_blank"><i class="fas fa-angle-right"></i> Bypass iCloud iPhone</a></li>
+                <li><a href="https://thuetaikhoan.com.vn/ord-services?q=griffin" target="_blank"><i class="fas fa-angle-right"></i> Xóa Mi Account</a></li>
+                <li><a href="https://thuetaikhoan.com.vn/ord-services" target="_blank"><i class="fas fa-angle-right"></i> Tất cả dịch vụ</a></li>
             </ul>
         </div>
         <div class="footer-col">
