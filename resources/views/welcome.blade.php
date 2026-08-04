@@ -267,26 +267,6 @@
     </div>
 </section>
 
-{{-- ===== SERVICE STRIP ===== --}}
-<section class="service-strip" id="dich-vu">
-    <h2 class="seo-section-title" style="margin-bottom:8px;">Dịch Vụ Cho Thuê Phần Mềm Mở Khóa</h2>
-    <p class="seo-section-subtitle">Đa dạng công cụ chuyên dụng: UnlockTool, Griffin, Samsung Tool, AMT, DFT Pro và nhiều hơn nữa</p>
-    <div class="service-strip-inner">
-        <a class="service-card" href="https://thuetaikhoan.net/thue-unlocktool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Thuê tài khoản Unlocktool giá rẻ" loading="lazy" decoding="async" width="68" height="68"></div><span>Unlocktool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-griffin.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/griffin.webp') }}" alt="Thuê tài khoản Griffin Unlocker" loading="lazy" decoding="async" width="68" height="68"></div><span>Griffin</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-amt.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/amt.webp') }}" alt="Thuê Android Multitool AMT" loading="lazy" decoding="async" width="68" height="68"></div><span>Android Multitool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-tsm.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/tsm.webp') }}" alt="Thuê TSM Tool bypass FRP" loading="lazy" decoding="async" width="68" height="68"></div><span>TSM Tool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-vietmap.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/vietmap.webp') }}" alt="Thuê Vietmap Live Pro bản đồ" loading="lazy" decoding="async" width="68" height="68"></div><span>Vietmap Live</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-kg-killer.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/kg-killer.webp') }}" alt="Thuê KG Killer xóa Knox Guard" loading="lazy" decoding="async" width="68" height="68"></div><span>KG Killer</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-dft.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/dft-pro.webp') }}" alt="Thuê DFT Pro unlock Samsung" loading="lazy" decoding="async" width="68" height="68"></div><span>DFT Pro</span></a>
-        <a class="service-card" href="https://thuetaikhoan.net/thue-samsung-tool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/samsung-tool.webp') }}" alt="Thuê Samsung Tool bypass KG Lock" loading="lazy" decoding="async" width="68" height="68"></div><span>Samsung Tool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-cheetah-tool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/cheetah-tool.webp') }}" alt="Thuê Cheetah Tool unlock điện thoại" loading="lazy" decoding="async" width="68" height="68"></div><span>Cheetah Tool</span></a>
-        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-sigma-plus" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/sigma-plus.webp') }}" alt="Thuê Sigma Plus unlock điện thoại" loading="lazy" decoding="async" width="68" height="68"></div><span>Sigma Plus</span></a>
-        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-chimera-tool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/chimera.webp') }}" alt="Thuê Chimera Tool unlock điện thoại" loading="lazy" decoding="async" width="68" height="68"></div><span>Chimera</span></a>
-        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-androidwintool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/androidwintool.webp') }}" alt="Thuê Android Win Tool GSM" loading="lazy" decoding="async" width="68" height="68"></div><span>Android Win Tool</span></a>
-    </div>
-</section>
-
 {{-- ===== ACCOUNTS TABLE ===== --}}
 <section class="seo-section" id="bang-tai-khoan" style="padding-bottom:0;">
     <h2 class="seo-section-title">Bảng Tài Khoản UnlockTool — Thuê Ngay</h2>
@@ -302,24 +282,22 @@
             @forelse($accounts as $row)
                 @php
                     $timeInfo = null;
-                    if ($row->active_expires_at) {
-                        $expiresTime = strtotime($row->active_expires_at);
-                        $now = time();
-                        if ($expiresTime > $now) {
-                            $remain = $expiresTime - $now;
-                            $h = floor($remain / 3600);
-                            $m = floor(($remain % 3600) / 60);
-                            $s = $remain % 60;
-                            $timeInfo = ['expired' => false, 'text' => "{$h}h {$m}m {$s}s", 'timestamp' => $expiresTime];
-                        } else {
-                            $timeInfo = ['expired' => true, 'text' => 'Đã hết hạn', 'timestamp' => $expiresTime];
+                    $isExpired = false;
+                    if(!$row->is_available && $row->latest_order) {
+                        $expiresAt = $row->latest_order->expires_at;
+                        if($expiresAt) {
+                            $isExpired = $expiresAt->isPast();
+                            $timeInfo = [
+                                'expired' => $isExpired,
+                                'timestamp' => $expiresAt->timestamp,
+                                'text' => $isExpired ? '⏳ Đang xử lý...' : $expiresAt->diffForHumans()
+                            ];
                         }
                     }
-                    $isExpired = $timeInfo ? $timeInfo['expired'] : true;
                 @endphp
                 <tr>
                     <td>{{ $row->id }}</td>
-                    <td>{{ $row->type ?? 'Không rõ' }}</td>
+                    <td>{{ $row->type ?? 'Unlocktool' }}</td>
                     <td>
                         @if($row->is_available)
                             <button type="button" class="btn btn-primary btn-sm btn-blink" data-toggle="modal" data-target="#rentModal" data-account-id="{{ $row->id }}">Thuê ngay</button>
@@ -358,6 +336,26 @@
         <button class="page-btn page-next" id="pageNext" title="Trang sau">›</button>
     </div>
 </div>
+
+{{-- ===== SERVICE STRIP ===== --}}
+<section class="service-strip" id="dich-vu">
+    <h2 class="seo-section-title" style="margin-bottom:8px;">Dịch Vụ Cho Thuê Phần Mềm Mở Khóa</h2>
+    <p class="seo-section-subtitle">Đa dạng công cụ chuyên dụng: UnlockTool, Griffin, Samsung Tool, AMT, DFT Pro và nhiều hơn nữa</p>
+    <div class="service-strip-inner">
+        <a class="service-card" href="https://thuetaikhoan.net/thue-unlocktool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Thuê tài khoản Unlocktool giá rẻ" loading="lazy" decoding="async" width="68" height="68"></div><span>Unlocktool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-griffin.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/griffin.webp') }}" alt="Thuê tài khoản Griffin Unlocker" loading="lazy" decoding="async" width="68" height="68"></div><span>Griffin</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-amt.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/amt.webp') }}" alt="Thuê Android Multitool AMT" loading="lazy" decoding="async" width="68" height="68"></div><span>Android Multitool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-tsm.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/tsm.webp') }}" alt="Thuê TSM Tool bypass FRP" loading="lazy" decoding="async" width="68" height="68"></div><span>TSM Tool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-vietmap.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/vietmap.webp') }}" alt="Thuê Vietmap Live Pro bản đồ" loading="lazy" decoding="async" width="68" height="68"></div><span>Vietmap Live</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-kg-killer.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/kg-killer.webp') }}" alt="Thuê KG Killer xóa Knox Guard" loading="lazy" decoding="async" width="68" height="68"></div><span>KG Killer</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-dft.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/dft-pro.webp') }}" alt="Thuê DFT Pro unlock Samsung" loading="lazy" decoding="async" width="68" height="68"></div><span>DFT Pro</span></a>
+        <a class="service-card" href="https://thuetaikhoan.net/thue-samsung-tool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/samsung-tool.webp') }}" alt="Thuê Samsung Tool bypass KG Lock" loading="lazy" decoding="async" width="68" height="68"></div><span>Samsung Tool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-cheetah-tool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/cheetah-tool.webp') }}" alt="Thuê Cheetah Tool unlock điện thoại" loading="lazy" decoding="async" width="68" height="68"></div><span>Cheetah Tool</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-sigma-plus" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/sigma-plus.webp') }}" alt="Thuê Sigma Plus unlock điện thoại" loading="lazy" decoding="async" width="68" height="68"></div><span>Sigma Plus</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-chimera-tool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/chimera.webp') }}" alt="Thuê Chimera Tool unlock điện thoại" loading="lazy" decoding="async" width="68" height="68"></div><span>Chimera</span></a>
+        <a class="service-card" href="https://thuetaikhoan.com.vn/thue-androidwintool" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/androidwintool.webp') }}" alt="Thuê Android Win Tool GSM" loading="lazy" decoding="async" width="68" height="68"></div><span>Android Win Tool</span></a>
+    </div>
+</section>
 
 {{-- ===== GUIDE + PAYMENT ===== --}}
 <section class="seo-section" id="huong-dan">
