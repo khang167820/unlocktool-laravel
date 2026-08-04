@@ -791,11 +791,9 @@ body {
    SERVICE STRIP — Colorful hover
    ======================================================================== */
 .service-strip {
-    padding: 36px 20px 16px;
+    padding: 20px 20px 8px;
     max-width: 1200px;
     margin: 0 auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .service-strip::-webkit-scrollbar {
