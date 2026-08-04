@@ -803,31 +803,24 @@ body {
 
 .service-strip-inner {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 4px;
-}
-.service-strip-inner::-webkit-scrollbar {
-    display: none;
+    justify-content: center;
 }
 
 .service-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 16px 10px;
+    gap: 6px;
+    padding: 10px 6px 8px;
     background: var(--white);
     border: 2px solid var(--gray-300);
     border-radius: var(--radius-md);
     cursor: pointer;
     text-decoration: none !important;
-    width: 108px;
-    min-width: 108px;
+    width: 88px;
+    min-width: 88px;
     transition: all 0.25s ease;
     position: relative;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -857,9 +850,9 @@ body {
 }
 
 .service-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
     background: var(--gray-50);
     display: flex;
     align-items: center;
@@ -873,13 +866,13 @@ body {
 }
 
 .service-icon img {
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
     object-fit: contain;
 }
 
 .service-card span {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--gray-900);
     text-align: center;
