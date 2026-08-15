@@ -212,7 +212,7 @@ class CheckoutController extends Controller
             'signature' => $signature,
         ];
 
-        $ch = curl_init('https://payment.pay2s.vn/v1/gateway/api/create');
+        $ch = curl_init('https://payment.pay2s.vn/v2/gateway/api/create');
         curl_setopt_array($ch, [
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($payload),
