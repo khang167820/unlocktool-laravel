@@ -23,7 +23,7 @@ class WebhookController extends Controller
         // === 1. Verify Signature ===
         if (!$this->verifySignature($data)) {
             Log::warning('PAY2S: Invalid signature');
-            return response()->json(['success' => false, 'message' => 'Invalid signature'], 403);
+            return response()->json(['resultCode' => 99, 'message' => 'Invalid signature']);
         }
 
         $resultCode = $data['resultCode'] ?? -1;
@@ -34,7 +34,7 @@ class WebhookController extends Controller
         // === 2. Check result code ===
         if (!in_array($resultCode, ['0', 0, '00'], true)) {
             Log::info("PAY2S: Non-success resultCode={$resultCode}");
-            return response()->json(['status' => 'ignored']);
+            return response()->json(['resultCode' => 0, 'message' => 'Acknowledged']);
         }
 
         // === 3. Find pending order ===
@@ -52,11 +52,12 @@ class WebhookController extends Controller
                 ->first();
 
             if ($existing && in_array($existing->status, ['paid', 'completed'])) {
-                return response()->json(['status' => 'already_paid']);
+                Log::info("PAY2S: Order already processed - orderId={$orderId}");
+                return response()->json(['resultCode' => 0, 'message' => 'Already processed']);
             }
 
             Log::error("PAY2S: Order not found - orderId={$orderId}, orderInfo={$orderInfo}");
-            return response()->json(['status' => 'order_not_found'], 404);
+            return response()->json(['resultCode' => 0, 'message' => 'Order not found']);
         }
 
         // === 4. Verify amount ===
@@ -78,7 +79,7 @@ class WebhookController extends Controller
             Log::warning("PAY2S: Order {$order->tracking_code} paid but allocation failed: " . ($result['error'] ?? 'unknown'));
         }
 
-        return response()->json(['success' => true, 'message' => 'OK']);
+        return response()->json(['resultCode' => 0, 'message' => 'Successful']);
     }
 
     /**
