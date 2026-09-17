@@ -361,11 +361,10 @@ class AdminController extends Controller
                 END ASC
             ")
             ->orderBy('accounts.id', 'asc')
-            ->paginate(50)
-            ->withQueryString();
+            ->get();
         
         // Get rental info for rented accounts
-        $rentedAccountIds = collect($accounts->items())
+        $rentedAccountIds = $accounts
             ->where('is_available', 0)
             ->pluck('id')
             ->toArray();

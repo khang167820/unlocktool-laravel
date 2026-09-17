@@ -420,12 +420,6 @@
     </table>
 </div>
 
-<!-- Pagination -->
-@if($accounts->hasPages())
-<div class="pagination" style="margin-top: 16px;">
-    {{ $accounts->links() }}
-</div>
-@endif
 
 <script>
 function copyToClipboard(text) {
