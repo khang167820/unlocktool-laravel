@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul 2>&1
 title UnlockTool Password Agent - unlocktool.us
 cd /d "%~dp0"
 
