@@ -132,6 +132,10 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/password-rotation', [AdminController::class, 'passwordRotation'])->name('admin.password-rotation');
     Route::post('/password-rotation/{id}/mark-synced', [AdminController::class, 'markPasswordSynced'])->name('admin.password-rotation.mark-synced');
     Route::post('/password-rotation/generate-all', [AdminController::class, 'generateAllPasswords'])->name('admin.password-rotation.generate-all');
+
+    // Agent tự động đổi pass
+    Route::post('/password-rotation/agent/create', [\App\Http\Controllers\Admin\PasswordRotationAgentController::class, 'create'])->name('admin.password-rotation.agent.create');
+    Route::post('/password-rotation/agent/queue', [\App\Http\Controllers\Admin\PasswordRotationAgentController::class, 'queue'])->name('admin.password-rotation.agent.queue');
     
     // Accounts
     Route::get('/accounts', [AdminController::class, 'accounts'])->name('admin.accounts');

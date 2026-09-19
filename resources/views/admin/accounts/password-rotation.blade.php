@@ -82,6 +82,125 @@
     <div class="pr-stat-card"><div class="pr-stat-icon blue">📊</div><div><div class="pr-stat-label">Tổng account</div><div class="pr-stat-value">{{ $stats['total_accounts'] }}</div></div></div>
 </div>
 
+
+<!-- ====== AGENT TỰ ĐỘNG ĐỔI PASS ====== -->
+<div id="agent-section" style="margin-bottom:20px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:18px;">🤖</span>
+            <span style="font-weight:700;font-size:14px;color:var(--text-primary);">Agent tự động đổi pass</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            @if(session('agent_token'))
+                <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
+                    <code style="font-size:11px;color:#3b82f6;user-select:all;word-break:break-all;">{{ session('agent_token') }}</code>
+                    <button onclick="navigator.clipboard.writeText('{{ session('agent_token') }}').then(()=>this.textContent='✅')" style="background:#3b82f6;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;">📋 Copy</button>
+                </div>
+            @endif
+            <form method="POST" action="{{ route('admin.password-rotation.agent.create') }}" style="display:inline;">
+                @csrf
+                <button type="submit" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid rgba(59,130,246,0.3);background:rgba(59,130,246,0.1);color:#3b82f6;cursor:pointer;white-space:nowrap;">🔐 Tạo mã kết nối mới</button>
+            </form>
+            @if($accounts->count() > 0)
+                <form method="POST" action="{{ route('admin.password-rotation.agent.queue') }}" style="display:inline;">
+                    @csrf
+                    @foreach($accounts as $acc)
+                        <input type="hidden" name="account_ids[]" value="{{ $acc->id }}">
+                    @endforeach
+                    <button type="submit" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#10b981;color:#fff;cursor:pointer;white-space:nowrap;">▶ Đưa {{ $accounts->count() }} account vào Auto</button>
+                </form>
+            @endif
+        </div>
+    </div>
+
+    {{-- Job Queue Status --}}
+    @php
+        $jobs = \DB::table('password_rotation_jobs')
+            ->join('accounts', 'password_rotation_jobs.account_id', '=', 'accounts.id')
+            ->select('password_rotation_jobs.*', 'accounts.username')
+            ->whereIn('password_rotation_jobs.status', ['queued', 'processing', 'attention'])
+            ->orderBy('password_rotation_jobs.created_at')
+            ->limit(20)
+            ->get();
+        $recentJobs = \DB::table('password_rotation_jobs')
+            ->join('accounts', 'password_rotation_jobs.account_id', '=', 'accounts.id')
+            ->select('password_rotation_jobs.*', 'accounts.username')
+            ->whereIn('password_rotation_jobs.status', ['succeeded', 'failed'])
+            ->whereDate('password_rotation_jobs.updated_at', today())
+            ->orderByDesc('password_rotation_jobs.updated_at')
+            ->limit(10)
+            ->get();
+        $agent = \DB::table('password_rotation_agents')->where('is_active', true)->first();
+    @endphp
+
+    @if($agent)
+        <div style="padding:8px 16px;font-size:11px;color:var(--text-dimmed);border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:6px;">
+            @if($agent->last_seen_at && \Carbon\Carbon::parse($agent->last_seen_at)->diffInMinutes(now()) < 2)
+                <span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+                <span style="color:#10b981;font-weight:600;">Online</span>
+            @else
+                <span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block;"></span>
+                <span>Offline</span>
+            @endif
+            <span>· {{ $agent->name }}</span>
+            @if($agent->last_seen_at)
+                <span>· Lần cuối: {{ \Carbon\Carbon::parse($agent->last_seen_at)->locale('vi')->diffForHumans() }}</span>
+            @endif
+        </div>
+    @endif
+
+    @if($jobs->count() > 0 || $recentJobs->count() > 0)
+        <div style="padding:10px 16px;">
+            @if($jobs->count() > 0)
+                <div style="font-size:11px;font-weight:600;color:var(--text-dimmed);margin-bottom:6px;">ĐANG XỬ LÝ ({{ $jobs->count() }})</div>
+                @foreach($jobs as $j)
+                    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;">
+                        @if($j->status === 'queued')
+                            <span style="color:#f59e0b;" title="Đang chờ">⏳</span>
+                        @elseif($j->status === 'processing')
+                            <span style="color:#3b82f6;" title="Đang xử lý">⚙️</span>
+                        @elseif($j->status === 'attention')
+                            <span style="color:#ef4444;" title="Cần chú ý">⚠️</span>
+                        @endif
+                        <span style="font-weight:600;color:var(--text-primary);">{{ $j->username }}</span>
+                        <span style="color:var(--text-dimmed);font-size:10px;">{{ $j->last_message ?? $j->status }}</span>
+                    </div>
+                @endforeach
+            @endif
+            @if($recentJobs->count() > 0)
+                <div style="font-size:11px;font-weight:600;color:var(--text-dimmed);margin-top:8px;margin-bottom:4px;">HOÀN TẤT HÔM NAY</div>
+                @foreach($recentJobs as $rj)
+                    <div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;opacity:0.7;">
+                        <span>{{ $rj->status === 'succeeded' ? '✅' : '❌' }}</span>
+                        <span>{{ $rj->username }}</span>
+                        <span style="color:var(--text-dimmed);font-size:10px;">{{ \Carbon\Carbon::parse($rj->updated_at)->format('H:i') }}</span>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    @else
+        <div style="padding:12px 16px;font-size:12px;color:var(--text-dimmed);text-align:center;">Chưa có job nào. Bấm "Đưa ... account vào Auto" để bắt đầu.</div>
+    @endif
+</div>
+
+<script>
+// Auto-refresh agent section mỗi 10 giây
+setInterval(() => {
+    fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newSection = doc.getElementById('agent-section');
+            const oldSection = document.getElementById('agent-section');
+            if (newSection && oldSection) {
+                oldSection.innerHTML = newSection.innerHTML;
+            }
+        }).catch(() => {});
+}, 10000);
+</script>
+<!-- ====== END AGENT ====== -->
+
 <!-- Filter Tabs -->
 @if(count($typeCounts) > 0)
 <div class="pr-filter-tabs">

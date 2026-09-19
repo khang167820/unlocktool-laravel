@@ -1,0 +1,13 @@
+{
+  "name": "unlocktool-password-agent-unlockus",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Auto password rotation agent for UnlockTool accounts — unlocktool.us",
+  "scripts": {
+    "start": "node unlocktool-password-agent.mjs"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}
