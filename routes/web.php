@@ -211,7 +211,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
 });
 
 // === TEMP: Fix accounts đang cho thuê bị đổi pass ===
-Route::get('/fix-active-rentals/{secret}', function ($secret) {
+Route::get('/fix-active-rentals/{secret}/{action?}', function ($secret, $action = null) {
     if ($secret !== 'kh4ng2026fix') abort(403);
     
     $affected = \DB::table('accounts')
@@ -248,8 +248,15 @@ Route::get('/fix-active-rentals/{secret}', function ($secret) {
         })
         ->update(['status' => 'cancelled', 'last_message' => 'Cancelled: account has active rental', 'completed_at' => now(), 'updated_at' => now()]);
     
+    // Reset tất cả account "Chờ thuê" (is_available=1) có password_changed=1 → 0
+    $resetAvailable = \DB::table('accounts')
+        ->where('is_available', true)
+        ->where('password_changed', 1)
+        ->update(['password_changed' => 0]);
+
     return response()->json([
         'fixed_accounts' => $count,
+        'reset_available' => $resetAvailable,
         'cancelled_jobs' => $cancelledJobs,
         'details' => $affected->map(fn($a) => $a->username . ' → ' . $a->password),
     ]);
