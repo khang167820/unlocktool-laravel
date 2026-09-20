@@ -67,6 +67,19 @@ class PasswordRotationAgentController extends Controller
                 continue;
             }
 
+            // ⛔ KHÔNG đổi pass tài khoản đang có khách thuê
+            $hasActiveRental = DB::table('orders')
+                ->where('account_id', $accountId)
+                ->whereIn('status', ['paid', 'completed'])
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '>', now())
+                ->exists();
+
+            if ($hasActiveRental) {
+                $skipped++;
+                continue;
+            }
+
             // Sinh mật khẩu mới nếu chưa có
             $newPassword = $account->new_password ?: 'Unlock'.random_int(100, 999);
             if (empty($account->new_password)) {
@@ -274,7 +287,9 @@ class PasswordRotationAgentController extends Controller
         $updates = [
             'password' => $account->new_password,
             'new_password' => null,
-            'password_changed' => 1,
+            // ⛔ KHÔNG đánh dấu password_changed nếu tài khoản đang cho thuê
+            // Nếu có đơn active → giữ password_changed=0 để khách vẫn thấy pass mới
+            'password_changed' => $activeOrder ? 0 : 1,
             'needs_password_sync' => 0,
             'password_synced_at' => now(),
             'is_available' => $activeOrder ? 0 : 1,
