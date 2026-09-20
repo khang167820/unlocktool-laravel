@@ -1525,6 +1525,7 @@ class AdminController extends Controller
             'expiring_soon' => $accounts->filter(fn($a) => $a->expired_at && \Carbon\Carbon::parse($a->expired_at)->isFuture())->count(),
             'synced_today'  => DB::table('accounts')->whereNotNull('password_synced_at')->whereDate('password_synced_at', today())->count(),
             'total_accounts'=> DB::table('accounts')->count(),
+            'failed_today' => 0,
         ];
         
         // Recently synced today
@@ -1534,8 +1535,36 @@ class AdminController extends Controller
             ->orderBy('password_synced_at', 'desc')
             ->limit(10)->get();
         
+        // Failed / attention jobs today
+        $failedJobs = collect();
+        if (\Illuminate\Support\Facades\Schema::hasTable('password_rotation_jobs')) {
+            $failedJobs = DB::table('password_rotation_jobs')
+                ->join('accounts', 'password_rotation_jobs.account_id', '=', 'accounts.id')
+                ->whereIn('password_rotation_jobs.status', ['failed', 'attention'])
+                ->where(function ($q) {
+                    $q->whereDate('password_rotation_jobs.completed_at', today())
+                      ->orWhereDate('password_rotation_jobs.updated_at', today());
+                })
+                ->select(
+                    'password_rotation_jobs.id as job_id',
+                    'password_rotation_jobs.status as job_status',
+                    'password_rotation_jobs.last_message',
+                    'password_rotation_jobs.attempts',
+                    'password_rotation_jobs.completed_at',
+                    'password_rotation_jobs.updated_at as job_updated_at',
+                    'accounts.id as account_id',
+                    'accounts.username',
+                    'accounts.type',
+                    'accounts.password',
+                    'accounts.new_password'
+                )
+                ->orderByDesc('password_rotation_jobs.updated_at')
+                ->get();
+            $stats['failed_today'] = $failedJobs->count();
+        }
+
         return view('admin.accounts.password-rotation', compact(
-            'accounts', 'stats', 'typeCounts', 'typeLabels', 'serviceColors', 'recentlySynced'
+            'accounts', 'stats', 'typeCounts', 'typeLabels', 'serviceColors', 'recentlySynced', 'failedJobs'
         ));
     }
     

@@ -4,7 +4,7 @@
 @section('content')
 <style>
 /* Stats */
-.pr-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.pr-stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
 .pr-stat-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
 .pr-stat-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .pr-stat-icon.red { background: rgba(239,68,68,0.15); }
@@ -70,6 +70,20 @@
 .pr-date-save, .pr-date-cancel { background: none; border: none; cursor: pointer; font-size: 12px; padding: 2px 4px; border-radius: 4px; transition: all 0.15s; }
 .pr-date-save:hover { background: rgba(16,185,129,0.15); }
 .pr-date-cancel:hover { background: rgba(239,68,68,0.15); }
+/* Failed section */
+.pr-failed-section { margin-top: 20px; background: var(--bg-secondary); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 14px; overflow: hidden; }
+.pr-failed-header { padding: 12px 14px; font-size: 12px; font-weight: 700; color: #ef4444; border-bottom: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.06); display: flex; align-items: center; gap: 8px; }
+.pr-failed-count { background: #ef4444; color: #fff; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.pr-failed-row { opacity: 1 !important; }
+.pr-failed-row:hover { background: rgba(239, 68, 68, 0.04) !important; }
+.pr-failed-icon { color: #ef4444; font-size: 14px; flex-shrink: 0; }
+.pr-failed-msg { font-size: 11px; color: #f87171; margin-top: 2px; max-width: 300px; word-break: break-word; }
+.pr-failed-attempts { font-size: 10px; color: var(--text-dimmed); }
+.pr-retry-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08); color: #ef4444; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.pr-retry-btn:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+.pr-status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.pr-status-badge.failed { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.pr-status-badge.attention { background: rgba(245, 158, 11, 0.12); color: #f59e0b; animation: prBlink 1.5s infinite; }
 @media (max-width: 768px) { .pr-stats-grid { grid-template-columns: 1fr 1fr; } .pr-table-wrap { overflow-x: auto; } .pr-table { min-width: 650px; } }
 @media (max-width: 480px) { .pr-stats-grid { grid-template-columns: 1fr; } }
 </style>
@@ -79,6 +93,7 @@
     <div class="pr-stat-card"><div class="pr-stat-icon red">🔴</div><div><div class="pr-stat-label">Cần đổi pass</div><div class="pr-stat-value" id="stat-needs-sync">{{ $stats['needs_sync'] }}</div></div></div>
     <div class="pr-stat-card"><div class="pr-stat-icon amber">⏳</div><div><div class="pr-stat-label">Sắp hết hạn (45p)</div><div class="pr-stat-value">{{ $stats['expiring_soon'] }}</div></div></div>
     <div class="pr-stat-card"><div class="pr-stat-icon green">✅</div><div><div class="pr-stat-label">Đã đổi hôm nay</div><div class="pr-stat-value">{{ $stats['synced_today'] }}</div></div></div>
+    <div class="pr-stat-card"><div class="pr-stat-icon red">❌</div><div><div class="pr-stat-label">Lỗi hôm nay</div><div class="pr-stat-value" style="{{ $stats['failed_today'] > 0 ? 'color:#ef4444;' : '' }}">{{ $stats['failed_today'] }}</div></div></div>
     <div class="pr-stat-card"><div class="pr-stat-icon blue">📊</div><div><div class="pr-stat-label">Tổng account</div><div class="pr-stat-value">{{ $stats['total_accounts'] }}</div></div></div>
 </div>
 
@@ -298,6 +313,61 @@ setInterval(() => {
     @endif
 </div>
 
+{{-- Failed / Attention Jobs --}}
+@if($failedJobs->count() > 0)
+<div class="pr-failed-section">
+    <div class="pr-failed-header">
+        ❌ Đổi pass thất bại
+        <span class="pr-failed-count">{{ $failedJobs->count() }}</span>
+    </div>
+    <table class="pr-table">
+        <thead>
+            <tr>
+                <th>Tài khoản</th>
+                <th>Lỗi</th>
+                <th>Trạng thái</th>
+                <th style="text-align:right;">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($failedJobs as $fj)
+            <tr class="pr-failed-row" id="pr-failed-row-{{ $fj->job_id }}">
+                <td>
+                    <div class="pr-account-row">
+                        <span class="pr-failed-icon">❌</span>
+                        <div>
+                            <div class="pr-account-name">{{ $fj->username }}</div>
+                            <div class="pr-account-meta">{{ $typeLabels[$fj->type] ?? $fj->type }} · #{{ $fj->account_id }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="pr-failed-msg">{{ $fj->last_message ?: 'Agent không thể đổi mật khẩu.' }}</div>
+                    @if($fj->attempts > 1)
+                        <div class="pr-failed-attempts">Đã thử {{ $fj->attempts }} lần</div>
+                    @endif
+                </td>
+                <td>
+                    @if($fj->job_status === 'attention')
+                        <span class="pr-status-badge attention">⚠️ Cần xử lý</span>
+                    @else
+                        <span class="pr-status-badge failed">❌ Thất bại</span>
+                    @endif
+                    <div style="font-size: 10px; color: var(--text-dimmed); margin-top: 2px;">
+                        {{ $fj->completed_at ? \Carbon\Carbon::parse($fj->completed_at)->format('H:i') : \Carbon\Carbon::parse($fj->job_updated_at)->format('H:i') }}
+                    </div>
+                </td>
+                <td>
+                    <div class="pr-actions" style="justify-content:flex-end;">
+                        <button class="pr-retry-btn" onclick="retryJob({{ $fj->job_id }}, this)">🔄 Thử lại</button>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
 <!-- Recently Synced Today -->
 @if($recentlySynced->count() > 0)
 <div style="margin-top:20px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;">
@@ -362,6 +432,30 @@ function markSynced(id, btn) {
 }
 
 // === Date Edit Functions ===
+
+function retryJob(jobId, btn) {
+    if (btn.disabled) return;
+    btn.disabled = true; btn.innerHTML = '⏳ Đang thử...';
+    fetch('{{ url("/admin/password-rotation/agent/retry-job") }}/' + jobId, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            const row = document.getElementById('pr-failed-row-' + jobId);
+            row.style.background = 'rgba(16, 185, 129, 0.1)';
+            btn.innerHTML = '✅ Đã đưa lại hàng đợi';
+            btn.style.borderColor = '#10b981'; btn.style.color = '#10b981';
+            setTimeout(() => row.remove(), 1500);
+        } else {
+            btn.disabled = false; btn.innerHTML = '🔄 Thử lại';
+            alert(d.error || 'Không thể thử lại!');
+        }
+    })
+    .catch(() => { btn.disabled = false; btn.innerHTML = '🔄 Thử lại'; alert('Lỗi kết nối!'); });
+}
+
 function showDateEdit(id, currentDate) {
     document.getElementById(`pr-expiry-${id}`).style.display = 'none';
     document.getElementById(`pr-date-edit-${id}`).style.display = 'flex';

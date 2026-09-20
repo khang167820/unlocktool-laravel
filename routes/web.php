@@ -136,6 +136,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     // Agent tự động đổi pass
     Route::post('/password-rotation/agent/create', [\App\Http\Controllers\Admin\PasswordRotationAgentController::class, 'create'])->name('admin.password-rotation.agent.create');
     Route::post('/password-rotation/agent/queue', [\App\Http\Controllers\Admin\PasswordRotationAgentController::class, 'queue'])->name('admin.password-rotation.agent.queue');
+    Route::post('/password-rotation/agent/retry-job/{jobId}', [\App\Http\Controllers\Admin\PasswordRotationAgentController::class, 'retryJob'])->name('admin.password-rotation.agent.retry-job');
     
     // Accounts
     Route::get('/accounts', [AdminController::class, 'accounts'])->name('admin.accounts');

@@ -266,6 +266,32 @@ class PasswordRotationAgentController extends Controller
     /**
      * Xác thực Bearer token từ agent.
      */
+
+    /**
+     * Admin: Đưa job thất bại / attention trở lại hàng đợi để agent thử lại
+     */
+    public function retryJob(int $jobId): JsonResponse
+    {
+        $job = DB::table('password_rotation_jobs')
+            ->where('id', $jobId)
+            ->whereIn('status', ['failed', 'attention'])
+            ->first();
+
+        if (! $job) {
+            return response()->json(['success' => false, 'error' => 'Không tìm thấy tác vụ hoặc tác vụ không ở trạng thái thất bại.']);
+        }
+
+        DB::table('password_rotation_jobs')->where('id', $job->id)->update([
+            'status' => 'queued',
+            'agent_id' => null,
+            'locked_until' => null,
+            'last_message' => 'Admin đã đưa lại hàng đợi để thử lại.',
+            'completed_at' => null,
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Đã đưa tác vụ trở lại hàng đợi.']);
+    }
     private function authenticateAgent(Request $request): object
     {
         $token = $request->bearerToken();
