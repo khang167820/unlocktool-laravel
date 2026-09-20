@@ -63,9 +63,10 @@ class AccountAllocationService
             $hours = $order->hours ?? 0;
             $expiresAt = $hours > 0 ? now()->addHours($hours) : null;
 
-            // Mark account as rented
+            // Mark account as rented — reset password_changed so customer sees password normally
             $account->update([
                 'is_available' => false,
+                'password_changed' => 0,
                 'rental_expires_at' => $expiresAt,
                 'rental_order_code' => $order->tracking_code,
             ]);
