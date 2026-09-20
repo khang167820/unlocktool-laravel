@@ -209,3 +209,49 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/system/phpinfo', [AdminController::class, 'phpInfo'])->name('admin.system.phpinfo');
 
 });
+
+// === TEMP: Fix accounts đang cho thuê bị đổi pass ===
+Route::get('/fix-active-rentals/{secret}', function ($secret) {
+    if ($secret !== 'kh4ng2026fix') abort(403);
+    
+    $affected = \DB::table('accounts')
+        ->where('password_changed', 1)
+        ->whereIn('id', function ($q) {
+            $q->select('account_id')
+                ->from('orders')
+                ->whereIn('status', ['paid', 'completed'])
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '>', now());
+        })
+        ->get(['id', 'username', 'password']);
+    
+    $count = \DB::table('accounts')
+        ->where('password_changed', 1)
+        ->whereIn('id', function ($q) {
+            $q->select('account_id')
+                ->from('orders')
+                ->whereIn('status', ['paid', 'completed'])
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '>', now());
+        })
+        ->update(['password_changed' => 0]);
+    
+    // Also cancel any queued jobs for accounts with active rentals
+    $cancelledJobs = \DB::table('password_rotation_jobs')
+        ->whereIn('status', ['queued', 'processing'])
+        ->whereIn('account_id', function ($q) {
+            $q->select('account_id')
+                ->from('orders')
+                ->whereIn('status', ['paid', 'completed'])
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '>', now());
+        })
+        ->update(['status' => 'cancelled', 'last_message' => 'Cancelled: account has active rental', 'completed_at' => now(), 'updated_at' => now()]);
+    
+    return response()->json([
+        'fixed_accounts' => $count,
+        'cancelled_jobs' => $cancelledJobs,
+        'details' => $affected->map(fn($a) => $a->username . ' → ' . $a->password),
+    ]);
+});
+
