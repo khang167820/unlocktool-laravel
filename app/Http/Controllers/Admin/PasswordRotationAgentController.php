@@ -67,12 +67,12 @@ class PasswordRotationAgentController extends Controller
                 continue;
             }
 
-            // ⛔ KHÔNG đổi pass tài khoản đang có khách thuê
+            // ⛔ Bỏ qua nếu khách còn thuê > 40 phút (dưới 40p thì cho đổi)
             $hasActiveRental = DB::table('orders')
                 ->where('account_id', $accountId)
                 ->whereIn('status', ['paid', 'completed'])
                 ->whereNotNull('expires_at')
-                ->where('expires_at', '>', now())
+                ->where('expires_at', '>', now()->addMinutes(40))
                 ->exists();
 
             if ($hasActiveRental) {
@@ -169,18 +169,18 @@ class PasswordRotationAgentController extends Controller
                 return null;
             }
 
-            // ⛔ Bỏ qua account đang có khách thuê
+            // ⛔ Bỏ qua nếu khách còn thuê > 40 phút
             $hasActiveRental = DB::table('orders')
                 ->where('account_id', $job->account_id)
                 ->whereIn('status', ['paid', 'completed'])
                 ->whereNotNull('expires_at')
-                ->where('expires_at', '>', now())
+                ->where('expires_at', '>', now()->addMinutes(40))
                 ->exists();
 
             if ($hasActiveRental) {
                 DB::table('password_rotation_jobs')->where('id', $job->id)->update([
                     'status' => 'cancelled',
-                    'last_message' => 'Bỏ qua: tài khoản đang có khách thuê.',
+                    'last_message' => 'Bỏ qua: khách còn thuê hơn 40 phút.',
                     'completed_at' => now(),
                     'updated_at' => now(),
                 ]);
