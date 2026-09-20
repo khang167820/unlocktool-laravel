@@ -169,6 +169,25 @@ class PasswordRotationAgentController extends Controller
                 return null;
             }
 
+            // ⛔ Bỏ qua account đang có khách thuê
+            $hasActiveRental = DB::table('orders')
+                ->where('account_id', $job->account_id)
+                ->whereIn('status', ['paid', 'completed'])
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '>', now())
+                ->exists();
+
+            if ($hasActiveRental) {
+                DB::table('password_rotation_jobs')->where('id', $job->id)->update([
+                    'status' => 'cancelled',
+                    'last_message' => 'Bỏ qua: tài khoản đang có khách thuê.',
+                    'completed_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                return null;
+            }
+
             // Lock job cho agent
             DB::table('password_rotation_jobs')->where('id', $job->id)->update([
                 'status' => 'processing',
