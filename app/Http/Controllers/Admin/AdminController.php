@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Admin;
 
@@ -1483,6 +1483,7 @@ class AdminController extends Controller
             })
             // CHỈ hiện acc đang thuê (is_available=0), ẩn acc đã chờ thuê (is_available=1)
             ->where('accounts.is_available', 0)
+            ->where('accounts.password_changed', 0) // Chi hien acc chua doi pass
             ->groupBy(
                 'accounts.id', 'accounts.username', 'accounts.password',
                 'accounts.type', 'accounts.is_available', 'accounts.new_password',
@@ -1616,6 +1617,7 @@ class AdminController extends Controller
                 })
                 // CHỈ đếm acc đang thuê (is_available=0)
                 ->where('is_available', 0)
+                ->where('password_changed', 0) // Chi dem acc chua doi pass
                 ->whereExists(function ($sub) use ($soonThreshold) {
                     $sub->select(DB::raw(1))->from('orders')
                         ->whereColumn('orders.account_id', 'accounts.id')
