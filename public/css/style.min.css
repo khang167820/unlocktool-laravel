@@ -803,8 +803,8 @@ body {
 
 .service-strip-inner {
     display: flex;
-    gap: 8px;
-    flex-wrap: nowrap;
+    gap: 10px 8px;
+    flex-wrap: wrap;
     justify-content: center;
 }
 
@@ -892,6 +892,7 @@ body {
 
     .service-card {
         width: auto;
+        min-width: 0;
         padding: 14px 8px;
     }
 

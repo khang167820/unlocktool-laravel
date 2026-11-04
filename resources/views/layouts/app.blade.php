@@ -120,7 +120,7 @@
 
     /* Service Strip — dimensions match style.min.css to prevent CLS on async load */
     .service-strip{background:var(--white);padding:36px 20px 16px;border-bottom:1px solid var(--gray-200);min-height:130px;max-width:1200px;margin:0 auto}
-    .service-strip-inner{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .service-strip-inner{display:flex;justify-content:center;gap:10px 8px;flex-wrap:wrap}
     .service-card{display:flex;flex-direction:column;align-items:center;gap:8px;width:108px;min-width:108px;padding:16px 10px;border-radius:var(--radius-md);text-decoration:none!important;color:var(--gray-700)!important;font-size:12px;font-weight:700;text-align:center;transition:all .25s ease;flex-shrink:0;background:var(--white);border:2px solid var(--gray-300);box-shadow:0 2px 8px rgba(0,0,0,.06)}
     .service-card:hover{background:var(--gray-50);color:var(--primary)!important}
     .service-icon{width:56px;height:56px;border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--gray-50);border:1px solid var(--gray-200);aspect-ratio:1/1}
@@ -179,8 +179,8 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
     {{-- CSS: async load to avoid render-blocking (CLS=0 maintained by inline critical CSS + display=optional) --}}
-    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.6" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.6"></noscript>
+    <link rel="preload" href="{{ asset('css/style.min.css') }}?v=7.7" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/style.min.css') }}?v=7.7"></noscript>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional"></noscript>
     @yield('schema')
