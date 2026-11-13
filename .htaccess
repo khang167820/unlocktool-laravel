@@ -2,6 +2,13 @@
     RewriteEngine On
     RewriteBase /
 
+    # Canonicalize direct front-controller URLs before rewriting to public/.
+    RewriteCond %{THE_REQUEST} \s/+public(?:/index\.php|/)?(?:[?\s]) [NC]
+    RewriteRule ^public(?:/index\.php|/)?$ https://unlocktool.us/ [R=301,L]
+
+    RewriteCond %{THE_REQUEST} \s/+index\.php(?:[?\s]) [NC]
+    RewriteRule ^index\.php$ https://unlocktool.us/ [R=301,L]
+
     # Redirect test.unlocktool.us → unlocktool.us (301 permanent)
     RewriteCond %{HTTP_HOST} ^test\.unlocktool\.us$ [NC]
     RewriteRule ^(.*)$ https://unlocktool.us/$1 [R=301,L]

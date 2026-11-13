@@ -172,7 +172,6 @@ class SeoController extends Controller
             if (isset($item['focus_keyword'])) $updateData['focus_keyword'] = $item['focus_keyword'];
             
             if (!empty($updateData)) {
-                $updateData['updated_at'] = now();
                 DB::table('blog_posts')->where('id', $item['id'])->update($updateData);
                 $updated++;
             }

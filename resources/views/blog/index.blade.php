@@ -25,6 +25,7 @@
     if ($blogPage > 1 && $blogSearch === '') {
         $blogTitle .= " – Trang {$blogPage}";
         $blogCanonical = url()->current() . '?page=' . $blogPage;
+        $blogRobots = 'noindex, follow';
     }
 @endphp
 

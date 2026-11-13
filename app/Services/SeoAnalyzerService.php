@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SeoAnalyzerService
 {
@@ -2261,8 +2262,14 @@ class SeoAnalyzerService
     public function insertInternalLinks(string $html, int $currentPostId = null, int $maxLinks = 3): string
     {
         try {
+            $excludedSlugs = array_values(array_unique(array_merge(
+                array_keys(config('seo.blog_redirects', [])),
+                config('seo.blog_gone', [])
+            )));
+
             $posts = DB::table('blog_posts')
                 ->where('status', 'published')
+                ->when(!empty($excludedSlugs), fn($q) => $q->whereNotIn('slug', $excludedSlugs))
                 ->when($currentPostId, fn($q) => $q->where('id', '!=', $currentPostId))
                 ->whereNotNull('focus_keyword')
                 ->where('focus_keyword', '!=', '')
@@ -2294,6 +2301,83 @@ class SeoAnalyzerService
         }
         
         return $html;
+    }
+
+    /**
+     * Remove formulaic paragraphs inserted by the retired keyword-density
+     * fixer. Its byte offsets were also used with mb_substr(), which could put
+     * a generated <p> inside an existing HTML tag. Removing innermost matches
+     * first repairs those tags without rewriting the author's real content.
+     */
+    public function sanitizeLegacySeoContent(string $html): string
+    {
+        $densityPatterns = [
+            'Khi sử dụng [^<]{1,180}?, bạn sẽ được hỗ trợ kỹ thuật 24/7 từ đội ngũ chuyên gia của chúng tôi\.',
+            'Nhiều thợ sửa điện thoại đã tin dùng [^<]{1,180}? trong công việc hàng ngày nhờ tính năng mạnh mẽ và ổn định\.',
+            'Với [^<]{1,180}?, bạn có thể tiết kiệm chi phí đáng kể so với việc mua license trọn đời\.',
+            'UnlockTool\.us cung cấp [^<]{1,180}? với nhiều gói thời gian và mức giá linh hoạt\.',
+            'Quy trình thực hiện [^<]{1,180}? không quá phức tạp nếu bạn làm đúng theo hướng dẫn chi tiết dưới đây\.',
+            'Trước khi tiến hành [^<]{1,180}?, hãy đảm bảo bạn đã sao lưu dữ liệu quan trọng trên thiết bị\.',
+            'Nhiều người dùng đã thực hiện thành công [^<]{1,180}? chỉ trong vài phút với phương pháp này\.',
+            'Nếu gặp khó khăn trong quá trình [^<]{1,180}?, hãy liên hệ UnlockTool\.us để được hỗ trợ\.',
+            'Việc hiểu rõ về [^<]{1,180}? sẽ giúp bạn đưa ra quyết định phù hợp nhất cho nhu cầu của mình\.',
+            'Mỗi công cụ trong [^<]{1,180}? đều có ưu và nhược điểm riêng tùy thuộc vào tình huống sử dụng\.',
+            'Dựa trên kinh nghiệm thực tế, chúng tôi đã kiểm tra kỹ từng yếu tố trong [^<]{1,180}? để đưa ra đánh giá khách quan\.',
+            'Hiểu rõ về [^<]{1,180}? sẽ giúp bạn xử lý các tình huống phổ biến trong nghề sửa chữa điện thoại\.',
+            'Thông tin về [^<]{1,180}? trong bài viết này được cập nhật mới nhất cho năm 2026\.',
+            'Nếu bạn cần hỗ trợ thêm về [^<]{1,180}?, đội ngũ UnlockTool\.us luôn sẵn sàng tư vấn\.',
+            'Các chuyên gia trong ngành GSM đều khuyên bạn nên nắm vững kiến thức về [^<]{1,180}? trước khi thực hành\.',
+        ];
+
+        foreach ($densityPatterns as $sentencePattern) {
+            do {
+                $html = preg_replace(
+                    '~<p\b[^>]*>(?:(?!<p\b).)*?' . $sentencePattern . '(?:(?!</p>).)*?</p>~isu',
+                    '',
+                    $html,
+                    -1,
+                    $removed
+                ) ?? $html;
+            } while ($removed > 0);
+        }
+
+        // Intro sentences were prepended inside a genuine first paragraph, so
+        // remove only the generated sentence and preserve the paragraph.
+        $introPatterns = [
+            'Bạn đang tìm cách mua [^<.!?]{1,180}? chính hãng với giá tốt nhất\?\s*',
+            'Trong bài viết này, chúng tôi sẽ hướng dẫn chi tiết về [^<.!?]{1,180}? từ A đến Z\.\s*',
+            'Bài viết này sẽ giúp bạn hiểu rõ về [^<.!?]{1,180}? để đưa ra lựa chọn phù hợp nhất\.\s*',
+            'Tìm hiểu cách thực hiện [^<.!?]{1,180}? nhanh chóng và an toàn với hướng dẫn chi tiết dưới đây\.\s*',
+            'Dưới đây là hướng dẫn chi tiết vị trí [^<.!?]{1,180}? với hình ảnh minh họa rõ ràng\.\s*',
+            'Tìm hiểu mọi thông tin về [^<.!?]{1,180}? với hướng dẫn chi tiết từ UnlockTool\.us\.\s*',
+            'Tìm hiểu chi tiết về [^<.!?]{1,180}? với hướng dẫn đầy đủ và cập nhật mới nhất 2026\.\s*',
+        ];
+
+        foreach ($introPatterns as $pattern) {
+            $html = preg_replace('~' . $pattern . '~iu', '', $html) ?? $html;
+        }
+
+        return preg_replace('~<p\b[^>]*>\s*</p>~iu', '', $html) ?? $html;
+    }
+
+    /**
+     * Convert links copied from the old /articles/*.php site into final blog
+     * URLs. This prevents broken relative links and avoids redirect hops.
+     */
+    public function normalizeLegacyBlogLinks(string $html): string
+    {
+        return preg_replace_callback(
+            '~href=([\"\'])(?:\./)?(?:(\d+)-)?([a-z0-9-]+)\.php(?:#[^\"\']*)?\1~iu',
+            function (array $match) {
+                $slug = Str::slug($match[3]);
+                $target = $slug === 'index'
+                    ? '/blog'
+                    : (config("seo.blog_redirects.{$slug}") ?: "/blog/{$slug}");
+
+                return 'href=' . $match[1] . $target . $match[1];
+            },
+            $html
+        ) ?? $html;
     }
 
     /**
@@ -3874,7 +3958,7 @@ class SeoAnalyzerService
             $contentChanged = false;
             $metaTitleChanged = false;
             $metaDescChanged = false;
-
+            $allowAutomatedContentRewrites = false;
             // ---- FIX 1: Keyword không có trong Meta Title ----
             if (!mb_stripos($metaTitle, $keyword) !== false && mb_stripos($metaTitle, $keyword) === false) {
                 // Thêm keyword vào đầu meta title
@@ -3899,7 +3983,7 @@ class SeoAnalyzerService
 
             // ---- FIX 2: Keyword không có trong heading (H2/H3) ----
             $hasKeywordInHeading = (bool) preg_match('/<h[2-3][^>]*>.*?' . preg_quote($keyword, '/') . '.*?<\/h[2-3]>/isu', $content);
-            if (!$hasKeywordInHeading) {
+            if ($allowAutomatedContentRewrites && !$hasKeywordInHeading) {
                 // Tìm heading H2 đầu tiên và thêm keyword vào
                 if (preg_match('/<h2([^>]*)>(.*?)<\/h2>/isu', $content, $match)) {
                     $oldHeading = $match[2];
@@ -3950,7 +4034,7 @@ class SeoAnalyzerService
 
             // ---- FIX 3: Keyword không có trong alt text ảnh ----
             $hasKeywordInAlt = (bool) preg_match('/alt\s*=\s*["\'][^"\']*' . preg_quote($keyword, '/') . '[^"\']*["\']/isu', $content);
-            if (!$hasKeywordInAlt) {
+            if ($allowAutomatedContentRewrites && !$hasKeywordInAlt) {
                 // Tìm ảnh đầu tiên có alt rỗng hoặc không có alt
                 $imgFixed = false;
                 
@@ -4035,7 +4119,7 @@ class SeoAnalyzerService
             $keywordCount = mb_substr_count($plainContent, $keyword);
             $density = $totalWords > 0 ? ($keywordCount / $totalWords) * 100 : 0;
             
-            if ($density < 0.5 && $totalWords > 100) {
+            if ($allowAutomatedContentRewrites && $density < 0.5 && $totalWords > 100) {
                 // Thêm 1 câu ngữ cảnh chứa keyword trước H2 đầu tiên
                 $keywordCapitalized = mb_strtoupper(mb_substr($keyword, 0, 1)) . mb_substr($keyword, 1);
                 $contextSentence = '<p><strong>' . $keywordCapitalized . '</strong> là một trong những chủ đề được nhiều người quan tâm hiện nay. Trong bài viết này, chúng tôi sẽ chia sẻ thông tin chi tiết về ' . $keyword . ' để bạn có cái nhìn tổng quan nhất.</p>';
@@ -4146,6 +4230,9 @@ class SeoAnalyzerService
             $contentChanged = false;
             $metaTitleChanged = false;
             $metaDescChanged = false;
+            // Search engines reward useful editing, not mechanically repeated
+            // focus keywords. Keep automatic fixes limited to metadata/reverts.
+            $allowAutomatedContentRewrites = false;
 
             // ================================================================
             // STEP 0: Revert ugly V1 heading fixes (remove " — keyword" patterns)
@@ -4243,7 +4330,7 @@ class SeoAnalyzerService
                 $firstPara = mb_strtolower(strip_tags($paraMatch[1]));
             }
             
-            if (mb_strpos($firstPara, $keyword) === false && !empty($firstPara)) {
+            if ($allowAutomatedContentRewrites && mb_strpos($firstPara, $keyword) === false && !empty($firstPara)) {
                 // Thêm câu chứa keyword vào đầu paragraph đầu tiên
                 $introSentence = $this->generateIntroSentence($keyword, $title);
                 if (preg_match('/<p([^>]*)>(.*?)<\/p>/is', $content, $paraMatch)) {
@@ -4269,7 +4356,7 @@ class SeoAnalyzerService
             // STEP 3: Keyword trong heading (H2) — Viết lại tự nhiên
             // ================================================================
             $hasKeywordInHeading = (bool) preg_match('/<h[2-3][^>]*>.*?' . preg_quote($keyword, '/') . '.*?<\/h[2-3]>/isu', $content);
-            if (!$hasKeywordInHeading) {
+            if ($allowAutomatedContentRewrites && !$hasKeywordInHeading) {
                 // Tìm heading H2 phù hợp nhất (liên quan đến keyword) để viết lại
                 preg_match_all('/<h2([^>]*)>(.*?)<\/h2>/isu', $content, $h2Matches, PREG_SET_ORDER);
                 
@@ -4369,7 +4456,7 @@ class SeoAnalyzerService
             $keywordWords = $this->countWords($keyword);
             $density = $wordCount > 0 ? ($keywordCount * $keywordWords / $wordCount) * 100 : 0;
             
-            if ($density < 1 && $wordCount > 100) {
+            if ($allowAutomatedContentRewrites && $density < 1 && $wordCount > 100) {
                 // Tính cần thêm bao nhiêu lần keyword để đạt ~1.2%
                 $targetDensity = 1.2;
                 $targetCount = ceil(($targetDensity / 100) * $wordCount / $keywordWords);
@@ -4411,7 +4498,7 @@ class SeoAnalyzerService
             // STEP 7: Alt text hình ảnh — Viết alt mô tả tự nhiên
             // ================================================================
             $hasKeywordInAlt = (bool) preg_match('/alt\s*=\s*["\'][^"\']*' . preg_quote($keyword, '/') . '[^"\']*["\']/isu', $content);
-            if (!$hasKeywordInAlt) {
+            if ($allowAutomatedContentRewrites && !$hasKeywordInAlt) {
                 // Tìm ảnh đầu tiên
                 if (preg_match('/<img([^>]*?)alt\s*=\s*["\']([^"\']*)["\']([^>]*?)>/iu', $content, $imgMatch)) {
                     $oldAlt = $imgMatch[2];

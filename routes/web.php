@@ -54,20 +54,12 @@ Route::get('/migrate-unlock2026', function () {
     ]);
 });
 
-// === Blog 301 Redirects (Keyword Cannibalization Fix - 2026-04-16) ===
-// Old duplicate slugs → new canonical slugs
-$blogRedirects = [
-    'icloud-iphone-7-bypass'    => 'bypass-icloud-iphone-7',     // ID:12 → ID:152
-    'icloud-iphone-8-bypass'    => 'bypass-icloud-iphone-8',     // ID:20 → ID:151
-    'flash-firmware-samsung-odin' => 'flash-samsung-odin',       // ID:16 → ID:41
-    'jailbreak-iphone-2026'     => 'jailbreak-iphone',           // ID:17 → ID:126
-    'bang-gia-dich-vu-2026'     => 'bang-gia-dich-vu',           // ID:31 → ID:138
-    'dich-vu-sua-chua-dien-thoai' => 'sua-chua-dien-thoai',     // ID:25 → ID:132
-];
-foreach ($blogRedirects as $oldSlug => $newSlug) {
-    Route::get("/blog/{$oldSlug}", function () use ($newSlug) {
-        return redirect("/blog/{$newSlug}", 301);
-    });
+// === Blog consolidation (must be declared before /blog/{slug}) ===
+foreach (config('seo.blog_redirects', []) as $oldSlug => $target) {
+    Route::permanentRedirect("/blog/{$oldSlug}", $target);
+}
+foreach (config('seo.blog_gone', []) as $slug) {
+    Route::get("/blog/{$slug}", fn () => response('', 410));
 }
 
 // === Blog Routes ===
@@ -90,6 +82,15 @@ Route::get('/articles/{filename}', function ($filename) {
     $slug = preg_replace('/\.php$/', '', $filename);
     $slug = preg_replace('/^\d+-/', '', $slug);
     $slug = \Illuminate\Support\Str::slug($slug);
+
+    // Avoid a two-hop redirect when the equivalent blog post was consolidated.
+    $consolidatedTarget = config("seo.blog_redirects.{$slug}");
+    if ($consolidatedTarget) {
+        return redirect($consolidatedTarget, 301);
+    }
+    if (in_array($slug, config('seo.blog_gone', []), true)) {
+        return response('', 410);
+    }
     
     // Check if blog post exists
     $exists = \App\Models\BlogPost::where('slug', $slug)->exists();
@@ -97,8 +98,8 @@ Route::get('/articles/{filename}', function ($filename) {
         return redirect("/blog/{$slug}", 301);
     }
     
-    // Fallback: redirect to blog listing
-    return redirect('/blog', 301);
+    // An unknown legacy article has no equivalent: avoid a soft 404.
+    return response('', 410);
 });
 
 // === Cron: Reclaim expired accounts ===

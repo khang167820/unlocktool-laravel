@@ -15,7 +15,7 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        $query = BlogPost::published()->orderBy('created_at', 'desc');
+        $query = BlogPost::published()->indexable()->orderBy('created_at', 'desc');
         
         if ($request->filled('category')) {
             $query->where('category', $request->category);
@@ -32,14 +32,14 @@ class BlogController extends Controller
         $posts = $query->paginate(12)->withQueryString();
         
         // Categories
-        $categories = BlogPost::published()
+        $categories = BlogPost::published()->indexable()
             ->select('category', DB::raw('count(*) as count'))
             ->groupBy('category')
             ->orderBy('count', 'desc')
             ->get();
         
         // Featured posts
-        $featuredPosts = BlogPost::published()
+        $featuredPosts = BlogPost::published()->indexable()
             ->orderBy('views', 'desc')
             ->limit(3)
             ->get();
@@ -52,17 +52,19 @@ class BlogController extends Controller
      */
     public function show($slug)
     {
-        $post = BlogPost::where('slug', $slug)->where('status', 'published')->first();
-        
-        if (!$post) {
-            return redirect()->route('blog.index')->with('info', 'Bài viết không tồn tại hoặc chưa được xuất bản.');
+        $post = BlogPost::published()->indexable()->where('slug', $slug)->firstOrFail();
+
+        foreach (config("seo.blog_overrides.{$slug}", []) as $field => $value) {
+            if (in_array($field, ['title', 'meta_title', 'meta_description'], true)) {
+                $post->setAttribute($field, $value);
+            }
         }
         
         // Increment views
         DB::table('blog_posts')->where('id', $post->id)->increment('views');
         
         // Related posts (same category)
-        $relatedPosts = BlogPost::published()
+        $relatedPosts = BlogPost::published()->indexable()
             ->where('id', '!=', $post->id)
             ->where('category', $post->category)
             ->orderBy('views', 'desc')
@@ -70,18 +72,23 @@ class BlogController extends Controller
             ->get();
         
         // Popular posts
-        $popularPosts = BlogPost::published()
+        $popularPosts = BlogPost::published()->indexable()
             ->where('id', '!=', $post->id)
             ->orderBy('views', 'desc')
             ->limit(5)
             ->get();
         
         // Prev/Next
-        $prevPost = BlogPost::published()->where('id', '<', $post->id)->orderBy('id', 'desc')->first();
-        $nextPost = BlogPost::published()->where('id', '>', $post->id)->orderBy('id', 'asc')->first();
+        $prevPost = BlogPost::published()->indexable()->where('id', '<', $post->id)->orderBy('id', 'desc')->first();
+        $nextPost = BlogPost::published()->indexable()->where('id', '>', $post->id)->orderBy('id', 'asc')->first();
         
         // ===== Auto-SEO Processing (from SeoAnalyzerService) =====
         $seoAnalyzer = new \App\Services\SeoAnalyzerService();
+
+        // Remove boilerplate inserted by the old keyword-density fixer and
+        // normalize obsolete relative .php links before search engines see it.
+        $post->content = $seoAnalyzer->sanitizeLegacySeoContent($post->content);
+        $post->content = $seoAnalyzer->normalizeLegacyBlogLinks($post->content);
         
         // Generate TOC from content
         $toc = $seoAnalyzer->generateToc($post->content);
@@ -152,13 +159,13 @@ class BlogController extends Controller
      */
     public function category($category)
     {
-        $posts = BlogPost::published()
+        $posts = BlogPost::published()->indexable()
             ->where('category', $category)
             ->orderBy('created_at', 'desc')
             ->paginate(12)
             ->withQueryString();
         
-        $categories = BlogPost::published()
+        $categories = BlogPost::published()->indexable()
             ->select('category', DB::raw('count(*) as count'))
             ->groupBy('category')
             ->orderBy('count', 'desc')
@@ -174,7 +181,7 @@ class BlogController extends Controller
      */
     public function ratePost(Request $request, $slug)
     {
-        $post = BlogPost::where('slug', $slug)->firstOrFail();
+        $post = BlogPost::published()->indexable()->where('slug', $slug)->firstOrFail();
         
         $request->validate(['rating' => 'required|integer|min:1|max:5']);
         

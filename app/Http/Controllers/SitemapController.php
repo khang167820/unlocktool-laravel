@@ -61,7 +61,7 @@ class SitemapController extends Controller
         $urls = [];
 
         try {
-            $posts = BlogPost::published()->latest('created_at')->get();
+            $posts = BlogPost::published()->indexable()->latest('created_at')->get();
             foreach ($posts as $post) {
                 $lastModified = $post->updated_at ?? $post->created_at;
                 $urls[] = [
@@ -83,7 +83,7 @@ class SitemapController extends Controller
         $entries = [];
 
         try {
-            $posts = BlogPost::published()->latest('created_at')->get();
+            $posts = BlogPost::published()->indexable()->latest('created_at')->get();
             foreach ($posts as $post) {
                 $image = $post->featured_image ?? $post->image;
                 if (empty($image)) {
@@ -135,7 +135,7 @@ class SitemapController extends Controller
     private function postsLastModified(): string
     {
         try {
-            $lastModified = BlogPost::published()->max('updated_at');
+            $lastModified = BlogPost::published()->indexable()->max('updated_at');
             if ($lastModified) {
                 return Carbon::parse($lastModified)->toW3cString();
             }

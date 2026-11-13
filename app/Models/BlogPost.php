@@ -25,4 +25,19 @@ class BlogPost extends Model
     {
         return $query->where('status', 'published');
     }
+
+    /**
+     * Posts that have not been consolidated into another canonical URL.
+     */
+    public function scopeIndexable($query)
+    {
+        $excludedSlugs = array_values(array_unique(array_merge(
+            array_keys(config('seo.blog_redirects', [])),
+            config('seo.blog_gone', [])
+        )));
+
+        return empty($excludedSlugs)
+            ? $query
+            : $query->whereNotIn('slug', $excludedSlugs);
+    }
 }

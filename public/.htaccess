@@ -63,6 +63,14 @@
 
     RewriteEngine On
 
+    # A direct /public or /index.php request is a duplicate of the homepage.
+    # THE_REQUEST prevents this rule from matching Laravel's internal rewrite.
+    RewriteCond %{THE_REQUEST} \s/+public(?:/index\.php|/)?(?:[?\s]) [NC]
+    RewriteRule ^(?:index\.php)?$ https://unlocktool.us/ [R=301,L]
+
+    RewriteCond %{THE_REQUEST} \s/+index\.php(?:[?\s]) [NC]
+    RewriteRule ^index\.php$ https://unlocktool.us/ [R=301,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
