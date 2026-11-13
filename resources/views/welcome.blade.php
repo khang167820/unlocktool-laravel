@@ -1,12 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Thuê Tài Khoản UnlockTool Giá Rẻ Từ 8K | UnlockTool.us - Tự Động 24/7')
+@section('title', 'Thuê Tài Khoản UnlockTool Từ 8K – Tự Động 24/7')
 
 @section('meta_description', 'Thuê tài khoản UnlockTool giá rẻ chỉ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay 30 giây. Hỗ trợ FRP Bypass Samsung, Xiaomi. Uy tín 6.500+ đơn.')
 
 @section('head')
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="keywords" content="thuê unlocktool, cho thuê unlocktool, thuê tài khoản unlocktool, unlocktool giá rẻ, thuê tool mở khóa, FRP bypass, xóa tài khoản google, thuê unlocktool 2026">
 @endsection
 
 @section('schema')
@@ -16,11 +14,12 @@
 {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": "https://unlocktool.us/#organization",
     "name": "UnlockTool.us",
     "alternateName": "Thuê UnlockTool Giá Rẻ",
     "url": "https://unlocktool.us",
     "logo": "https://unlocktool.us/images/logo.jpg",
-    "description": "Hệ thống cho thuê tài khoản UnlockTool tự động 24/7. Giá rẻ nhất thị trường, nhận tài khoản ngay sau thanh toán.",
+    "description": "Hệ thống cho thuê tài khoản UnlockTool tự động 24/7. Giá cạnh tranh, nhận tài khoản ngay sau thanh toán.",
     "contactPoint": [
         {
             "@type": "ContactPoint",
@@ -49,14 +48,10 @@
 {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": "https://unlocktool.us/#website",
     "name": "UnlockTool.us",
     "url": "https://unlocktool.us",
     "description": "Hệ thống cho thuê tài khoản UnlockTool, Griffin, Samsung Tool tự động 24/7",
-    "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://unlocktool.us/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-    },
     "inLanguage": "vi"
 }
 </script>
@@ -66,52 +61,21 @@
 {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": "https://unlocktool.us/#unlocktool-rental",
     "name": "Thuê Tài Khoản UnlockTool",
     "description": "Dịch vụ cho thuê tài khoản UnlockTool giá rẻ, tự động 24/7. Hỗ trợ FRP Bypass Samsung, Xiaomi, Oppo, Vivo. Nhận tài khoản ngay sau thanh toán.",
-    "image": "https://unlocktool.us/images/unlocktool-banner.jpg",
+    "image": "https://unlocktool.us/images/og-unlocktool.jpg",
     "brand": {
         "@type": "Brand",
         "name": "UnlockTool.us"
     },
     "offers": {
         "@type": "AggregateOffer",
-        "lowPrice": "10000",
+        "lowPrice": "8000",
         "highPrice": "220000",
         "priceCurrency": "VND",
-        "offerCount": "8",
-        "availability": "https://schema.org/InStock"
-    },
-    "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "bestRating": "5",
-        "worstRating": "1",
-        "ratingCount": "127",
-        "reviewCount": "127"
-    },
-    "review": [
-        {
-            "@type": "Review",
-            "author": {"@type": "Person", "name": "Minh Tuấn"},
-            "datePublished": "2026-01-15",
-            "reviewBody": "Thanh toán xong là nhận tài khoản liền. Xóa FRP Samsung A54, A34 thành công. Giá 8K/6h quá rẻ.",
-            "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
-        },
-        {
-            "@type": "Review",
-            "author": {"@type": "Person", "name": "Thanh Hải"},
-            "datePublished": "2026-02-01",
-            "reviewBody": "Hệ thống tự động 24/7 tiện lợi. Thuê lúc 2h sáng, chuyển tiền xong 30 giây là có tài khoản.",
-            "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
-        },
-        {
-            "@type": "Review",
-            "author": {"@type": "Person", "name": "Thành Long"},
-            "datePublished": "2026-02-10",
-            "reviewBody": "Đã thử 3-4 trang khác nhau, chốt ở đây vì giá rẻ nhất, hệ thống tự động, hỗ trợ nhanh.",
-            "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
-        }
-    ]
+        "offerCount": "8"
+    }
 }
 </script>
 
@@ -224,7 +188,6 @@
     "description": "Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau thanh toán.",
     "isPartOf": {"@id": "https://unlocktool.us/#website"},
     "about": {"@id": "https://unlocktool.us/#organization"},
-    "dateModified": "{{ now()->toIso8601String() }}",
     "inLanguage": "vi",
     "potentialAction": [{"@type": "ReadAction", "target": ["https://unlocktool.us/"]}]
 }
@@ -246,7 +209,7 @@
         </form>
         <div class="hero-tags">
             <span class="hero-tags-label">Phổ biến:</span>
-            <a href="https://thuetaikhoan.com.vn/ord-services?q=unlocktool" target="_blank" class="hero-tag">unlocktool</a>
+            <a href="/#account-table" class="hero-tag">unlocktool</a>
             <a href="https://thuetaikhoan.com.vn/ord-services?q=griffin" target="_blank" class="hero-tag">griffin</a>
             <a href="https://thuetaikhoan.com.vn/ord-services?q=hfz" target="_blank" class="hero-tag">hfz</a>
             <a href="https://thuetaikhoan.com.vn/ord-services?q=samsung+tool" target="_blank" class="hero-tag">samsung tool</a>
@@ -270,7 +233,7 @@
 {{-- ===== SERVICE STRIP ===== --}}
 <section class="service-strip" id="dich-vu">
     <div class="service-strip-inner">
-        <a class="service-card" href="https://thuetaikhoan.net/thue-unlocktool.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Thuê tài khoản Unlocktool giá rẻ" loading="lazy" decoding="async" width="68" height="68"></div><span>Unlocktool</span></a>
+        <a class="service-card" href="/#account-table"><div class="service-icon"><img src="{{ asset('images/services/unlocktool.webp') }}" alt="Thuê tài khoản UnlockTool giá rẻ" loading="lazy" decoding="async" width="68" height="68"></div><span>UnlockTool</span></a>
         <a class="service-card" href="https://thuetaikhoan.net/thue-vietmap.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/vietmap.webp') }}" alt="Thuê Vietmap Live Pro bản đồ" loading="lazy" decoding="async" width="68" height="68"></div><span>Vietmap Live</span></a>
         <a class="service-card" href="https://thuetaikhoan.net/thue-tsm.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/tsm.webp') }}" alt="Thuê TSM Tool bypass FRP" loading="lazy" decoding="async" width="68" height="68"></div><span>TSM Tool</span></a>
         <a class="service-card" href="https://thuetaikhoan.net/thue-amt.php" target="_blank"><div class="service-icon"><img src="{{ asset('images/services/amt.webp') }}" alt="Thuê Android Multitool AMT" loading="lazy" decoding="async" width="68" height="68"></div><span>Android Multitool</span></a>
@@ -399,8 +362,8 @@
     <p class="seo-section-subtitle">6 lý do hàng nghìn thợ sửa điện thoại tin dùng dịch vụ của chúng tôi</p>
     <div class="why-grid">
         <div class="why-card"><div class="why-icon speed"><i class="fas fa-bolt"></i></div><div class="why-title">Nhận Tài Khoản Siêu Nhanh</div><div class="why-desc">Hệ thống tự động 100%. Thanh toán xong 30 giây là có tài khoản.</div></div>
-        <div class="why-card"><div class="why-icon price"><i class="fas fa-tags"></i></div><div class="why-title">Giá Thuê Cạnh Tranh Nhất</div><div class="why-desc">Chỉ từ 8.000đ/6 giờ — giá rẻ nhất thị trường.</div></div>
-        <div class="why-card"><div class="why-icon secure"><i class="fas fa-shield-alt"></i></div><div class="why-title">Tài Khoản Bản Quyền Riêng</div><div class="why-desc">Tài khoản chính hãng, không dùng chung. Hoạt động ổn định.</div></div>
+        <div class="why-card"><div class="why-icon price"><i class="fas fa-tags"></i></div><div class="why-title">Giá Thuê Cạnh Tranh</div><div class="why-desc">Chỉ từ 8.000đ/6 giờ với nhiều gói thời gian linh hoạt.</div></div>
+        <div class="why-card"><div class="why-icon secure"><i class="fas fa-shield-alt"></i></div><div class="why-title">Tài Khoản Hoạt Động Ổn Định</div><div class="why-desc">Thông tin đăng nhập được cấp tự động theo thời hạn của gói thuê.</div></div>
         <div class="why-card"><div class="why-icon auto"><i class="fas fa-clock"></i></div><div class="why-title">Hệ Thống Tự Động 24/7</div><div class="why-desc">Thuê bất cứ lúc nào, kể cả 2h sáng. Không phụ thuộc admin.</div></div>
         <div class="why-card"><div class="why-icon support"><i class="fas fa-headset"></i></div><div class="why-title">Hỗ Trợ Kỹ Thuật Tận Tình</div><div class="why-desc">Đội ngũ kỹ thuật hỗ trợ qua Zalo mọi lúc.</div></div>
         <div class="why-card"><div class="why-icon update"><i class="fas fa-sync-alt"></i></div><div class="why-title">Cập Nhật Phiên Bản Mới Nhất</div><div class="why-desc">Luôn sử dụng UnlockTool version mới nhất từ hãng.</div></div>
@@ -410,7 +373,7 @@
 {{-- ===== TESTIMONIALS ===== --}}
 <section class="seo-section" id="danh-gia">
     <h2 class="seo-section-title">Khách Hàng Nói Gì Về UnlockTool.us?</h2>
-    <p class="seo-section-subtitle">Hơn 6.500 đánh giá tích cực từ cộng đồng thợ sửa điện thoại</p>
+    <p class="seo-section-subtitle">Phản hồi từ khách hàng đã sử dụng dịch vụ thuê tài khoản</p>
     <div class="testimonials-grid">
         <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="testimonial-text">"Thanh toán xong là nhận tài khoản liền. Xóa FRP Samsung A54, A34 thành công. Giá 8K/6h quá rẻ."</div><div class="testimonial-author"><div class="testimonial-avatar">MT</div><div><div class="testimonial-name">Minh Tuấn</div><div class="testimonial-role">Kỹ thuật viên phần mềm</div></div></div></div>
         <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="testimonial-text">"Hệ thống tự động 24/7 tiện lợi. Thuê lúc 2h sáng, chuyển tiền xong 30 giây là có tài khoản."</div><div class="testimonial-author"><div class="testimonial-avatar">TH</div><div><div class="testimonial-name">Thanh Hải</div><div class="testimonial-role">Cửa hàng điện thoại (TP.HCM)</div></div></div></div>

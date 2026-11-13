@@ -4,24 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="google-site-verification" content="sopE0oKWWzmSq9xXTXegYWh6bE4pdp_FbESZZhTtnmQ" />
-    <title>@yield('title', 'Thuê Tài Khoản UnlockTool Giá Rẻ Từ 8K - Tự Động 24/7 | UnlockTool.us')</title>
+    <title>@yield('title', 'Thuê Tài Khoản UnlockTool Từ 8K – Tự Động 24/7')</title>
     <meta name="description" content="@yield('meta_description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau thanh toán.')">
     <meta name="robots" content="@yield('robots_meta', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
-    <meta name="twitter:title" content="@yield('title', 'Thuê Tài Khoản UnlockTool Giá Rẻ 2026')">
+    <meta name="twitter:title" content="@yield('title', 'Thuê Tài Khoản UnlockTool Từ 8K – Tự Động 24/7')">
     <meta name="twitter:description" content="@yield('meta_description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7.')">
-    <meta name="twitter:image" content="{{ asset('images/unlocktool-banner.jpg') }}">
-    <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'Thuê Tài Khoản UnlockTool Giá Rẻ 2026')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-unlocktool.jpg'))">
+    <link rel="canonical" href="@yield('canonical_url', url()->current())">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:url" content="@yield('canonical_url', url()->current())">
+    <meta property="og:title" content="@yield('title', 'Thuê Tài Khoản UnlockTool Từ 8K – Tự Động 24/7')">
     <meta property="og:description" content="@yield('meta_description', 'Thuê tài khoản UnlockTool giá rẻ từ 8.000đ. Hệ thống tự động 24/7, nhận tài khoản ngay sau thanh toán.')">
-    <meta property="og:image" content="{{ asset('images/unlocktool-banner.jpg') }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-unlocktool.jpg'))">
     <meta property="og:locale" content="vi_VN">
     <meta property="og:site_name" content="UnlockTool.us">
     <meta name="twitter:card" content="summary_large_image">
-    <meta property="article:modified_time" content="{{ now()->toIso8601String() }}">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
 
     {{-- DNS Prefetch & Preconnect --}}
@@ -281,7 +278,7 @@
     <div class="footer-container">
         <div class="footer-col">
             <h4>UnlockTool.us</h4>
-            <p>Dịch vụ cho thuê tài khoản UnlockTool uy tín, giá rẻ nhất Việt Nam. Hệ thống tự động 24/7.</p>
+            <p>Dịch vụ cho thuê tài khoản UnlockTool giá cạnh tranh. Hệ thống tự động 24/7.</p>
             <p style="margin-top:12px;"><strong>Hotline:</strong> 0777 333 763</p>
         </div>
         <div class="footer-col">

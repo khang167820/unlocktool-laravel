@@ -1,61 +1,76 @@
 @extends('layouts.app')
 
+@php
+    $postCanonical = $post->canonical_url ?: url()->current();
+    if (!\Illuminate\Support\Str::startsWith($postCanonical, ['http://', 'https://'])) {
+        $postCanonical = url($postCanonical);
+    }
+
+    $postOgImage = $post->og_image ?: $post->image ?: asset('images/og-unlocktool.jpg');
+    if (!\Illuminate\Support\Str::startsWith($postOgImage, ['http://', 'https://'])) {
+        $postOgImage = url($postOgImage);
+    }
+
+    $articleSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Article',
+        '@id' => $postCanonical . '#article',
+        'headline' => $post->meta_title ?: $post->title,
+        'description' => $post->meta_description ?: Str::limit(strip_tags($post->content), 160),
+        'image' => [$postOgImage],
+        'author' => [
+            '@type' => 'Person',
+            'name' => $post->author ?: 'Đội ngũ UnlockTool.us',
+        ],
+        'publisher' => [
+            '@type' => 'Organization',
+            '@id' => url('/') . '/#organization',
+            'name' => 'UnlockTool.us',
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('images/logo.jpg'),
+            ],
+        ],
+        'datePublished' => \Carbon\Carbon::parse($post->created_at)->toIso8601String(),
+        'dateModified' => \Carbon\Carbon::parse($post->updated_at)->toIso8601String(),
+        'mainEntityOfPage' => [
+            '@type' => 'WebPage',
+            '@id' => $postCanonical,
+        ],
+        'inLanguage' => 'vi',
+    ];
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Trang chủ', 'item' => url('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => route('blog.index')],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $post->category, 'item' => route('blog.category', $post->category)],
+            ['@type' => 'ListItem', 'position' => 4, 'name' => $post->title, 'item' => $postCanonical],
+        ],
+    ];
+
+    $jsonLdFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+@endphp
+
 @section('title', $post->meta_title ?: $post->title)
 @section('meta_description', $post->meta_description ?: Str::limit(strip_tags($post->content), 160))
+@section('canonical_url', $postCanonical)
+@section('og_image', $postOgImage)
+@section('og_type', 'article')
 @if(!empty($post->robots_meta) && $post->robots_meta !== 'index, follow')
 @section('robots_meta', $post->robots_meta)
 @endif
 
+@section('head')
+<meta property="article:published_time" content="{{ \Carbon\Carbon::parse($post->created_at)->toIso8601String() }}">
+<meta property="article:modified_time" content="{{ \Carbon\Carbon::parse($post->updated_at)->toIso8601String() }}">
+@endsection
+
 @section('schema')
-<script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@@type": "Article",
-    "headline": "{{ e($post->meta_title ?: $post->title) }}",
-    "description": "{{ e($post->meta_description ?: Str::limit(strip_tags($post->content), 160)) }}",
-    "image": "{{ $post->image ? url($post->image) : asset('images/og-default.png') }}",
-    "author": {
-        "@@type": "Organization",
-        "name": "UnlockTool.us",
-        "url": "{{ url('/') }}"
-    },
-    "publisher": {
-        "@@type": "Organization",
-        "name": "UnlockTool.us",
-        "logo": {
-            "@@type": "ImageObject",
-            "url": "{{ asset('assets/images/logo.webp') }}"
-        }
-    },
-    "datePublished": "{{ \Carbon\Carbon::parse($post->created_at)->toIso8601String() }}",
-    "dateModified": "{{ \Carbon\Carbon::parse($post->updated_at)->toIso8601String() }}",
-    "mainEntityOfPage": {
-        "@@type": "WebPage",
-        "@@id": "{{ url()->current() }}"
-    }
-    @if($ratingCount > 0)
-    ,"aggregateRating": {
-        "@@type": "AggregateRating",
-        "ratingValue": "{{ $ratingAvg }}",
-        "bestRating": "5",
-        "worstRating": "1",
-        "ratingCount": "{{ $ratingCount }}"
-    }
-    @endif
-}
-</script>
-<script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@@type": "BreadcrumbList",
-    "itemListElement": [
-        {"@@type": "ListItem", "position": 1, "name": "Home", "item": "{{ url('/') }}"},
-        {"@@type": "ListItem", "position": 2, "name": "Blog", "item": "{{ route('blog.index') }}"},
-        {"@@type": "ListItem", "position": 3, "name": "{{ e($post->category) }}", "item": "{{ route('blog.category', $post->category) }}"},
-        {"@@type": "ListItem", "position": 4, "name": "{{ e($post->title) }}"}
-    ]
-}
-</script>
+<script type="application/ld+json">{!! json_encode($articleSchema, $jsonLdFlags) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, $jsonLdFlags) !!}</script>
 @if(isset($faqSchema))
 <script type="application/ld+json">{!! $faqSchema !!}</script>
 @endif

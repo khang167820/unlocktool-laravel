@@ -9,4 +9,4 @@ Disallow: /cron/
 Disallow: /cleanup/
 Disallow: /fix-cache.php
 
-Sitemap: https://test.unlocktool.us/sitemap.xml
+Sitemap: https://unlocktool.us/sitemap.xml

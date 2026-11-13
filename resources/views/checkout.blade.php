@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Xác nhận đơn hàng - UnlockTool.us')
+@section('robots_meta', 'noindex, nofollow, noarchive')
 
 @section('head')
 <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>

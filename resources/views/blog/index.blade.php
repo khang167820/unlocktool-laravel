@@ -1,5 +1,46 @@
 @extends('layouts.app')
-@section('title', 'Blog - UnlockTool.us')
+
+@php
+    $blogPage = max(1, (int) request('page', 1));
+    $blogCategory = request()->route('category');
+    $blogSearch = trim((string) request('search', ''));
+
+    if ($blogSearch !== '') {
+        $blogTitle = 'Kết quả tìm kiếm bài viết | UnlockTool.us';
+        $blogDescription = 'Kết quả tìm kiếm trong thư viện hướng dẫn UnlockTool và sửa chữa điện thoại.';
+        $blogCanonical = route('blog.index');
+        $blogRobots = 'noindex, follow';
+    } elseif ($blogCategory) {
+        $blogTitle = "Bài Viết {$blogCategory} | UnlockTool.us";
+        $blogDescription = "Hướng dẫn và kiến thức mới nhất về {$blogCategory} dành cho kỹ thuật viên điện thoại.";
+        $blogCanonical = url()->current();
+        $blogRobots = 'index, follow, max-image-preview:large';
+    } else {
+        $blogTitle = 'Blog UnlockTool – Hướng Dẫn FRP, Flash Và Mở Khóa';
+        $blogDescription = 'Hướng dẫn sử dụng UnlockTool, xóa FRP, flash firmware và xử lý lỗi điện thoại dành cho kỹ thuật viên.';
+        $blogCanonical = route('blog.index');
+        $blogRobots = 'index, follow, max-image-preview:large';
+    }
+
+    if ($blogPage > 1 && $blogSearch === '') {
+        $blogTitle .= " – Trang {$blogPage}";
+        $blogCanonical = url()->current() . '?page=' . $blogPage;
+    }
+@endphp
+
+@section('title', $blogTitle)
+@section('meta_description', $blogDescription)
+@section('canonical_url', $blogCanonical)
+@section('robots_meta', $blogRobots)
+
+@section('head')
+@if($posts->previousPageUrl())
+<link rel="prev" href="{{ $posts->previousPageUrl() }}">
+@endif
+@if($posts->nextPageUrl())
+<link rel="next" href="{{ $posts->nextPageUrl() }}">
+@endif
+@endsection
 
 @section('content')
 <style>
@@ -31,8 +72,8 @@
 
 <section class="blog-hero">
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-        <h1 class="blog-hero-title">📝 Blog</h1>
-        <p class="blog-hero-desc">Tips, guides, and news about UnlockTool and phone unlocking</p>
+        <h1 class="blog-hero-title">📝 {{ $blogCategory ? "Bài viết {$blogCategory}" : 'Blog UnlockTool' }}</h1>
+        <p class="blog-hero-desc">Hướng dẫn, kinh nghiệm và tin tức về UnlockTool dành cho kỹ thuật viên điện thoại</p>
     </div>
 </section>
 
@@ -40,7 +81,8 @@
     <!-- Search -->
     <div class="blog-search">
         <form class="blog-search-form" action="{{ route('blog.index') }}" method="GET">
-            <input type="text" name="search" class="blog-search-input" placeholder="Search articles..." value="{{ request('search') }}">
+            <label for="blog-search-input" class="sr-only">Tìm bài viết</label>
+            <input id="blog-search-input" type="search" name="search" class="blog-search-input" placeholder="Tìm bài viết..." value="{{ request('search') }}">
             <button type="submit" class="blog-search-btn">🔍</button>
         </form>
     </div>
@@ -48,9 +90,9 @@
     <!-- Categories -->
     @if($categories->isNotEmpty())
     <div class="blog-categories">
-        <a href="{{ route('blog.index') }}" class="blog-cat-pill {{ !request('category') ? 'active' : '' }}">All</a>
+        <a href="{{ route('blog.index') }}" class="blog-cat-pill {{ !$blogCategory ? 'active' : '' }}">Tất cả</a>
         @foreach($categories as $cat)
-        <a href="{{ route('blog.category', $cat->category) }}" class="blog-cat-pill {{ request('category') === $cat->category ? 'active' : '' }}">
+        <a href="{{ route('blog.category', $cat->category) }}" class="blog-cat-pill {{ $blogCategory === $cat->category ? 'active' : '' }}">
             {{ $cat->category }} ({{ $cat->count }})
         </a>
         @endforeach
@@ -63,7 +105,7 @@
         <article class="blog-card">
             <div class="blog-card-img">
                 @if($post->image)
-                    <img src="{{ $post->image }}" alt="{{ $post->title }}" style="width:100%;height:100%;object-fit:cover;">
+                    <img src="{{ $post->image }}" alt="{{ $post->title }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                 @else
                     📄
                 @endif
@@ -76,15 +118,15 @@
                 <p class="blog-card-excerpt">{{ Str::limit(strip_tags($post->excerpt ?: $post->content), 120) }}</p>
                 <div class="blog-card-meta">
                     <span>📅 {{ \Carbon\Carbon::parse($post->created_at)->format('d/m/Y') }}</span>
-                    <span>👁 {{ number_format($post->views) }} views</span>
+                    <span>👁 {{ number_format($post->views) }} lượt xem</span>
                 </div>
             </div>
         </article>
         @empty
         <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #64748b;">
             <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
-            <h3 style="color: #1f2937; margin-bottom: 8px;">No posts yet</h3>
-            <p>Check back soon for new content!</p>
+            <h3 style="color: #1f2937; margin-bottom: 8px;">Chưa có bài viết</h3>
+            <p>Vui lòng quay lại sau để xem nội dung mới.</p>
         </div>
         @endforelse
     </div>

@@ -139,7 +139,7 @@ class SeoAnalyzerService
         // Google preview data
         $googlePreview = [
             'title' => mb_substr($seoTitle, 0, 60),
-            'url' => 'thuetaikhoan.net/blog/' . $slug,
+            'url' => parse_url(config('app.url'), PHP_URL_HOST) . '/blog/' . $slug,
             'description' => !empty($metaDescription) 
                 ? mb_substr($metaDescription, 0, 160) 
                 : mb_substr($plainContent, 0, 160),
@@ -1620,7 +1620,7 @@ class SeoAnalyzerService
         $title = $data['meta_title'] ?: $data['title'] ?? '';
         $description = $data['meta_description'] ?: mb_substr(strip_tags($data['content'] ?? ''), 0, 160);
         $image = $data['image'] ?? '';
-        $url = 'https://thuetaikhoan.net/blog/' . ($data['slug'] ?? '');
+        $url = url('/blog/' . ($data['slug'] ?? ''));
         
         return [
             'facebook' => [
@@ -1628,7 +1628,7 @@ class SeoAnalyzerService
                 'description' => mb_substr($description, 0, 155),
                 'image' => $image,
                 'url' => $url,
-                'site_name' => 'ThueTaiKhoan.net',
+                'site_name' => 'UnlockTool.us',
             ],
             'twitter' => [
                 'title' => mb_substr($title, 0, 55),
@@ -1647,11 +1647,12 @@ class SeoAnalyzerService
     {
         try {
             $apiKey = '5e4b892f3c7d4a01b8d2f0e6a9c35d78'; // IndexNow key
-            $host = 'thuetaikhoan.net';
+            $host = parse_url(config('app.url'), PHP_URL_HOST);
             
             $indexNowUrl = "https://api.indexnow.org/indexnow?" . http_build_query([
                 'url' => $url,
                 'key' => $apiKey,
+                'keyLocation' => "https://{$host}/{$apiKey}.txt",
             ]);
             
             $ch = curl_init();
@@ -1958,7 +1959,8 @@ class SeoAnalyzerService
         
         preg_match_all('/href\s*=\s*["\']https?:\/\/([^"\'\/]+)/i', $html, $matches);
         
-        $ownDomains = ['thuetaikhoan.net', 'www.thuetaikhoan.net'];
+        $siteHost = strtolower((string) parse_url(config('app.url'), PHP_URL_HOST));
+        $ownDomains = array_filter([$siteHost, 'www.' . $siteHost]);
         
         foreach ($matches[1] as $domain) {
             $domain = strtolower($domain);
@@ -2088,13 +2090,13 @@ class SeoAnalyzerService
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
             'url' => url('/'),
-            'name' => 'Thuetaikhoan.net',
+            'name' => 'UnlockTool.us',
             'description' => 'Hệ thống cho thuê tài khoản UnlockTool, Vietmap Live Pro, Griffin, TSM Tool tự động 24/7',
             'potentialAction' => [
                 '@type' => 'SearchAction',
                 'target' => [
                     '@type' => 'EntryPoint',
-                    'urlTemplate' => url('/blog') . '?q={search_term_string}',
+                    'urlTemplate' => url('/blog') . '?search={search_term_string}',
                 ],
                 'query-input' => 'required name=search_term_string',
             ],
@@ -2112,10 +2114,10 @@ class SeoAnalyzerService
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'name' => 'Thuetaikhoan.net',
+            'name' => 'UnlockTool.us',
             'url' => url('/'),
-            'logo' => asset('assets/images/logo.webp'),
-            'description' => 'Hệ thống cho thuê tài khoản phần mềm GSM uy tín, tự động 24/7',
+            'logo' => asset('images/logo.jpg'),
+            'description' => 'Hệ thống cho thuê tài khoản UnlockTool tự động 24/7',
             'contactPoint' => [
                 '@type' => 'ContactPoint',
                 'telephone' => '+84-799-161-640',
@@ -2124,7 +2126,6 @@ class SeoAnalyzerService
                 'availableLanguage' => 'Vietnamese',
             ],
             'sameAs' => [
-                'https://www.facebook.com/thuetaikhoan.net',
                 'https://zalo.me/0777333763',
             ],
         ];
@@ -3485,6 +3486,8 @@ class SeoAnalyzerService
         }
 
         $allLinks = [];
+        $siteRoot = rtrim(url('/'), '/');
+        $siteHost = (string) parse_url($siteRoot, PHP_URL_HOST);
         
         foreach ($posts as $post) {
             // Tìm tất cả link trong nội dung
@@ -3497,7 +3500,7 @@ class SeoAnalyzerService
                     
                     // Chuyển relative URL thành absolute
                     if (str_starts_with($url, '/')) {
-                        $url = 'https://thuetaikhoan.net' . $url;
+                        $url = $siteRoot . $url;
                     }
                     
                     if (!isset($allLinks[$url])) {
@@ -3526,7 +3529,7 @@ class SeoAnalyzerService
                     if (str_contains($url, '<?php')) continue; // Skip dynamic PHP URLs
                     
                     if (str_starts_with($url, '/')) {
-                        $url = 'https://thuetaikhoan.net' . $url;
+                        $url = $siteRoot . $url;
                     }
                     
                     if (!isset($allLinks[$url])) {
@@ -3551,7 +3554,7 @@ class SeoAnalyzerService
             $checked++;
             
             // Check blog internal links via DB (instant)
-            if (str_contains($url, 'thuetaikhoan.net/blog/')) {
+            if (str_contains($url, $siteHost . '/blog/')) {
                 $slug = basename(parse_url($url, PHP_URL_PATH));
                 $slug = preg_replace('/\.(php|html|htm)$/i', '', $slug);
                 $slug = strtok($slug, '?');
@@ -3573,7 +3576,7 @@ class SeoAnalyzerService
             }
             
             // Collect non-blog internal links for HTTP check
-            if (str_contains($url, 'thuetaikhoan.net')) {
+            if (str_contains($url, $siteHost)) {
                 $internalNonBlogUrls[$url] = $postsList;
                 continue;
             }
@@ -4555,7 +4558,7 @@ class SeoAnalyzerService
             return "Dưới đây là hướng dẫn chi tiết vị trí {$kwLower} với hình ảnh minh họa rõ ràng.";
         }
         if (preg_match('/vietmap/iu', $keyword)) {
-            return "Tìm hiểu mọi thông tin về {$kwLower} với hướng dẫn chi tiết từ Thuetaikhoan.net.";
+            return "Tìm hiểu mọi thông tin về {$kwLower} với hướng dẫn chi tiết từ UnlockTool.us.";
         }
         
         // Default
@@ -4738,14 +4741,14 @@ class SeoAnalyzerService
                 "Khi sử dụng {$kwLower}, bạn sẽ được hỗ trợ kỹ thuật 24/7 từ đội ngũ chuyên gia của chúng tôi.",
                 "Nhiều thợ sửa điện thoại đã tin dùng {$kwLower} trong công việc hàng ngày nhờ tính năng mạnh mẽ và ổn định.",
                 "Với {$kwLower}, bạn có thể tiết kiệm chi phí đáng kể so với việc mua license trọn đời.",
-                "Thuetaikhoan.net là đại lý chính hãng cung cấp {$kwLower} với giá tốt nhất thị trường Việt Nam.",
+                "UnlockTool.us cung cấp {$kwLower} với nhiều gói thời gian và mức giá linh hoạt.",
             ];
         } elseif ($isTutorial) {
             $pool = [
                 "Quy trình thực hiện {$kwLower} không quá phức tạp nếu bạn làm đúng theo hướng dẫn chi tiết dưới đây.",
                 "Trước khi tiến hành {$kwLower}, hãy đảm bảo bạn đã sao lưu dữ liệu quan trọng trên thiết bị.",
                 "Nhiều người dùng đã thực hiện thành công {$kwLower} chỉ trong vài phút với phương pháp này.",
-                "Nếu gặp khó khăn trong quá trình {$kwLower}, hãy liên hệ Thuetaikhoan.net để được hỗ trợ miễn phí.",
+                "Nếu gặp khó khăn trong quá trình {$kwLower}, hãy liên hệ UnlockTool.us để được hỗ trợ.",
             ];
         } elseif ($isComparison) {
             $pool = [
@@ -4757,7 +4760,7 @@ class SeoAnalyzerService
             $pool = [
                 "Hiểu rõ về {$kwLower} sẽ giúp bạn xử lý các tình huống phổ biến trong nghề sửa chữa điện thoại.",
                 "Thông tin về {$kwLower} trong bài viết này được cập nhật mới nhất cho năm 2026.",
-                "Nếu bạn cần hỗ trợ thêm về {$kwLower}, đội ngũ Thuetaikhoan.net luôn sẵn sàng tư vấn miễn phí.",
+                "Nếu bạn cần hỗ trợ thêm về {$kwLower}, đội ngũ UnlockTool.us luôn sẵn sàng tư vấn.",
                 "Các chuyên gia trong ngành GSM đều khuyên bạn nên nắm vững kiến thức về {$kwLower} trước khi thực hành.",
             ];
         }
@@ -4824,7 +4827,7 @@ class SeoAnalyzerService
         }
         
         if (preg_match('/(mua|license)/iu', $title)) {
-            return 'Mua ' . $kwLower . ' giá rẻ tại Thuetaikhoan.net';
+            return 'Tìm hiểu ' . $kwLower . ' tại UnlockTool.us';
         }
         
         return 'Hướng dẫn ' . $kwLower . ' chi tiết 2026';
