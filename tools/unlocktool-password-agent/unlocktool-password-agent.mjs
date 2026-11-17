@@ -1,12 +1,13 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 /**
  * UnlockTool Password Rotation Agent
- * Tá»± Ä‘á»™ng Ä‘á»•i máº­t kháº©u tÃ i khoáº£n UnlockTool qua Chrome (puppeteer-core).
+ * Tự động đổi mật khẩu tài khoản UnlockTool qua Chrome (puppeteer-core).
  *
- * Luá»“ng: Poll API â†’ Login unlocktool.net â†’ Äá»•i pass â†’ Report káº¿t quáº£
- * Turnstile: Dá»«ng láº¡i, chá» user xÃ¡c minh thá»§ cÃ´ng â†’ tá»± tiáº¿p tá»¥c
+ * Luồng: Poll API → Login unlocktool.net → Đổi pass → Report kết quả
+ * Turnstile: Dừng lại, chờ user xác minh thủ công → tự tiếp tục
  */
 
+import { setDefaultAutoSelectFamily } from 'node:net';
 import puppeteer from 'puppeteer-core';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { createInterface } from 'node:readline';
@@ -14,20 +15,24 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync, spawn } from 'node:child_process';
 
+// This machine cannot reliably reach the API over IPv6. Prefer IPv4 so the
+// unlocktool.us agent does not time out while polling or reporting a job.
+setDefaultAutoSelectFamily(false);
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = resolve(__dirname, 'agent-config.json');
 const CHROME_PROFILE = resolve(__dirname, 'chrome-profile');
-const DEBUG_PORT = 9224; // Use different port from thuetaikhoan agent (9223) // Use non-standard port to avoid conflicts
+const DEBUG_PORT = 9224; // Separate from the thuetaikhoan.com.vn agent (9223)
 
 const URLS = {
   login: 'https://unlocktool.net/post-in/',
   changePassword: 'https://unlocktool.net/password-change/',
 };
 
-const POLL_INTERVAL = 15_000;   // 15 seconds between polls when idle
+const POLL_INTERVAL = 3_000;    // Check for a new job every 3 seconds
 const JOB_TIMEOUT   = 120_000; // 2 minutes max per job
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ──────────────────────────────────────────────────────────
 
 function log(msg) {
   const ts = new Date().toLocaleTimeString('vi-VN');
@@ -36,7 +41,7 @@ function log(msg) {
 
 function logError(msg) {
   const ts = new Date().toLocaleTimeString('vi-VN');
-  console.error(`[${ts}] âŒ ${msg}`);
+  console.error(`[${ts}] ❌ ${msg}`);
 }
 
 function sleep(ms) {
@@ -51,7 +56,7 @@ function askUser(question) {
   });
 }
 
-// â”€â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Config ──────────────────────────────────────────────────────────
 
 function loadConfig() {
   if (existsSync(CONFIG_PATH)) {
@@ -81,7 +86,7 @@ function findChrome() {
   return null;
 }
 
-// â”€â”€â”€ API Client â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── API Client ──────────────────────────────────────────────────────
 
 class ApiClient {
   constructor(baseUrl, token) {
@@ -123,7 +128,7 @@ class ApiClient {
   }
 }
 
-// â”€â”€â”€ Browser Automation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Browser Automation ──────────────────────────────────────────────
 
 class UnlockToolAutomation {
   constructor(chromePath) {
@@ -141,7 +146,7 @@ class UnlockToolAutomation {
       mkdirSync(CHROME_PROFILE, { recursive: true });
     }
 
-    log('ðŸŒ Khá»Ÿi Ä‘á»™ng Chrome (clean, khÃ´ng cá» automation)...');
+    log('🌐 Khởi động Chrome (clean, không cờ automation)...');
 
     // Launch Chrome as a REGULAR process with remote debugging
     // NO automation flags = Cloudflare cannot detect it
@@ -160,14 +165,13 @@ class UnlockToolAutomation {
       this.chromeProcess = null;
       this.browser = null;
       this.page = null;
-      log('âš ï¸ Chrome Ä‘Ã£ Ä‘Ã³ng.');
+      log('⚠️ Chrome đã đóng.');
     });
 
     // Wait for Chrome to start and debugging port to be ready
-    log('â³ Chá» Chrome khá»Ÿi Ä‘á»™ng...');
+    log('⏳ Chờ Chrome khởi động...');
     let connected = false;
-    for (let attempt = 0; attempt < 30; attempt++) {
-      await sleep(1_000);
+    for (let attempt = 0; attempt < 60; attempt++) {
       try {
         this.browser = await puppeteer.connect({
           browserURL: `http://127.0.0.1:${DEBUG_PORT}`,
@@ -176,17 +180,18 @@ class UnlockToolAutomation {
         connected = true;
         break;
       } catch {
-        // Chrome not ready yet, retry
+        // Chrome not ready yet; retry quickly.
+        await sleep(250);
       }
     }
 
     if (!connected) {
-      logError('KhÃ´ng thá»ƒ káº¿t ná»‘i vÃ o Chrome sau 30 giÃ¢y.');
+      logError('Không thể kết nối vào Chrome sau 15 giây.');
       this.killChrome();
       throw new Error('Chrome connection failed');
     }
 
-    log('âœ… ÄÃ£ káº¿t ná»‘i Chrome (clean browser â€” Cloudflare khÃ´ng phÃ¡t hiá»‡n).');
+    log('✅ Đã kết nối Chrome (clean browser — Cloudflare không phát hiện).');
 
     const pages = await this.browser.pages();
     this.page = pages[0] || await this.browser.newPage();
@@ -235,14 +240,21 @@ class UnlockToolAutomation {
         const iframe = document.querySelector('iframe[src*="challenges.cloudflare.com"]');
         const widget = document.querySelector('#cf-turnstile, .cf-turnstile, [data-sitekey]');
         if (iframe || widget) {
-          // Check multiple solved indicators
+          // Turnstile creates the response field before verification, but its
+          // value is empty. The element existing does NOT mean it is solved.
           const widgetArea = document.querySelector('#cf-turnstile, .cf-turnstile') || document.body;
           const widgetText = widgetArea?.innerText || '';
           const hasSolvedText = widgetText.includes('Success');
-          const hasSolvedAttr = document.querySelector('[data-response], .cf-turnstile[data-response], input[name="cf-turnstile-response"]');
+          const responseField = document.querySelector(
+            'input[name^="cf-turnstile-response"], textarea[name^="cf-turnstile-response"]'
+          );
+          const responseToken = String(
+            responseField?.value || widget?.getAttribute('data-response') || ''
+          ).trim();
+          const hasSolvedToken = responseToken.length > 20;
           const hasSolvedCheckbox = document.querySelector('.cf-turnstile iframe[style*="display: none"], .cf-turnstile [aria-checked="true"]');
 
-          if (hasSolvedText || hasSolvedAttr || hasSolvedCheckbox) return false; // solved!
+          if (hasSolvedText || hasSolvedToken || hasSolvedCheckbox) return false; // solved!
           return 'turnstile';
         }
 
@@ -254,6 +266,60 @@ class UnlockToolAutomation {
     }
   }
 
+  /** Read the embedded login Turnstile state without treating an empty field as solved. */
+  async getTurnstileState() {
+    try {
+      return await this.page.evaluate(() => {
+        const iframe = document.querySelector('iframe[src*="challenges.cloudflare.com"]');
+        const widget = document.querySelector('#cf-turnstile, .cf-turnstile, [data-sitekey]');
+        const responseField = document.querySelector(
+          'input[name^="cf-turnstile-response"], textarea[name^="cf-turnstile-response"]'
+        );
+        const token = String(
+          responseField?.value || widget?.getAttribute('data-response') || ''
+        ).trim();
+
+        return {
+          present: Boolean(iframe || widget || responseField),
+          solved: token.length > 20,
+        };
+      });
+    } catch {
+      return { present: false, solved: false };
+    }
+  }
+
+  /** Require a real Turnstile response token before the agent may submit login. */
+  async waitForLoginTurnstile(api, jobId) {
+    const initial = await this.getTurnstileState();
+    if (initial.solved) return true;
+
+    log(initial.present
+      ? '⚠️  TURNSTILE — hãy tích "Verify you are human" trên Chrome...'
+      : '⏳ Đang chờ Turnstile xuất hiện và được xác minh...');
+    await api.report(jobId, 'attention', 'Turnstile — cần tích Verify you are human trước khi đăng nhập.');
+
+    let waited = 0;
+    while (waited < 300_000) {
+      await sleep(250);
+      waited += 250;
+
+      const state = await this.getTurnstileState();
+      if (state.solved) {
+        log('✅ Turnstile đã có mã xác minh — chuẩn bị đăng nhập...');
+        await sleep(100);
+        return true;
+      }
+
+      if (waited % 15_000 === 0) {
+        log(`   ⏳ Chưa tích xác minh Turnstile... (${Math.round(waited / 1000)}s)`);
+      }
+    }
+
+    logError('Timeout chờ tích xác minh Turnstile (5 phút).');
+    return false;
+  }
+
   /**
    * Wait for Cloudflare challenge to clear. Pauses agent and notifies panel.
    * Returns true when challenge is passed, false on timeout.
@@ -263,60 +329,64 @@ class UnlockToolAutomation {
     if (!challengeType) return true; // no challenge
 
     const label = challengeType === 'interstitial'
-      ? 'ðŸ›¡ï¸  CLOUDFLARE CHALLENGE'
-      : 'ðŸ”„ TURNSTILE WIDGET';
+      ? '🛡️  CLOUDFLARE CHALLENGE'
+      : '🔄 TURNSTILE WIDGET';
 
-    log(`âš ï¸  ${label} â€” Chá» xÃ¡c minh trÃªn Chrome...`);
-    log('   Náº¿u tá»± Ä‘á»™ng qua thÃ¬ agent tiáº¿p tá»¥c. Náº¿u cáº§n click, hÃ£y thao tÃ¡c trÃªn Chrome.');
-    await api.report(jobId, 'attention', `${label} â€” cáº§n xÃ¡c minh thá»§ cÃ´ng trÃªn Chrome.`);
+    log(`⚠️  ${label} — Chờ xác minh trên Chrome...`);
+    log('   Nếu tự động qua thì agent tiếp tục. Nếu cần click, hãy thao tác trên Chrome.');
+    await api.report(jobId, 'attention', `${label} — cần xác minh thủ công trên Chrome.`);
 
     let waited = 0;
     while (waited < 300_000) { // max 5 minutes
-      await sleep(3_000);
-      waited += 3_000;
+      await sleep(1_000);
+      waited += 1_000;
 
       const still = await this.hasCloudflareChallenge();
       if (!still) {
-        log('âœ… Cloudflare Ä‘Ã£ xÃ¡c minh xong â€” tiáº¿p tá»¥c...');
-        await sleep(1_000); // wait for real page to fully load
+        log('✅ Cloudflare đã xác minh xong — tiếp tục...');
+        await sleep(200); // let the real page replace the challenge frame
         return true;
       }
 
       // Print dot every 15 seconds so user knows agent is alive
       if (waited % 15_000 === 0) {
-        log(`   â³ Váº«n Ä‘ang chá» Cloudflare... (${Math.round(waited / 1000)}s)`);
+        log(`   ⏳ Vẫn đang chờ Cloudflare... (${Math.round(waited / 1000)}s)`);
       }
     }
 
-    logError('Timeout chá» Cloudflare (5 phÃºt).');
+    logError('Timeout chờ Cloudflare (5 phút).');
     return false;
   }
 
   /** Login to unlocktool.net. Returns true if successful. */
   async login(username, password, api, jobId) {
-    log(`ðŸ”‘ ÄÄƒng nháº­p: ${username}`);
+    log(`🔑 Đăng nhập: ${username}`);
 
     await this.page.goto(URLS.login, { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await sleep(800);
+    await sleep(200);
 
-    // Wait for Cloudflare challenge to clear FIRST
-    const cfOk = await this.waitForCloudflare(api, jobId);
-    if (!cfOk) return false;
+    // A full-page Cloudflare interstitial must clear before the form is usable.
+    // The embedded login Turnstile is handled after credentials are filled.
+    const firstChallenge = await this.hasCloudflareChallenge();
+    if (firstChallenge === 'interstitial') {
+      const cfOk = await this.waitForCloudflare(api, jobId);
+      if (!cfOk) return false;
+    }
 
-    // After Cloudflare clears, the page may have redirected â€” re-check URL
-    await sleep(500);
+    // After Cloudflare clears, the page may have redirected — re-check URL
+    await sleep(100);
 
     // If page is still on Cloudflare domain or challenge, navigate again
     if (!this.page.url().includes('unlocktool.net')) {
       await this.page.goto(URLS.login, { waitUntil: 'domcontentloaded', timeout: 20_000 });
-      await sleep(800);
+      await sleep(200);
       const cfOk2 = await this.waitForCloudflare(api, jobId);
       if (!cfOk2) return false;
     }
 
     // Check if already logged in (redirected away from login page)
     if (!this.page.url().includes('post-in') && !this.page.url().includes('login')) {
-      log('âœ… ÄÃ£ Ä‘Äƒng nháº­p sáºµn, bá» qua login.');
+      log('✅ Đã đăng nhập sẵn, bỏ qua login.');
       return true;
     }
 
@@ -333,11 +403,11 @@ class UnlockToolAutomation {
         try {
           await this.page.waitForSelector('input[name="log"], input[name="username"], #user_login', { timeout: 10_000 });
         } catch {
-          logError('KhÃ´ng tÃ¬m tháº¥y form login sau khi Cloudflare Ä‘Ã£ qua.');
+          logError('Không tìm thấy form login sau khi Cloudflare đã qua.');
           return false;
         }
       } else {
-        logError('KhÃ´ng tÃ¬m tháº¥y form login â€” trang cÃ³ thá»ƒ Ä‘Ã£ thay Ä‘á»•i giao diá»‡n.');
+        logError('Không tìm thấy form login — trang có thể đã thay đổi giao diện.');
         return false;
       }
     }
@@ -345,53 +415,48 @@ class UnlockToolAutomation {
     // Clear and fill username
     const usernameInput = await this.page.$('input[name="log"], input[name="username"], #user_login, input[type="text"]');
     if (!usernameInput) {
-      logError('KhÃ´ng tÃ¬m tháº¥y Ã´ Username trÃªn trang login.');
+      logError('Không tìm thấy ô Username trên trang login.');
       return false;
     }
     await usernameInput.click({ clickCount: 3 });
-    await usernameInput.type(username, { delay: 5 });
+    await usernameInput.type(username, { delay: 1 });
 
     // Clear and fill password
     const passwordInput = await this.page.$('input[name="pwd"], input[name="password"], #user_pass, input[type="password"]');
     if (!passwordInput) {
-      logError('KhÃ´ng tÃ¬m tháº¥y Ã´ Password trÃªn trang login.');
+      logError('Không tìm thấy ô Password trên trang login.');
       return false;
     }
     await passwordInput.click({ clickCount: 3 });
-    await passwordInput.type(password, { delay: 5 });
+    await passwordInput.type(password, { delay: 1 });
 
-    // Wait for Turnstile to finish and inject token into form
-    await sleep(1_500);
-    const formCf = await this.hasCloudflareChallenge();
-    if (formCf) {
-      const ok = await this.waitForCloudflare(api, jobId);
-      if (!ok) return false;
-    }
+    // Never submit the login form until Cloudflare has injected a non-empty
+    // cf-turnstile-response token. Merely finding the hidden input is not enough.
+    await sleep(100);
+    const turnstileOk = await this.waitForLoginTurnstile(api, jobId);
+    if (!turnstileOk) return false;
 
     // Click login button
     const loginBtn = await this.page.$('input[type="submit"][value*="Login"], button[type="submit"], input[name="wp-submit"]');
     if (!loginBtn) {
-      logError('KhÃ´ng tÃ¬m tháº¥y nÃºt Login.');
+      logError('Không tìm thấy nút Login.');
       return false;
     }
-    await loginBtn.click();
-
-    // Wait for navigation
-    try {
-      await this.page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30_000 });
-    } catch {
-      // Navigation might not trigger if there's an error on the same page
-    }
+    // Start waiting before the click so a fast redirect cannot be missed.
+    await Promise.all([
+      this.page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => null),
+      loginBtn.click(),
+    ]);
 
     // After login submit, might hit Cloudflare again
-    await sleep(500);
+    await sleep(150);
     const postLoginCf = await this.hasCloudflareChallenge();
     if (postLoginCf) {
       const ok = await this.waitForCloudflare(api, jobId);
       if (!ok) return false;
     }
 
-    await sleep(500);
+    await sleep(150);
 
     // Check if still on login page (= login failed)
     const currentUrl = this.page.url();
@@ -402,33 +467,33 @@ class UnlockToolAutomation {
         return err ? err.textContent.trim() : '';
       });
       if (errorText) {
-        logError(`Login tháº¥t báº¡i: ${errorText.substring(0, 100)}`);
+        logError(`Login thất bại: ${errorText.substring(0, 100)}`);
       } else {
-        logError('Login tháº¥t báº¡i â€” váº«n á»Ÿ trang login.');
+        logError('Login thất bại — vẫn ở trang login.');
       }
       return false;
     }
 
-    log('âœ… ÄÄƒng nháº­p thÃ nh cÃ´ng!');
+    log('✅ Đăng nhập thành công!');
     return true;
   }
 
   /** Change password on unlocktool.net. Returns true if successful. */
   async changePassword(oldPassword, newPassword, api, jobId) {
-    log('ðŸ”„ Äang Ä‘á»•i máº­t kháº©u...');
+    log('🔄 Đang đổi mật khẩu...');
 
     await this.page.goto(URLS.changePassword, { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await sleep(800);
+    await sleep(200);
 
     // Wait for Cloudflare challenge if present
     const cfOk = await this.waitForCloudflare(api, jobId);
     if (!cfOk) return false;
 
-    await sleep(500);
+    await sleep(100);
 
     // If redirected to login page, we're not authenticated
     if (this.page.url().includes('post-in') || this.page.url().includes('login')) {
-      logError('Bá»‹ redirect vá» trang login â€” phiÃªn Ä‘Äƒng nháº­p háº¿t háº¡n.');
+      logError('Bị redirect về trang login — phiên đăng nhập hết hạn.');
       return false;
     }
 
@@ -436,50 +501,46 @@ class UnlockToolAutomation {
     try {
       await this.page.waitForSelector('input[type="password"]', { timeout: 15_000 });
     } catch {
-      logError('KhÃ´ng tÃ¬m tháº¥y form Ä‘á»•i máº­t kháº©u.');
+      logError('Không tìm thấy form đổi mật khẩu.');
       return false;
     }
 
-    // Find password fields â€” the change-password page has 3 password inputs
+    // Find password fields — the change-password page has 3 password inputs
     const passwordInputs = await this.page.$$('input[type="password"]');
 
     if (passwordInputs.length < 3) {
-      logError(`Trang Ä‘á»•i pass chá»‰ cÃ³ ${passwordInputs.length} Ã´ password (cáº§n 3).`);
+      logError(`Trang đổi pass chỉ có ${passwordInputs.length} ô password (cần 3).`);
       return false;
     }
 
     // Field 1: Old password
     await passwordInputs[0].click({ clickCount: 3 });
-    await passwordInputs[0].type(oldPassword, { delay: 5 });
+    await passwordInputs[0].type(oldPassword, { delay: 1 });
 
     // Field 2: New password
     await passwordInputs[1].click({ clickCount: 3 });
-    await passwordInputs[1].type(newPassword, { delay: 5 });
+    await passwordInputs[1].type(newPassword, { delay: 1 });
 
     // Field 3: Confirm new password
     await passwordInputs[2].click({ clickCount: 3 });
-    await passwordInputs[2].type(newPassword, { delay: 5 });
+    await passwordInputs[2].type(newPassword, { delay: 1 });
 
-    await sleep(500);
+    await sleep(100);
 
     // Click "Change password" button
     const changeBtn = await this.page.$('button[type="submit"], input[type="submit"]');
     if (!changeBtn) {
-      logError('KhÃ´ng tÃ¬m tháº¥y nÃºt "Change password".');
+      logError('Không tìm thấy nút "Change password".');
       return false;
     }
-    await changeBtn.click();
+    await Promise.all([
+      this.page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => null),
+      changeBtn.click(),
+    ]);
 
-    // Wait for result
-    try {
-      await this.page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 20_000 });
-    } catch {
-      // page may not navigate
-    }
+    await sleep(250);
 
-    await sleep(800);
-
-    // Check for success â€” the page title or body should contain "successful"
+    // Check for success — the page title or body should contain "successful"
     const pageContent = await this.page.evaluate(() => {
       return {
         title: document.title,
@@ -488,29 +549,29 @@ class UnlockToolAutomation {
       };
     });
 
-    const successIndicators = ['successful', 'success', 'thÃ nh cÃ´ng', 'changed'];
+    const successIndicators = ['successful', 'success', 'thành công', 'changed'];
     const isSuccess = successIndicators.some(s =>
       pageContent.title.toLowerCase().includes(s) ||
       pageContent.body.toLowerCase().includes(s)
     );
 
     if (isSuccess) {
-      log('âœ… Äá»•i máº­t kháº©u thÃ nh cÃ´ng!');
+      log('✅ Đổi mật khẩu thành công!');
 
       // Click "Update password" in Chrome's password save bubble
-      // Chrome bubble is browser-level UI â€” need Windows native SendKeys
-      await sleep(1_500);
+      // Chrome bubble is browser-level UI — need Windows native SendKeys
+      await sleep(800);
       try {
-        log('ðŸ’¾ Nháº¥n "Update password" trong Chrome...');
+        log('💾 Nhấn "Update password" trong Chrome...');
         const psScript = resolve(__dirname, 'click-save-password.ps1');
         execSync(`powershell -NoProfile -ExecutionPolicy Bypass -File "${psScript}"`, {
           timeout: 5_000,
           stdio: 'ignore',
         });
-        await sleep(500);
-        log('âœ… ÄÃ£ lÆ°u máº­t kháº©u vÃ o Google.');
+        await sleep(150);
+        log('✅ Đã lưu mật khẩu vào Google.');
       } catch (e) {
-        log('âš ï¸ KhÃ´ng thá»ƒ tá»± Ä‘á»™ng click "Update password" â€” báº¡n click thá»§ cÃ´ng náº¿u tháº¥y popup.');
+        log('⚠️ Không thể tự động click "Update password" — bạn click thủ công nếu thấy popup.');
       }
 
       return true;
@@ -523,9 +584,9 @@ class UnlockToolAutomation {
     });
 
     if (hasErrors) {
-      logError(`Äá»•i pass tháº¥t báº¡i â€” lá»—i: ${hasErrors.substring(0, 200)}`);
+      logError(`Đổi pass thất bại — lỗi: ${hasErrors.substring(0, 200)}`);
     } else {
-      logError('Äá»•i pass tháº¥t báº¡i â€” khÃ´ng phÃ¡t hiá»‡n thÃ´ng bÃ¡o thÃ nh cÃ´ng.');
+      logError('Đổi pass thất bại — không phát hiện thông báo thành công.');
     }
 
     return false;
@@ -534,7 +595,7 @@ class UnlockToolAutomation {
   /** Clear session and go to login page for next account. */
   async logout() {
     try {
-      log('ðŸšª XoÃ¡ phiÃªn Ä‘Äƒng nháº­p...');
+      log('🚪 Xoá phiên đăng nhập...');
 
       // Clear cookies for unlocktool.net via CDP
       const cdp = await this.page.createCDPSession();
@@ -556,28 +617,28 @@ class UnlockToolAutomation {
       }
 
       // Navigate directly to login page
-      log('âž¡ï¸ Chuyá»ƒn vá» trang Ä‘Äƒng nháº­p...');
+      log('➡️ Chuyển về trang đăng nhập...');
       await this.page.goto('https://unlocktool.net/post-in/', {
         waitUntil: 'domcontentloaded', timeout: 20_000
       });
-      await sleep(500);
+      await sleep(100);
     } catch (err) {
-      log(`âš ï¸ Lá»—i khi logout: ${err.message} â€” tiáº¿p tá»¥c...`);
+      log(`⚠️ Lỗi khi logout: ${err.message} — tiếp tục...`);
     }
   }
 }
 
-// â”€â”€â”€ Main Agent Loop â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Agent Loop ─────────────────────────────────────────────────
 
 async function main() {
   console.log('');
-  console.log('â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—');
-  console.log('â•‘   ðŸ” UnlockTool Password Rotation Agent v1.0   â•‘');
-  console.log('â•‘   unlocktool.us                           â•‘');
-  console.log('â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•');
+  console.log('╔══════════════════════════════════════════════════╗');
+  console.log('║   🔐 UnlockTool Password Rotation Agent v1.0   ║');
+  console.log('║   unlocktool.us                                 ║');
+  console.log('╚══════════════════════════════════════════════════╝');
   console.log('');
 
-  // â”€â”€â”€ Load / setup config
+  // ─── Load / setup config
   let cfg = loadConfig();
 
   if (!cfg.apiBaseUrl) {
@@ -585,57 +646,57 @@ async function main() {
   }
 
   if (!cfg.token) {
-    console.log('ChÆ°a cÃ³ mÃ£ káº¿t ná»‘i. Táº¡o mÃ£ tá»« Admin Panel â†’ Äá»•i Pass â†’ UnlockTool â†’ "Táº¡o mÃ£ káº¿t ná»‘i má»›i"');
+    console.log('Chưa có mã kết nối. Tạo mã từ Admin Panel → Đổi Pass → UnlockTool → "Tạo mã kết nối mới"');
     console.log('');
-    cfg.token = await askUser('DÃ¡n mÃ£ káº¿t ná»‘i (token): ');
+    cfg.token = await askUser('Dán mã kết nối (token): ');
     if (!cfg.token || cfg.token.length < 32) {
-      logError('Token khÃ´ng há»£p lá»‡. ThoÃ¡t.');
+      logError('Token không hợp lệ. Thoát.');
       process.exit(1);
     }
     saveConfig(cfg);
-    log('âœ… ÄÃ£ lÆ°u token vÃ o agent-config.json');
+    log('✅ Đã lưu token vào agent-config.json');
   }
 
-  // â”€â”€â”€ Find Chrome
-  const chromePath = cfg.chromePath || findChrome();
+  // ─── Find Chrome
+  const chromePath = (cfg.chromePath && existsSync(cfg.chromePath)) ? cfg.chromePath : findChrome();
   if (!chromePath) {
-    logError('KhÃ´ng tÃ¬m tháº¥y Chrome. CÃ i Chrome hoáº·c set CHROME_PATH trong agent-config.json.');
+    logError('Không tìm thấy Chrome. Cài Chrome hoặc set CHROME_PATH trong agent-config.json.');
     process.exit(1);
   }
   cfg.chromePath = chromePath;
   saveConfig(cfg);
   log(`Chrome: ${chromePath}`);
 
-  // â”€â”€â”€ Init API client
+  // ─── Init API client
   const api = new ApiClient(cfg.apiBaseUrl, cfg.token);
 
-  // â”€â”€â”€ Test connection
-  log('Kiá»ƒm tra káº¿t ná»‘i API...');
+  // ─── Test connection
+  log('Kiểm tra kết nối API...');
   try {
     await api.poll();
-    log('âœ… Káº¿t ná»‘i API thÃ nh cÃ´ng!');
+    log('✅ Kết nối API thành công!');
   } catch (err) {
     if (err.message === 'TOKEN_INVALID') {
-      logError('Token khÃ´ng há»£p lá»‡ hoáº·c Ä‘Ã£ bá»‹ thu há»“i. Táº¡o token má»›i tá»« Admin Panel.');
+      logError('Token không hợp lệ hoặc đã bị thu hồi. Tạo token mới từ Admin Panel.');
       // Delete invalid token
       cfg.token = '';
       saveConfig(cfg);
       process.exit(1);
     }
-    logError(`Lá»—i káº¿t ná»‘i: ${err.message}`);
+    logError(`Lỗi kết nối: ${err.message}`);
     process.exit(1);
   }
 
-  // â”€â”€â”€ Init browser automation
+  // ─── Init browser automation
   const automation = new UnlockToolAutomation(chromePath);
   let consecutiveErrors = 0;
 
-  // â”€â”€â”€ First-run: Setup Google account in Chrome profile
+  // ─── First-run: Setup Google account in Chrome profile
   const googleSetupMarker = resolve(__dirname, 'chrome-profile', '.google-setup-done');
   if (!existsSync(googleSetupMarker)) {
     log('');
-    log('ðŸ“§ Láº§n Ä‘áº§u cháº¡y â€” cáº§n Ä‘Äƒng nháº­p Google Ä‘á»ƒ lÆ°u máº­t kháº©u.');
-    log('   Chrome sáº½ má»Ÿ trang Ä‘Äƒng nháº­p Google...');
+    log('📧 Lần đầu chạy — cần đăng nhập Google để lưu mật khẩu.');
+    log('   Chrome sẽ mở trang đăng nhập Google...');
     log('');
 
     await automation.launch();
@@ -646,22 +707,22 @@ async function main() {
     });
 
     console.log('');
-    console.log('â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—');
-    console.log('â•‘  ÄÄƒng nháº­p Google trÃªn Chrome rá»“i nháº¥n Enter á»Ÿ Ä‘Ã¢y  â•‘');
-    console.log('â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•');
+    console.log('╔══════════════════════════════════════════════════════╗');
+    console.log('║  Đăng nhập Google trên Chrome rồi nhấn Enter ở đây  ║');
+    console.log('╚══════════════════════════════════════════════════════╝');
     console.log('');
-    await askUser('Nháº¥n Enter sau khi Ä‘Ã£ Ä‘Äƒng nháº­p Google â†’ ');
+    await askUser('Nhấn Enter sau khi đã đăng nhập Google → ');
 
     // Also enable password saving: navigate to Chrome settings
     try {
       await automation.page.goto('chrome://settings/passwords', { waitUntil: 'networkidle2', timeout: 10_000 });
       await sleep(1_000);
-      log('ðŸ’¡ Kiá»ƒm tra Chrome Settings â†’ Passwords Ä‘Ã£ báº­t "Offer to save passwords".');
+      log('💡 Kiểm tra Chrome Settings → Passwords đã bật "Offer to save passwords".');
     } catch { /* chrome:// pages may not work via puppeteer connect */ }
 
     // Write marker so we don't ask again
     writeFileSync(googleSetupMarker, new Date().toISOString(), 'utf-8');
-    log('âœ… ÄÃ£ thiáº¿t láº­p Google account â€” máº­t kháº©u sáº½ tá»± lÆ°u vÃ o Google.');
+    log('✅ Đã thiết lập Google account — mật khẩu sẽ tự lưu vào Google.');
     log('');
 
     // Close Chrome so it relaunches fresh for the job loop
@@ -671,14 +732,14 @@ async function main() {
 
   // Handle graceful shutdown
   process.on('SIGINT', async () => {
-    log('\\nðŸ›‘ Äang dá»«ng agent...');
+    log('\\n🛑 Đang dừng agent...');
     await automation.close();
     process.exit(0);
   });
 
-  // â”€â”€â”€ Main loop
-  log('ðŸš€ Agent Ä‘ang cháº¡y â€” nháº¥n Ctrl+C Ä‘á»ƒ dá»«ng.');
-  console.log('â”€'.repeat(50));
+  // ─── Main loop
+  log('🚀 Agent đang chạy — nhấn Ctrl+C để dừng.');
+  console.log('─'.repeat(50));
 
   while (true) {
     let job = null;
@@ -687,14 +748,14 @@ async function main() {
       job = await api.poll();
     } catch (err) {
       if (err.message === 'TOKEN_INVALID') {
-        logError('Token háº¿t háº¡n. Táº¡o token má»›i tá»« Admin Panel.');
+        logError('Token hết hạn. Tạo token mới từ Admin Panel.');
         await automation.close();
         process.exit(1);
       }
       consecutiveErrors++;
-      logError(`Poll lá»—i (${consecutiveErrors}): ${err.message}`);
+      logError(`Poll lỗi (${consecutiveErrors}): ${err.message}`);
       if (consecutiveErrors > 10) {
-        logError('QuÃ¡ nhiá»u lá»—i liÃªn tiáº¿p. Dá»«ng agent.');
+        logError('Quá nhiều lỗi liên tiếp. Dừng agent.');
         await automation.close();
         process.exit(1);
       }
@@ -705,13 +766,13 @@ async function main() {
     consecutiveErrors = 0;
 
     if (!job) {
-      process.stdout.write(`\râ³ KhÃ´ng cÃ³ tÃ¡c vá»¥ â€” chá» ${POLL_INTERVAL / 1000}s...  `);
+      process.stdout.write(`\r⏳ Không có tác vụ — chờ ${POLL_INTERVAL / 1000}s...  `);
       await sleep(POLL_INTERVAL);
       continue;
     }
 
     console.log(''); // Clear the waiting line
-    log(`ðŸ“‹ Job #${job.id}: ${job.username}`);
+    log(`📋 Job #${job.id}: ${job.username}`);
 
     try {
       // Launch Chrome if not already running
@@ -720,8 +781,8 @@ async function main() {
       // Step 1: Login
       const loginOk = await automation.login(job.username, job.current_password, api, job.id);
       if (!loginOk) {
-        await api.report(job.id, 'failed', 'KhÃ´ng thá»ƒ Ä‘Äƒng nháº­p vÃ o unlocktool.net');
-        logError(`Job #${job.id}: Login tháº¥t báº¡i.`);
+        await api.report(job.id, 'failed', 'Không thể đăng nhập vào unlocktool.net');
+        logError(`Job #${job.id}: Login thất bại.`);
         await automation.logout();
         continue;
       }
@@ -729,31 +790,31 @@ async function main() {
       // Step 2: Change password
       const changeOk = await automation.changePassword(job.current_password, job.new_password, api, job.id);
       if (!changeOk) {
-        await api.report(job.id, 'failed', 'Äá»•i máº­t kháº©u tháº¥t báº¡i trÃªn unlocktool.net');
-        logError(`Job #${job.id}: Äá»•i pass tháº¥t báº¡i.`);
+        await api.report(job.id, 'failed', 'Đổi mật khẩu thất bại trên unlocktool.net');
+        logError(`Job #${job.id}: Đổi pass thất bại.`);
         await automation.logout();
         continue;
       }
 
-      // Step 3: Report success â€” ONLY after confirmed success on page
-      await api.report(job.id, 'success', 'Äá»•i máº­t kháº©u thÃ nh cÃ´ng.');
-      log(`âœ… Job #${job.id}: HoÃ n táº¥t â€” ${job.username}`);
+      // Step 3: Report success — ONLY after confirmed success on page
+      await api.report(job.id, 'success', 'Đổi mật khẩu thành công.');
+      log(`✅ Job #${job.id}: Hoàn tất — ${job.username}`);
 
       // Logout to prepare for next account
       await automation.logout();
 
       // Brief pause between accounts
-      await sleep(500);
+      await sleep(100);
 
     } catch (err) {
-      logError(`Job #${job.id}: Lá»—i ngoáº¡i lá»‡ â€” ${err.message}`);
+      logError(`Job #${job.id}: Lỗi ngoại lệ — ${err.message}`);
       try {
-        await api.report(job.id, 'failed', `Lá»—i agent: ${err.message.substring(0, 200)}`);
+        await api.report(job.id, 'failed', `Lỗi agent: ${err.message.substring(0, 200)}`);
       } catch { /* ignore report error */ }
 
       // If browser crashed, null it out so it relaunches
       if (!automation.browser) {
-        log('Chrome bá»‹ crash â€” sáº½ khá»Ÿi Ä‘á»™ng láº¡i á»Ÿ job tiáº¿p theo.');
+        log('Chrome bị crash — sẽ khởi động lại ở job tiếp theo.');
       }
     }
   }
