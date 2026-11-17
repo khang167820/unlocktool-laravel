@@ -136,6 +136,7 @@ class UnlockToolAutomation {
     this.browser = null;
     this.page = null;
     this.chromeProcess = null;
+    this.lastLoginFailure = null;
   }
 
   async launch() {
@@ -360,6 +361,7 @@ class UnlockToolAutomation {
 
   /** Login to unlocktool.net. Returns true if successful. */
   async login(username, password, api, jobId) {
+    this.lastLoginFailure = null;
     log(`🔑 Đăng nhập: ${username}`);
 
     await this.page.goto(URLS.login, { waitUntil: 'domcontentloaded', timeout: 30_000 });
@@ -467,8 +469,12 @@ class UnlockToolAutomation {
         return err ? err.textContent.trim() : '';
       });
       if (errorText) {
+        this.lastLoginFailure = /correct username and password|incorrect|invalid (?:username|password)|wrong password|sai (?:tài khoản|mật khẩu)/i.test(errorText)
+          ? 'credentials'
+          : 'unknown';
         logError(`Login thất bại: ${errorText.substring(0, 100)}`);
       } else {
+        this.lastLoginFailure = 'unknown';
         logError('Login thất bại — vẫn ở trang login.');
       }
       return false;
@@ -779,11 +785,38 @@ async function main() {
       await automation.launch();
 
       // Step 1: Login
-      const loginOk = await automation.login(job.username, job.current_password, api, job.id);
+      let loginOk = await automation.login(job.username, job.current_password, api, job.id);
+      let passwordAlreadyChanged = false;
+
+      // A previous run may have changed the password successfully but failed
+      // before reporting back. Only after a definite credential error, verify
+      // the queued new password once so the database can be reconciled safely.
+      if (!loginOk
+          && automation.lastLoginFailure === 'credentials'
+          && job.new_password
+          && job.new_password !== job.current_password) {
+        log('🔁 Mật khẩu hiện tại không đúng — thử xác minh bằng mật khẩu mới đã tạo...');
+        await automation.logout();
+        loginOk = await automation.login(job.username, job.new_password, api, job.id);
+        passwordAlreadyChanged = loginOk;
+
+        if (passwordAlreadyChanged) {
+          log('✅ Mật khẩu mới đăng nhập được — lần đổi trước đã thành công.');
+        }
+      }
+
       if (!loginOk) {
         await api.report(job.id, 'failed', 'Không thể đăng nhập vào unlocktool.net');
         logError(`Job #${job.id}: Login thất bại.`);
         await automation.logout();
+        continue;
+      }
+
+      if (passwordAlreadyChanged) {
+        await api.report(job.id, 'success', 'Mật khẩu mới đã đăng nhập thành công; đồng bộ lại dữ liệu sau lần đổi trước.');
+        log(`✅ Job #${job.id}: Đã xác nhận mật khẩu mới — ${job.username}`);
+        await automation.logout();
+        await sleep(100);
         continue;
       }
 
