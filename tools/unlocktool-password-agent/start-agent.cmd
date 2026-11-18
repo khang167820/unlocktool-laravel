@@ -10,6 +10,9 @@ echo   unlocktool.us
 echo  ========================================
 echo.
 
+:: Doi mang on dinh 5 giay khi khoi dong cung Windows
+timeout /t 5 /nobreak >nul 2>&1
+
 :: Check Node.js
 where node >nul 2>&1
 if %errorlevel% neq 0 (
@@ -27,10 +30,11 @@ if not exist "node_modules" (
     echo.
 )
 
-:: Run agent
+:LOOP
 node unlocktool-password-agent.mjs
 
-:: Keep window open if agent exits
 echo.
-echo Agent da dung. Nhan phim bat ky de dong.
-pause >nul
+echo [CANH BAO] Agent bi ngat ket noi hoac da dung.
+echo Se tu dong ket noi lai sau 10 giay... (Nhan Ctrl+C neu muon dung han)
+timeout /t 10
+goto LOOP
